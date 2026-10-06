@@ -55,6 +55,7 @@ class PhysicalLocations extends Table {
   TextColumn get id => text()();
   TextColumn get nameEncrypted => text()();
   TextColumn get descriptionEncrypted => text().nullable()();
+  BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   @override
@@ -247,7 +248,7 @@ class VaultDatabase extends _$VaultDatabase {
   VaultDatabase(super.e);
   VaultDatabase.defaults() : super(driftDatabase(name: 'document_vault'));
 
-  static const currentSchemaVersion = 1;
+  static const currentSchemaVersion = 2;
   @override
   int get schemaVersion => currentSchemaVersion;
 
@@ -266,10 +267,12 @@ class VaultDatabase extends _$VaultDatabase {
     required int from,
     required int to,
   }) async {
-    if (from == to) return;
-    throw UnsupportedError(
-      'No migration is registered from schema $from to $to.',
-    );
+    if (from >= to) return;
+    await transaction(() async {
+      if (from < 2 && to >= 2) {
+        await m.addColumn(physicalLocations, physicalLocations.isArchived);
+      }
+    });
   }
 
   Future<void> _createIndexes() async {

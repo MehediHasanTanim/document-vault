@@ -15,6 +15,8 @@ abstract interface class FamilyRepository {
   Future<FamilyMember?> getById(String id);
   Future<void> save(FamilyMembersCompanion member);
   Future<void> archive(String id, {required DateTime updatedAt});
+  Future<void> restore(String id, {required DateTime updatedAt});
+  Future<int> documentCount(String id);
 }
 
 abstract interface class CategoryRepository {
@@ -35,6 +37,11 @@ abstract interface class DocumentRepository {
   });
   Future<void> moveToTrash(String id, {required DateTime deletedAt});
   Future<void> restore(String id, {required DateTime updatedAt});
+  Future<void> assignPhysicalLocation(
+    String id, {
+    required String? physicalLocationId,
+    required DateTime updatedAt,
+  });
 
   /// Deletes database records and returns file metadata for journalled storage
   /// cleanup. Callers must not delete encrypted files before this transaction.
@@ -43,10 +50,24 @@ abstract interface class DocumentRepository {
 
 abstract interface class TagRepository {
   Stream<List<Tag>> watchAll();
+  Future<Tag?> getById(String id);
+  Future<Tag?> getByNormalizedNameHash(String normalizedNameHash);
   Future<void> save(TagsCompanion tag);
   Future<void> attach({required String documentId, required String tagId});
   Future<void> detach({required String documentId, required String tagId});
   Future<void> delete(String id);
+}
+
+abstract interface class PhysicalLocationRepository {
+  Stream<List<PhysicalLocation>> watchAll({bool includeArchived = false});
+  Future<PhysicalLocation?> getById(String id);
+  Future<void> save(PhysicalLocationsCompanion location);
+  Future<void> archive(
+    String id, {
+    required bool archived,
+    required DateTime updatedAt,
+  });
+  Future<int> documentCount(String id);
 }
 
 abstract interface class ReminderRepository {
@@ -125,6 +146,24 @@ class DriftFamilyRepository implements FamilyRepository {
           updatedAt: Value(updatedAt),
         ),
       );
+
+  @override
+  Future<void> restore(String id, {required DateTime updatedAt}) =>
+      (_db.update(_db.familyMembers)..where((m) => m.id.equals(id))).write(
+        FamilyMembersCompanion(
+          isArchived: const Value(false),
+          updatedAt: Value(updatedAt),
+        ),
+      );
+
+  @override
+  Future<int> documentCount(String id) async {
+    final count = _db.documentOwners.documentId.count();
+    final query = _db.selectOnly(_db.documentOwners)
+      ..addColumns([count])
+      ..where(_db.documentOwners.familyMemberId.equals(id));
+    return (await query.map((row) => row.read(count) ?? 0).getSingle());
+  }
 }
 
 class DriftCategoryRepository implements CategoryRepository {
@@ -146,6 +185,54 @@ class DriftCategoryRepository implements CategoryRepository {
   @override
   Future<void> delete(String id) =>
       (_db.delete(_db.documentCategories)..where((c) => c.id.equals(id))).go();
+}
+
+class DriftPhysicalLocationRepository implements PhysicalLocationRepository {
+  DriftPhysicalLocationRepository(this._db);
+  final VaultDatabase _db;
+
+  @override
+  Stream<List<PhysicalLocation>> watchAll({bool includeArchived = false}) {
+    final query = _db.select(_db.physicalLocations)
+      ..orderBy([(location) => OrderingTerm.asc(location.createdAt)]);
+    if (!includeArchived) {
+      query.where((location) => location.isArchived.equals(false));
+    }
+    return query.watch();
+  }
+
+  @override
+  Future<PhysicalLocation?> getById(String id) => (_db.select(
+    _db.physicalLocations,
+  )..where((location) => location.id.equals(id))).getSingleOrNull();
+
+  @override
+  Future<void> save(PhysicalLocationsCompanion location) =>
+      _db.into(_db.physicalLocations).insertOnConflictUpdate(location);
+
+  @override
+  Future<void> archive(
+    String id, {
+    required bool archived,
+    required DateTime updatedAt,
+  }) =>
+      (_db.update(
+        _db.physicalLocations,
+      )..where((location) => location.id.equals(id))).write(
+        PhysicalLocationsCompanion(
+          isArchived: Value(archived),
+          updatedAt: Value(updatedAt),
+        ),
+      );
+
+  @override
+  Future<int> documentCount(String id) async {
+    final count = _db.documents.id.count();
+    final query = _db.selectOnly(_db.documents)
+      ..addColumns([count])
+      ..where(_db.documents.physicalLocationId.equals(id));
+    return (await query.map((row) => row.read(count) ?? 0).getSingle());
+  }
 }
 
 class DriftDocumentRepository implements DocumentRepository {
@@ -221,6 +308,19 @@ class DriftDocumentRepository implements DocumentRepository {
       );
 
   @override
+  Future<void> assignPhysicalLocation(
+    String id, {
+    required String? physicalLocationId,
+    required DateTime updatedAt,
+  }) => (_db.update(_db.documents)..where((document) => document.id.equals(id)))
+      .write(
+        DocumentsCompanion(
+          physicalLocationId: Value(physicalLocationId),
+          updatedAt: Value(updatedAt),
+        ),
+      );
+
+  @override
   Future<List<DocumentFile>> deletePermanently(String id) =>
       _db.transaction(() async {
         final files = await (_db.select(
@@ -239,6 +339,17 @@ class DriftTagRepository implements TagRepository {
   Stream<List<Tag>> watchAll() => (_db.select(
     _db.tags,
   )..orderBy([(t) => OrderingTerm.asc(t.createdAt)])).watch();
+
+  @override
+  Future<Tag?> getById(String id) => (_db.select(
+    _db.tags,
+  )..where((tag) => tag.id.equals(id))).getSingleOrNull();
+
+  @override
+  Future<Tag?> getByNormalizedNameHash(String normalizedNameHash) =>
+      (_db.select(_db.tags)
+            ..where((tag) => tag.normalizedNameHash.equals(normalizedNameHash)))
+          .getSingleOrNull();
 
   @override
   Future<void> save(TagsCompanion tag) =>

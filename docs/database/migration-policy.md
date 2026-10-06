@@ -1,7 +1,8 @@
 # Database migration policy
 
 `VaultDatabase.currentSchemaVersion` is the authoritative schema version. The
-current production schema is version 1.
+current production schema is version 2. Version 2 adds archival state to
+physical storage locations; its v1 → v2 migration is additive.
 
 Every schema change must increment that constant and add an explicit,
 forward-only branch to `VaultDatabase._upgrade`. A migration must preserve

@@ -145,6 +145,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlock Document Vault'**
   String get unlockVault;
+
+  /// No description provided for @categoryIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get categoryIdentity;
+
+  /// No description provided for @categoryNid.
+  ///
+  /// In en, this message translates to:
+  /// **'National ID (NID)'**
+  String get categoryNid;
+
+  /// No description provided for @categoryBirthCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth certificate'**
+  String get categoryBirthCertificate;
+
+  /// No description provided for @categoryPassport.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport'**
+  String get categoryPassport;
+
+  /// No description provided for @categoryTaxFinancial.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax and Financial'**
+  String get categoryTaxFinancial;
+
+  /// No description provided for @categoryTin.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer Identification Number (TIN)'**
+  String get categoryTin;
+
+  /// No description provided for @categoryBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Banking and finance'**
+  String get categoryBank;
+
+  /// No description provided for @categoryEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get categoryEducation;
+
+  /// No description provided for @categoryCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate and academic record'**
+  String get categoryCertificate;
+
+  /// No description provided for @categoryLandProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Land and Property'**
+  String get categoryLandProperty;
+
+  /// No description provided for @categoryKhatian.
+  ///
+  /// In en, this message translates to:
+  /// **'Khatian / খতিয়ান'**
+  String get categoryKhatian;
+
+  /// No description provided for @categoryMutation.
+  ///
+  /// In en, this message translates to:
+  /// **'Mutation / নামজারি'**
+  String get categoryMutation;
+
+  /// No description provided for @categoryVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get categoryVehicle;
+
+  /// No description provided for @categoryVehicleRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle registration'**
+  String get categoryVehicleRegistration;
+
+  /// No description provided for @categoryMedical.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical'**
+  String get categoryMedical;
+
+  /// No description provided for @categoryPrescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescription'**
+  String get categoryPrescription;
+
+  /// No description provided for @categoryMarriageFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Marriage and Family'**
+  String get categoryMarriageFamily;
+
+  /// No description provided for @categoryNikahnama.
+  ///
+  /// In en, this message translates to:
+  /// **'Marriage certificate / Nikahnama'**
+  String get categoryNikahnama;
+
+  /// No description provided for @categoryEmployment.
+  ///
+  /// In en, this message translates to:
+  /// **'Employment'**
+  String get categoryEmployment;
+
+  /// No description provided for @categoryAppointmentLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment letter'**
+  String get categoryAppointmentLetter;
+
+  /// No description provided for @categoryBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get categoryBusiness;
+
+  /// No description provided for @categoryTradeLicence.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade licence'**
+  String get categoryTradeLicence;
+
+  /// No description provided for @categorySchoolChildren.
+  ///
+  /// In en, this message translates to:
+  /// **'School and Children'**
+  String get categorySchoolChildren;
+
+  /// No description provided for @categorySchoolAdmission.
+  ///
+  /// In en, this message translates to:
+  /// **'School admission'**
+  String get categorySchoolAdmission;
+
+  /// No description provided for @categoryTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get categoryTravel;
+
+  /// No description provided for @categoryVisa.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa'**
+  String get categoryVisa;
+
+  /// No description provided for @categoryWarrantyPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Warranty and Purchases'**
+  String get categoryWarrantyPurchases;
+
+  /// No description provided for @categoryPurchaseReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase receipt'**
+  String get categoryPurchaseReceipt;
+
+  /// No description provided for @categoryLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get categoryLegal;
+
+  /// No description provided for @categoryAffidavit.
+  ///
+  /// In en, this message translates to:
+  /// **'Affidavit'**
+  String get categoryAffidavit;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
 }
 
 class _AppLocalizationsDelegate

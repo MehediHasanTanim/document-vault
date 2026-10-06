@@ -1792,6 +1792,21 @@ class $PhysicalLocationsTable extends PhysicalLocations
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _isArchivedMeta = const VerificationMeta(
+    'isArchived',
+  );
+  @override
+  late final GeneratedColumn<bool> isArchived = GeneratedColumn<bool>(
+    'is_archived',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_archived" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1819,6 +1834,7 @@ class $PhysicalLocationsTable extends PhysicalLocations
     id,
     nameEncrypted,
     descriptionEncrypted,
+    isArchived,
     createdAt,
     updatedAt,
   ];
@@ -1859,6 +1875,12 @@ class $PhysicalLocationsTable extends PhysicalLocations
         ),
       );
     }
+    if (data.containsKey('is_archived')) {
+      context.handle(
+        _isArchivedMeta,
+        isArchived.isAcceptableOrUnknown(data['is_archived']!, _isArchivedMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1896,6 +1918,10 @@ class $PhysicalLocationsTable extends PhysicalLocations
         DriftSqlType.string,
         data['${effectivePrefix}description_encrypted'],
       ),
+      isArchived: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_archived'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1918,12 +1944,14 @@ class PhysicalLocation extends DataClass
   final String id;
   final String nameEncrypted;
   final String? descriptionEncrypted;
+  final bool isArchived;
   final DateTime createdAt;
   final DateTime updatedAt;
   const PhysicalLocation({
     required this.id,
     required this.nameEncrypted,
     this.descriptionEncrypted,
+    required this.isArchived,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -1935,6 +1963,7 @@ class PhysicalLocation extends DataClass
     if (!nullToAbsent || descriptionEncrypted != null) {
       map['description_encrypted'] = Variable<String>(descriptionEncrypted);
     }
+    map['is_archived'] = Variable<bool>(isArchived);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -1947,6 +1976,7 @@ class PhysicalLocation extends DataClass
       descriptionEncrypted: descriptionEncrypted == null && nullToAbsent
           ? const Value.absent()
           : Value(descriptionEncrypted),
+      isArchived: Value(isArchived),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -1963,6 +1993,7 @@ class PhysicalLocation extends DataClass
       descriptionEncrypted: serializer.fromJson<String?>(
         json['descriptionEncrypted'],
       ),
+      isArchived: serializer.fromJson<bool>(json['isArchived']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1974,6 +2005,7 @@ class PhysicalLocation extends DataClass
       'id': serializer.toJson<String>(id),
       'nameEncrypted': serializer.toJson<String>(nameEncrypted),
       'descriptionEncrypted': serializer.toJson<String?>(descriptionEncrypted),
+      'isArchived': serializer.toJson<bool>(isArchived),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1983,6 +2015,7 @@ class PhysicalLocation extends DataClass
     String? id,
     String? nameEncrypted,
     Value<String?> descriptionEncrypted = const Value.absent(),
+    bool? isArchived,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => PhysicalLocation(
@@ -1991,6 +2024,7 @@ class PhysicalLocation extends DataClass
     descriptionEncrypted: descriptionEncrypted.present
         ? descriptionEncrypted.value
         : this.descriptionEncrypted,
+    isArchived: isArchived ?? this.isArchived,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -2003,6 +2037,9 @@ class PhysicalLocation extends DataClass
       descriptionEncrypted: data.descriptionEncrypted.present
           ? data.descriptionEncrypted.value
           : this.descriptionEncrypted,
+      isArchived: data.isArchived.present
+          ? data.isArchived.value
+          : this.isArchived,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2014,6 +2051,7 @@ class PhysicalLocation extends DataClass
           ..write('id: $id, ')
           ..write('nameEncrypted: $nameEncrypted, ')
           ..write('descriptionEncrypted: $descriptionEncrypted, ')
+          ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2025,6 +2063,7 @@ class PhysicalLocation extends DataClass
     id,
     nameEncrypted,
     descriptionEncrypted,
+    isArchived,
     createdAt,
     updatedAt,
   );
@@ -2035,6 +2074,7 @@ class PhysicalLocation extends DataClass
           other.id == this.id &&
           other.nameEncrypted == this.nameEncrypted &&
           other.descriptionEncrypted == this.descriptionEncrypted &&
+          other.isArchived == this.isArchived &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2043,6 +2083,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
   final Value<String> id;
   final Value<String> nameEncrypted;
   final Value<String?> descriptionEncrypted;
+  final Value<bool> isArchived;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -2050,6 +2091,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
     this.id = const Value.absent(),
     this.nameEncrypted = const Value.absent(),
     this.descriptionEncrypted = const Value.absent(),
+    this.isArchived = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2058,6 +2100,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
     required String id,
     required String nameEncrypted,
     this.descriptionEncrypted = const Value.absent(),
+    this.isArchived = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -2069,6 +2112,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
     Expression<String>? id,
     Expression<String>? nameEncrypted,
     Expression<String>? descriptionEncrypted,
+    Expression<bool>? isArchived,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -2078,6 +2122,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
       if (nameEncrypted != null) 'name_encrypted': nameEncrypted,
       if (descriptionEncrypted != null)
         'description_encrypted': descriptionEncrypted,
+      if (isArchived != null) 'is_archived': isArchived,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2088,6 +2133,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
     Value<String>? id,
     Value<String>? nameEncrypted,
     Value<String?>? descriptionEncrypted,
+    Value<bool>? isArchived,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -2096,6 +2142,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
       id: id ?? this.id,
       nameEncrypted: nameEncrypted ?? this.nameEncrypted,
       descriptionEncrypted: descriptionEncrypted ?? this.descriptionEncrypted,
+      isArchived: isArchived ?? this.isArchived,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -2116,6 +2163,9 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
         descriptionEncrypted.value,
       );
     }
+    if (isArchived.present) {
+      map['is_archived'] = Variable<bool>(isArchived.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -2134,6 +2184,7 @@ class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
           ..write('id: $id, ')
           ..write('nameEncrypted: $nameEncrypted, ')
           ..write('descriptionEncrypted: $descriptionEncrypted, ')
+          ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -9201,6 +9252,7 @@ typedef $$PhysicalLocationsTableCreateCompanionBuilder =
       required String id,
       required String nameEncrypted,
       Value<String?> descriptionEncrypted,
+      Value<bool> isArchived,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -9210,6 +9262,7 @@ typedef $$PhysicalLocationsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> nameEncrypted,
       Value<String?> descriptionEncrypted,
+      Value<bool> isArchived,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -9267,6 +9320,11 @@ class $$PhysicalLocationsTableFilterComposer
 
   ColumnFilters<String> get descriptionEncrypted => $composableBuilder(
     column: $table.descriptionEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9330,6 +9388,11 @@ class $$PhysicalLocationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -9360,6 +9423,11 @@ class $$PhysicalLocationsTableAnnotationComposer
 
   GeneratedColumn<String> get descriptionEncrypted => $composableBuilder(
     column: $table.descriptionEncrypted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
     builder: (column) => column,
   );
 
@@ -9431,6 +9499,7 @@ class $$PhysicalLocationsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> nameEncrypted = const Value.absent(),
                 Value<String?> descriptionEncrypted = const Value.absent(),
+                Value<bool> isArchived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -9438,6 +9507,7 @@ class $$PhysicalLocationsTableTableManager
                 id: id,
                 nameEncrypted: nameEncrypted,
                 descriptionEncrypted: descriptionEncrypted,
+                isArchived: isArchived,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -9447,6 +9517,7 @@ class $$PhysicalLocationsTableTableManager
                 required String id,
                 required String nameEncrypted,
                 Value<String?> descriptionEncrypted = const Value.absent(),
+                Value<bool> isArchived = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -9454,6 +9525,7 @@ class $$PhysicalLocationsTableTableManager
                 id: id,
                 nameEncrypted: nameEncrypted,
                 descriptionEncrypted: descriptionEncrypted,
+                isArchived: isArchived,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
