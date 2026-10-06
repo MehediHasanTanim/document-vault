@@ -42,6 +42,11 @@ abstract interface class DocumentRepository {
     required String? physicalLocationId,
     required DateTime updatedAt,
   });
+  Future<void> attachImportedFiles(
+    String documentId, {
+    required List<DocumentFilesCompanion> files,
+    required List<DocumentPagesCompanion> pages,
+  });
 
   /// Deletes database records and returns file metadata for journalled storage
   /// cleanup. Callers must not delete encrypted files before this transaction.
@@ -319,6 +324,20 @@ class DriftDocumentRepository implements DocumentRepository {
           updatedAt: Value(updatedAt),
         ),
       );
+
+  @override
+  Future<void> attachImportedFiles(
+    String documentId, {
+    required List<DocumentFilesCompanion> files,
+    required List<DocumentPagesCompanion> pages,
+  }) => _db.transaction(() async {
+    final exists = await getById(documentId);
+    if (exists == null) {
+      throw StateError('Document must exist before attaching imported files.');
+    }
+    await _insertAll(_db.documentFiles, files);
+    await _insertAll(_db.documentPages, pages);
+  });
 
   @override
   Future<List<DocumentFile>> deletePermanently(String id) =>

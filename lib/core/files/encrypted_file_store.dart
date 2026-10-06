@@ -299,4 +299,19 @@ class EncryptedStorageCleanupManager {
     }
     return removed;
   }
+
+  /// Deletes only unfinished same-directory writes. A completed encrypted file
+  /// is always renamed to `.dvf` atomically, so `.pending` is recoverable
+  /// debris from an interrupted encryption operation.
+  Future<int> removePartialEncryptedWrites() async {
+    final root = await _store.documentsDirectory;
+    var removed = 0;
+    await for (final entity in root.list(recursive: true, followLinks: false)) {
+      if (entity is File && entity.path.endsWith('.pending')) {
+        await entity.delete();
+        removed++;
+      }
+    }
+    return removed;
+  }
 }

@@ -15,3 +15,15 @@ final class SecurityFailure extends AppFailure {
 final class StorageFailure extends AppFailure {
   const StorageFailure(super.message, {super.cause});
 }
+
+final class UnsupportedFileFailure extends AppFailure {
+  const UnsupportedFileFailure(super.message, {super.cause});
+}
+
+final class InsufficientStorageFailure extends AppFailure {
+  const InsufficientStorageFailure(super.message, {super.cause});
+}
+
+final class PermissionFailure extends AppFailure {
+  const PermissionFailure(super.message, {super.cause});
+}

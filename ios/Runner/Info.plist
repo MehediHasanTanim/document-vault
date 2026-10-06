@@ -6,6 +6,10 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Document Vault BD uses the camera only when you choose to scan a document. / আপনি নথি স্ক্যান করতে চাইলে ডকুমেন্ট ভল্ট বিডি শুধু তখন ক্যামেরা ব্যবহার করে।</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Document Vault BD lets you choose document images to import into your private vault. / ব্যক্তিগত ভল্টে নথির ছবি আনতে ডকুমেন্ট ভল্ট বিডি আপনাকে ছবি বেছে নিতে দেয়।</string>
 	<key>CFBundleDisplayName</key>
 	<string>Documentvault</string>
 	<key>CFBundleExecutable</key>
