@@ -13,8 +13,16 @@ class SecureFileReference {
     required this.id,
     required this.encryptedRelativePath,
     required this.mimeType,
+    required this.integrityHash,
+    required this.sizeBytes,
+    this.encryptionVersion = 1,
   });
   final String id;
   final String encryptedRelativePath;
   final String mimeType;
+
+  /// SHA-256 of plaintext, used to detect truncation and wrong-file swaps.
+  final String integrityHash;
+  final int sizeBytes;
+  final int encryptionVersion;
 }

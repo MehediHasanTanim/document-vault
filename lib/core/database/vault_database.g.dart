@@ -401,6 +401,18 @@ class $FamilyMembersTable extends FamilyMembers
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       );
+  static const VerificationMeta _nicknameEncryptedMeta = const VerificationMeta(
+    'nicknameEncrypted',
+  );
+  @override
+  late final GeneratedColumn<String> nicknameEncrypted =
+      GeneratedColumn<String>(
+        'nickname_encrypted',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _relationshipMeta = const VerificationMeta(
     'relationship',
   );
@@ -411,6 +423,50 @@ class $FamilyMembersTable extends FamilyMembers
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateOfBirthMeta = const VerificationMeta(
+    'dateOfBirth',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateOfBirth = GeneratedColumn<DateTime>(
+    'date_of_birth',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bloodGroupMeta = const VerificationMeta(
+    'bloodGroup',
+  );
+  @override
+  late final GeneratedColumn<String> bloodGroup = GeneratedColumn<String>(
+    'blood_group',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _avatarFileIdMeta = const VerificationMeta(
+    'avatarFileId',
+  );
+  @override
+  late final GeneratedColumn<String> avatarFileId = GeneratedColumn<String>(
+    'avatar_file_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesEncryptedMeta = const VerificationMeta(
+    'notesEncrypted',
+  );
+  @override
+  late final GeneratedColumn<String> notesEncrypted = GeneratedColumn<String>(
+    'notes_encrypted',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _isOwnerMeta = const VerificationMeta(
     'isOwner',
@@ -468,7 +524,12 @@ class $FamilyMembersTable extends FamilyMembers
   List<GeneratedColumn> get $columns => [
     id,
     displayNameEncrypted,
+    nicknameEncrypted,
     relationship,
+    dateOfBirth,
+    bloodGroup,
+    avatarFileId,
+    notesEncrypted,
     isOwner,
     isArchived,
     createdAt,
@@ -502,6 +563,15 @@ class $FamilyMembersTable extends FamilyMembers
     } else if (isInserting) {
       context.missing(_displayNameEncryptedMeta);
     }
+    if (data.containsKey('nickname_encrypted')) {
+      context.handle(
+        _nicknameEncryptedMeta,
+        nicknameEncrypted.isAcceptableOrUnknown(
+          data['nickname_encrypted']!,
+          _nicknameEncryptedMeta,
+        ),
+      );
+    }
     if (data.containsKey('relationship')) {
       context.handle(
         _relationshipMeta,
@@ -512,6 +582,39 @@ class $FamilyMembersTable extends FamilyMembers
       );
     } else if (isInserting) {
       context.missing(_relationshipMeta);
+    }
+    if (data.containsKey('date_of_birth')) {
+      context.handle(
+        _dateOfBirthMeta,
+        dateOfBirth.isAcceptableOrUnknown(
+          data['date_of_birth']!,
+          _dateOfBirthMeta,
+        ),
+      );
+    }
+    if (data.containsKey('blood_group')) {
+      context.handle(
+        _bloodGroupMeta,
+        bloodGroup.isAcceptableOrUnknown(data['blood_group']!, _bloodGroupMeta),
+      );
+    }
+    if (data.containsKey('avatar_file_id')) {
+      context.handle(
+        _avatarFileIdMeta,
+        avatarFileId.isAcceptableOrUnknown(
+          data['avatar_file_id']!,
+          _avatarFileIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes_encrypted')) {
+      context.handle(
+        _notesEncryptedMeta,
+        notesEncrypted.isAcceptableOrUnknown(
+          data['notes_encrypted']!,
+          _notesEncryptedMeta,
+        ),
+      );
     }
     if (data.containsKey('is_owner')) {
       context.handle(
@@ -558,10 +661,30 @@ class $FamilyMembersTable extends FamilyMembers
         DriftSqlType.string,
         data['${effectivePrefix}display_name_encrypted'],
       )!,
+      nicknameEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nickname_encrypted'],
+      ),
       relationship: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}relationship'],
       )!,
+      dateOfBirth: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_of_birth'],
+      ),
+      bloodGroup: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}blood_group'],
+      ),
+      avatarFileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}avatar_file_id'],
+      ),
+      notesEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes_encrypted'],
+      ),
       isOwner: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_owner'],
@@ -590,7 +713,12 @@ class $FamilyMembersTable extends FamilyMembers
 class FamilyMember extends DataClass implements Insertable<FamilyMember> {
   final String id;
   final String displayNameEncrypted;
+  final String? nicknameEncrypted;
   final String relationship;
+  final DateTime? dateOfBirth;
+  final String? bloodGroup;
+  final String? avatarFileId;
+  final String? notesEncrypted;
   final bool isOwner;
   final bool isArchived;
   final DateTime createdAt;
@@ -598,7 +726,12 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
   const FamilyMember({
     required this.id,
     required this.displayNameEncrypted,
+    this.nicknameEncrypted,
     required this.relationship,
+    this.dateOfBirth,
+    this.bloodGroup,
+    this.avatarFileId,
+    this.notesEncrypted,
     required this.isOwner,
     required this.isArchived,
     required this.createdAt,
@@ -609,7 +742,22 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['display_name_encrypted'] = Variable<String>(displayNameEncrypted);
+    if (!nullToAbsent || nicknameEncrypted != null) {
+      map['nickname_encrypted'] = Variable<String>(nicknameEncrypted);
+    }
     map['relationship'] = Variable<String>(relationship);
+    if (!nullToAbsent || dateOfBirth != null) {
+      map['date_of_birth'] = Variable<DateTime>(dateOfBirth);
+    }
+    if (!nullToAbsent || bloodGroup != null) {
+      map['blood_group'] = Variable<String>(bloodGroup);
+    }
+    if (!nullToAbsent || avatarFileId != null) {
+      map['avatar_file_id'] = Variable<String>(avatarFileId);
+    }
+    if (!nullToAbsent || notesEncrypted != null) {
+      map['notes_encrypted'] = Variable<String>(notesEncrypted);
+    }
     map['is_owner'] = Variable<bool>(isOwner);
     map['is_archived'] = Variable<bool>(isArchived);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -621,7 +769,22 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
     return FamilyMembersCompanion(
       id: Value(id),
       displayNameEncrypted: Value(displayNameEncrypted),
+      nicknameEncrypted: nicknameEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nicknameEncrypted),
       relationship: Value(relationship),
+      dateOfBirth: dateOfBirth == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dateOfBirth),
+      bloodGroup: bloodGroup == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bloodGroup),
+      avatarFileId: avatarFileId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarFileId),
+      notesEncrypted: notesEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notesEncrypted),
       isOwner: Value(isOwner),
       isArchived: Value(isArchived),
       createdAt: Value(createdAt),
@@ -639,7 +802,14 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
       displayNameEncrypted: serializer.fromJson<String>(
         json['displayNameEncrypted'],
       ),
+      nicknameEncrypted: serializer.fromJson<String?>(
+        json['nicknameEncrypted'],
+      ),
       relationship: serializer.fromJson<String>(json['relationship']),
+      dateOfBirth: serializer.fromJson<DateTime?>(json['dateOfBirth']),
+      bloodGroup: serializer.fromJson<String?>(json['bloodGroup']),
+      avatarFileId: serializer.fromJson<String?>(json['avatarFileId']),
+      notesEncrypted: serializer.fromJson<String?>(json['notesEncrypted']),
       isOwner: serializer.fromJson<bool>(json['isOwner']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -652,7 +822,12 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'displayNameEncrypted': serializer.toJson<String>(displayNameEncrypted),
+      'nicknameEncrypted': serializer.toJson<String?>(nicknameEncrypted),
       'relationship': serializer.toJson<String>(relationship),
+      'dateOfBirth': serializer.toJson<DateTime?>(dateOfBirth),
+      'bloodGroup': serializer.toJson<String?>(bloodGroup),
+      'avatarFileId': serializer.toJson<String?>(avatarFileId),
+      'notesEncrypted': serializer.toJson<String?>(notesEncrypted),
       'isOwner': serializer.toJson<bool>(isOwner),
       'isArchived': serializer.toJson<bool>(isArchived),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -663,7 +838,12 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
   FamilyMember copyWith({
     String? id,
     String? displayNameEncrypted,
+    Value<String?> nicknameEncrypted = const Value.absent(),
     String? relationship,
+    Value<DateTime?> dateOfBirth = const Value.absent(),
+    Value<String?> bloodGroup = const Value.absent(),
+    Value<String?> avatarFileId = const Value.absent(),
+    Value<String?> notesEncrypted = const Value.absent(),
     bool? isOwner,
     bool? isArchived,
     DateTime? createdAt,
@@ -671,7 +851,16 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
   }) => FamilyMember(
     id: id ?? this.id,
     displayNameEncrypted: displayNameEncrypted ?? this.displayNameEncrypted,
+    nicknameEncrypted: nicknameEncrypted.present
+        ? nicknameEncrypted.value
+        : this.nicknameEncrypted,
     relationship: relationship ?? this.relationship,
+    dateOfBirth: dateOfBirth.present ? dateOfBirth.value : this.dateOfBirth,
+    bloodGroup: bloodGroup.present ? bloodGroup.value : this.bloodGroup,
+    avatarFileId: avatarFileId.present ? avatarFileId.value : this.avatarFileId,
+    notesEncrypted: notesEncrypted.present
+        ? notesEncrypted.value
+        : this.notesEncrypted,
     isOwner: isOwner ?? this.isOwner,
     isArchived: isArchived ?? this.isArchived,
     createdAt: createdAt ?? this.createdAt,
@@ -683,9 +872,24 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
       displayNameEncrypted: data.displayNameEncrypted.present
           ? data.displayNameEncrypted.value
           : this.displayNameEncrypted,
+      nicknameEncrypted: data.nicknameEncrypted.present
+          ? data.nicknameEncrypted.value
+          : this.nicknameEncrypted,
       relationship: data.relationship.present
           ? data.relationship.value
           : this.relationship,
+      dateOfBirth: data.dateOfBirth.present
+          ? data.dateOfBirth.value
+          : this.dateOfBirth,
+      bloodGroup: data.bloodGroup.present
+          ? data.bloodGroup.value
+          : this.bloodGroup,
+      avatarFileId: data.avatarFileId.present
+          ? data.avatarFileId.value
+          : this.avatarFileId,
+      notesEncrypted: data.notesEncrypted.present
+          ? data.notesEncrypted.value
+          : this.notesEncrypted,
       isOwner: data.isOwner.present ? data.isOwner.value : this.isOwner,
       isArchived: data.isArchived.present
           ? data.isArchived.value
@@ -700,7 +904,12 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
     return (StringBuffer('FamilyMember(')
           ..write('id: $id, ')
           ..write('displayNameEncrypted: $displayNameEncrypted, ')
+          ..write('nicknameEncrypted: $nicknameEncrypted, ')
           ..write('relationship: $relationship, ')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('bloodGroup: $bloodGroup, ')
+          ..write('avatarFileId: $avatarFileId, ')
+          ..write('notesEncrypted: $notesEncrypted, ')
           ..write('isOwner: $isOwner, ')
           ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt, ')
@@ -713,7 +922,12 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
   int get hashCode => Object.hash(
     id,
     displayNameEncrypted,
+    nicknameEncrypted,
     relationship,
+    dateOfBirth,
+    bloodGroup,
+    avatarFileId,
+    notesEncrypted,
     isOwner,
     isArchived,
     createdAt,
@@ -725,7 +939,12 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
       (other is FamilyMember &&
           other.id == this.id &&
           other.displayNameEncrypted == this.displayNameEncrypted &&
+          other.nicknameEncrypted == this.nicknameEncrypted &&
           other.relationship == this.relationship &&
+          other.dateOfBirth == this.dateOfBirth &&
+          other.bloodGroup == this.bloodGroup &&
+          other.avatarFileId == this.avatarFileId &&
+          other.notesEncrypted == this.notesEncrypted &&
           other.isOwner == this.isOwner &&
           other.isArchived == this.isArchived &&
           other.createdAt == this.createdAt &&
@@ -735,7 +954,12 @@ class FamilyMember extends DataClass implements Insertable<FamilyMember> {
 class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
   final Value<String> id;
   final Value<String> displayNameEncrypted;
+  final Value<String?> nicknameEncrypted;
   final Value<String> relationship;
+  final Value<DateTime?> dateOfBirth;
+  final Value<String?> bloodGroup;
+  final Value<String?> avatarFileId;
+  final Value<String?> notesEncrypted;
   final Value<bool> isOwner;
   final Value<bool> isArchived;
   final Value<DateTime> createdAt;
@@ -744,7 +968,12 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
   const FamilyMembersCompanion({
     this.id = const Value.absent(),
     this.displayNameEncrypted = const Value.absent(),
+    this.nicknameEncrypted = const Value.absent(),
     this.relationship = const Value.absent(),
+    this.dateOfBirth = const Value.absent(),
+    this.bloodGroup = const Value.absent(),
+    this.avatarFileId = const Value.absent(),
+    this.notesEncrypted = const Value.absent(),
     this.isOwner = const Value.absent(),
     this.isArchived = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -754,7 +983,12 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
   FamilyMembersCompanion.insert({
     required String id,
     required String displayNameEncrypted,
+    this.nicknameEncrypted = const Value.absent(),
     required String relationship,
+    this.dateOfBirth = const Value.absent(),
+    this.bloodGroup = const Value.absent(),
+    this.avatarFileId = const Value.absent(),
+    this.notesEncrypted = const Value.absent(),
     this.isOwner = const Value.absent(),
     this.isArchived = const Value.absent(),
     required DateTime createdAt,
@@ -768,7 +1002,12 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
   static Insertable<FamilyMember> custom({
     Expression<String>? id,
     Expression<String>? displayNameEncrypted,
+    Expression<String>? nicknameEncrypted,
     Expression<String>? relationship,
+    Expression<DateTime>? dateOfBirth,
+    Expression<String>? bloodGroup,
+    Expression<String>? avatarFileId,
+    Expression<String>? notesEncrypted,
     Expression<bool>? isOwner,
     Expression<bool>? isArchived,
     Expression<DateTime>? createdAt,
@@ -779,7 +1018,12 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
       if (id != null) 'id': id,
       if (displayNameEncrypted != null)
         'display_name_encrypted': displayNameEncrypted,
+      if (nicknameEncrypted != null) 'nickname_encrypted': nicknameEncrypted,
       if (relationship != null) 'relationship': relationship,
+      if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
+      if (bloodGroup != null) 'blood_group': bloodGroup,
+      if (avatarFileId != null) 'avatar_file_id': avatarFileId,
+      if (notesEncrypted != null) 'notes_encrypted': notesEncrypted,
       if (isOwner != null) 'is_owner': isOwner,
       if (isArchived != null) 'is_archived': isArchived,
       if (createdAt != null) 'created_at': createdAt,
@@ -791,7 +1035,12 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
   FamilyMembersCompanion copyWith({
     Value<String>? id,
     Value<String>? displayNameEncrypted,
+    Value<String?>? nicknameEncrypted,
     Value<String>? relationship,
+    Value<DateTime?>? dateOfBirth,
+    Value<String?>? bloodGroup,
+    Value<String?>? avatarFileId,
+    Value<String?>? notesEncrypted,
     Value<bool>? isOwner,
     Value<bool>? isArchived,
     Value<DateTime>? createdAt,
@@ -801,7 +1050,12 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
     return FamilyMembersCompanion(
       id: id ?? this.id,
       displayNameEncrypted: displayNameEncrypted ?? this.displayNameEncrypted,
+      nicknameEncrypted: nicknameEncrypted ?? this.nicknameEncrypted,
       relationship: relationship ?? this.relationship,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      bloodGroup: bloodGroup ?? this.bloodGroup,
+      avatarFileId: avatarFileId ?? this.avatarFileId,
+      notesEncrypted: notesEncrypted ?? this.notesEncrypted,
       isOwner: isOwner ?? this.isOwner,
       isArchived: isArchived ?? this.isArchived,
       createdAt: createdAt ?? this.createdAt,
@@ -821,8 +1075,23 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
         displayNameEncrypted.value,
       );
     }
+    if (nicknameEncrypted.present) {
+      map['nickname_encrypted'] = Variable<String>(nicknameEncrypted.value);
+    }
     if (relationship.present) {
       map['relationship'] = Variable<String>(relationship.value);
+    }
+    if (dateOfBirth.present) {
+      map['date_of_birth'] = Variable<DateTime>(dateOfBirth.value);
+    }
+    if (bloodGroup.present) {
+      map['blood_group'] = Variable<String>(bloodGroup.value);
+    }
+    if (avatarFileId.present) {
+      map['avatar_file_id'] = Variable<String>(avatarFileId.value);
+    }
+    if (notesEncrypted.present) {
+      map['notes_encrypted'] = Variable<String>(notesEncrypted.value);
     }
     if (isOwner.present) {
       map['is_owner'] = Variable<bool>(isOwner.value);
@@ -847,7 +1116,12 @@ class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
     return (StringBuffer('FamilyMembersCompanion(')
           ..write('id: $id, ')
           ..write('displayNameEncrypted: $displayNameEncrypted, ')
+          ..write('nicknameEncrypted: $nicknameEncrypted, ')
           ..write('relationship: $relationship, ')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('bloodGroup: $bloodGroup, ')
+          ..write('avatarFileId: $avatarFileId, ')
+          ..write('notesEncrypted: $notesEncrypted, ')
           ..write('isOwner: $isOwner, ')
           ..write('isArchived: $isArchived, ')
           ..write('createdAt: $createdAt, ')
@@ -893,6 +1167,20 @@ class $DocumentCategoriesTable extends DocumentCategories
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES document_categories (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _nameKeyMeta = const VerificationMeta(
+    'nameKey',
+  );
+  @override
+  late final GeneratedColumn<String> nameKey = GeneratedColumn<String>(
+    'name_key',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _customNameEncryptedMeta =
       const VerificationMeta('customNameEncrypted');
@@ -932,14 +1220,52 @@ class $DocumentCategoriesTable extends DocumentCategories
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _iconKeyMeta = const VerificationMeta(
+    'iconKey',
+  );
+  @override
+  late final GeneratedColumn<String> iconKey = GeneratedColumn<String>(
+    'icon_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('document'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     code,
     parentId,
+    nameKey,
     customNameEncrypted,
     isSystem,
     sortOrder,
+    iconKey,
+    createdAt,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -972,6 +1298,12 @@ class $DocumentCategoriesTable extends DocumentCategories
         parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta),
       );
     }
+    if (data.containsKey('name_key')) {
+      context.handle(
+        _nameKeyMeta,
+        nameKey.isAcceptableOrUnknown(data['name_key']!, _nameKeyMeta),
+      );
+    }
     if (data.containsKey('custom_name_encrypted')) {
       context.handle(
         _customNameEncryptedMeta,
@@ -992,6 +1324,28 @@ class $DocumentCategoriesTable extends DocumentCategories
         _sortOrderMeta,
         sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
       );
+    }
+    if (data.containsKey('icon_key')) {
+      context.handle(
+        _iconKeyMeta,
+        iconKey.isAcceptableOrUnknown(data['icon_key']!, _iconKeyMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
     }
     return context;
   }
@@ -1014,6 +1368,10 @@ class $DocumentCategoriesTable extends DocumentCategories
         DriftSqlType.string,
         data['${effectivePrefix}parent_id'],
       ),
+      nameKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_key'],
+      ),
       customNameEncrypted: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}custom_name_encrypted'],
@@ -1025,6 +1383,18 @@ class $DocumentCategoriesTable extends DocumentCategories
       sortOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
+      )!,
+      iconKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}icon_key'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
       )!,
     );
   }
@@ -1040,16 +1410,24 @@ class DocumentCategory extends DataClass
   final String id;
   final String code;
   final String? parentId;
+  final String? nameKey;
   final String? customNameEncrypted;
   final bool isSystem;
   final int sortOrder;
+  final String iconKey;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   const DocumentCategory({
     required this.id,
     required this.code,
     this.parentId,
+    this.nameKey,
     this.customNameEncrypted,
     required this.isSystem,
     required this.sortOrder,
+    required this.iconKey,
+    required this.createdAt,
+    required this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1059,11 +1437,17 @@ class DocumentCategory extends DataClass
     if (!nullToAbsent || parentId != null) {
       map['parent_id'] = Variable<String>(parentId);
     }
+    if (!nullToAbsent || nameKey != null) {
+      map['name_key'] = Variable<String>(nameKey);
+    }
     if (!nullToAbsent || customNameEncrypted != null) {
       map['custom_name_encrypted'] = Variable<String>(customNameEncrypted);
     }
     map['is_system'] = Variable<bool>(isSystem);
     map['sort_order'] = Variable<int>(sortOrder);
+    map['icon_key'] = Variable<String>(iconKey);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -1074,11 +1458,17 @@ class DocumentCategory extends DataClass
       parentId: parentId == null && nullToAbsent
           ? const Value.absent()
           : Value(parentId),
+      nameKey: nameKey == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nameKey),
       customNameEncrypted: customNameEncrypted == null && nullToAbsent
           ? const Value.absent()
           : Value(customNameEncrypted),
       isSystem: Value(isSystem),
       sortOrder: Value(sortOrder),
+      iconKey: Value(iconKey),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -1091,11 +1481,15 @@ class DocumentCategory extends DataClass
       id: serializer.fromJson<String>(json['id']),
       code: serializer.fromJson<String>(json['code']),
       parentId: serializer.fromJson<String?>(json['parentId']),
+      nameKey: serializer.fromJson<String?>(json['nameKey']),
       customNameEncrypted: serializer.fromJson<String?>(
         json['customNameEncrypted'],
       ),
       isSystem: serializer.fromJson<bool>(json['isSystem']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      iconKey: serializer.fromJson<String>(json['iconKey']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -1105,9 +1499,13 @@ class DocumentCategory extends DataClass
       'id': serializer.toJson<String>(id),
       'code': serializer.toJson<String>(code),
       'parentId': serializer.toJson<String?>(parentId),
+      'nameKey': serializer.toJson<String?>(nameKey),
       'customNameEncrypted': serializer.toJson<String?>(customNameEncrypted),
       'isSystem': serializer.toJson<bool>(isSystem),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'iconKey': serializer.toJson<String>(iconKey),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
@@ -1115,29 +1513,41 @@ class DocumentCategory extends DataClass
     String? id,
     String? code,
     Value<String?> parentId = const Value.absent(),
+    Value<String?> nameKey = const Value.absent(),
     Value<String?> customNameEncrypted = const Value.absent(),
     bool? isSystem,
     int? sortOrder,
+    String? iconKey,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) => DocumentCategory(
     id: id ?? this.id,
     code: code ?? this.code,
     parentId: parentId.present ? parentId.value : this.parentId,
+    nameKey: nameKey.present ? nameKey.value : this.nameKey,
     customNameEncrypted: customNameEncrypted.present
         ? customNameEncrypted.value
         : this.customNameEncrypted,
     isSystem: isSystem ?? this.isSystem,
     sortOrder: sortOrder ?? this.sortOrder,
+    iconKey: iconKey ?? this.iconKey,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
   );
   DocumentCategory copyWithCompanion(DocumentCategoriesCompanion data) {
     return DocumentCategory(
       id: data.id.present ? data.id.value : this.id,
       code: data.code.present ? data.code.value : this.code,
       parentId: data.parentId.present ? data.parentId.value : this.parentId,
+      nameKey: data.nameKey.present ? data.nameKey.value : this.nameKey,
       customNameEncrypted: data.customNameEncrypted.present
           ? data.customNameEncrypted.value
           : this.customNameEncrypted,
       isSystem: data.isSystem.present ? data.isSystem.value : this.isSystem,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -1147,16 +1557,30 @@ class DocumentCategory extends DataClass
           ..write('id: $id, ')
           ..write('code: $code, ')
           ..write('parentId: $parentId, ')
+          ..write('nameKey: $nameKey, ')
           ..write('customNameEncrypted: $customNameEncrypted, ')
           ..write('isSystem: $isSystem, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('iconKey: $iconKey, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, code, parentId, customNameEncrypted, isSystem, sortOrder);
+  int get hashCode => Object.hash(
+    id,
+    code,
+    parentId,
+    nameKey,
+    customNameEncrypted,
+    isSystem,
+    sortOrder,
+    iconKey,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1164,55 +1588,81 @@ class DocumentCategory extends DataClass
           other.id == this.id &&
           other.code == this.code &&
           other.parentId == this.parentId &&
+          other.nameKey == this.nameKey &&
           other.customNameEncrypted == this.customNameEncrypted &&
           other.isSystem == this.isSystem &&
-          other.sortOrder == this.sortOrder);
+          other.sortOrder == this.sortOrder &&
+          other.iconKey == this.iconKey &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class DocumentCategoriesCompanion extends UpdateCompanion<DocumentCategory> {
   final Value<String> id;
   final Value<String> code;
   final Value<String?> parentId;
+  final Value<String?> nameKey;
   final Value<String?> customNameEncrypted;
   final Value<bool> isSystem;
   final Value<int> sortOrder;
+  final Value<String> iconKey;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const DocumentCategoriesCompanion({
     this.id = const Value.absent(),
     this.code = const Value.absent(),
     this.parentId = const Value.absent(),
+    this.nameKey = const Value.absent(),
     this.customNameEncrypted = const Value.absent(),
     this.isSystem = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.iconKey = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DocumentCategoriesCompanion.insert({
     required String id,
     required String code,
     this.parentId = const Value.absent(),
+    this.nameKey = const Value.absent(),
     this.customNameEncrypted = const Value.absent(),
     this.isSystem = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.iconKey = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       code = Value(code);
+       code = Value(code),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
   static Insertable<DocumentCategory> custom({
     Expression<String>? id,
     Expression<String>? code,
     Expression<String>? parentId,
+    Expression<String>? nameKey,
     Expression<String>? customNameEncrypted,
     Expression<bool>? isSystem,
     Expression<int>? sortOrder,
+    Expression<String>? iconKey,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (code != null) 'code': code,
       if (parentId != null) 'parent_id': parentId,
+      if (nameKey != null) 'name_key': nameKey,
       if (customNameEncrypted != null)
         'custom_name_encrypted': customNameEncrypted,
       if (isSystem != null) 'is_system': isSystem,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (iconKey != null) 'icon_key': iconKey,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1221,18 +1671,26 @@ class DocumentCategoriesCompanion extends UpdateCompanion<DocumentCategory> {
     Value<String>? id,
     Value<String>? code,
     Value<String?>? parentId,
+    Value<String?>? nameKey,
     Value<String?>? customNameEncrypted,
     Value<bool>? isSystem,
     Value<int>? sortOrder,
+    Value<String>? iconKey,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return DocumentCategoriesCompanion(
       id: id ?? this.id,
       code: code ?? this.code,
       parentId: parentId ?? this.parentId,
+      nameKey: nameKey ?? this.nameKey,
       customNameEncrypted: customNameEncrypted ?? this.customNameEncrypted,
       isSystem: isSystem ?? this.isSystem,
       sortOrder: sortOrder ?? this.sortOrder,
+      iconKey: iconKey ?? this.iconKey,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1249,6 +1707,9 @@ class DocumentCategoriesCompanion extends UpdateCompanion<DocumentCategory> {
     if (parentId.present) {
       map['parent_id'] = Variable<String>(parentId.value);
     }
+    if (nameKey.present) {
+      map['name_key'] = Variable<String>(nameKey.value);
+    }
     if (customNameEncrypted.present) {
       map['custom_name_encrypted'] = Variable<String>(
         customNameEncrypted.value,
@@ -1259,6 +1720,15 @@ class DocumentCategoriesCompanion extends UpdateCompanion<DocumentCategory> {
     }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (iconKey.present) {
+      map['icon_key'] = Variable<String>(iconKey.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1272,9 +1742,400 @@ class DocumentCategoriesCompanion extends UpdateCompanion<DocumentCategory> {
           ..write('id: $id, ')
           ..write('code: $code, ')
           ..write('parentId: $parentId, ')
+          ..write('nameKey: $nameKey, ')
           ..write('customNameEncrypted: $customNameEncrypted, ')
           ..write('isSystem: $isSystem, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('iconKey: $iconKey, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PhysicalLocationsTable extends PhysicalLocations
+    with TableInfo<$PhysicalLocationsTable, PhysicalLocation> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PhysicalLocationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEncryptedMeta = const VerificationMeta(
+    'nameEncrypted',
+  );
+  @override
+  late final GeneratedColumn<String> nameEncrypted = GeneratedColumn<String>(
+    'name_encrypted',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionEncryptedMeta =
+      const VerificationMeta('descriptionEncrypted');
+  @override
+  late final GeneratedColumn<String> descriptionEncrypted =
+      GeneratedColumn<String>(
+        'description_encrypted',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    nameEncrypted,
+    descriptionEncrypted,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'physical_locations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PhysicalLocation> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name_encrypted')) {
+      context.handle(
+        _nameEncryptedMeta,
+        nameEncrypted.isAcceptableOrUnknown(
+          data['name_encrypted']!,
+          _nameEncryptedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEncryptedMeta);
+    }
+    if (data.containsKey('description_encrypted')) {
+      context.handle(
+        _descriptionEncryptedMeta,
+        descriptionEncrypted.isAcceptableOrUnknown(
+          data['description_encrypted']!,
+          _descriptionEncryptedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PhysicalLocation map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PhysicalLocation(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      nameEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_encrypted'],
+      )!,
+      descriptionEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description_encrypted'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PhysicalLocationsTable createAlias(String alias) {
+    return $PhysicalLocationsTable(attachedDatabase, alias);
+  }
+}
+
+class PhysicalLocation extends DataClass
+    implements Insertable<PhysicalLocation> {
+  final String id;
+  final String nameEncrypted;
+  final String? descriptionEncrypted;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const PhysicalLocation({
+    required this.id,
+    required this.nameEncrypted,
+    this.descriptionEncrypted,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name_encrypted'] = Variable<String>(nameEncrypted);
+    if (!nullToAbsent || descriptionEncrypted != null) {
+      map['description_encrypted'] = Variable<String>(descriptionEncrypted);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  PhysicalLocationsCompanion toCompanion(bool nullToAbsent) {
+    return PhysicalLocationsCompanion(
+      id: Value(id),
+      nameEncrypted: Value(nameEncrypted),
+      descriptionEncrypted: descriptionEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(descriptionEncrypted),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory PhysicalLocation.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PhysicalLocation(
+      id: serializer.fromJson<String>(json['id']),
+      nameEncrypted: serializer.fromJson<String>(json['nameEncrypted']),
+      descriptionEncrypted: serializer.fromJson<String?>(
+        json['descriptionEncrypted'],
+      ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'nameEncrypted': serializer.toJson<String>(nameEncrypted),
+      'descriptionEncrypted': serializer.toJson<String?>(descriptionEncrypted),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  PhysicalLocation copyWith({
+    String? id,
+    String? nameEncrypted,
+    Value<String?> descriptionEncrypted = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => PhysicalLocation(
+    id: id ?? this.id,
+    nameEncrypted: nameEncrypted ?? this.nameEncrypted,
+    descriptionEncrypted: descriptionEncrypted.present
+        ? descriptionEncrypted.value
+        : this.descriptionEncrypted,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  PhysicalLocation copyWithCompanion(PhysicalLocationsCompanion data) {
+    return PhysicalLocation(
+      id: data.id.present ? data.id.value : this.id,
+      nameEncrypted: data.nameEncrypted.present
+          ? data.nameEncrypted.value
+          : this.nameEncrypted,
+      descriptionEncrypted: data.descriptionEncrypted.present
+          ? data.descriptionEncrypted.value
+          : this.descriptionEncrypted,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhysicalLocation(')
+          ..write('id: $id, ')
+          ..write('nameEncrypted: $nameEncrypted, ')
+          ..write('descriptionEncrypted: $descriptionEncrypted, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    nameEncrypted,
+    descriptionEncrypted,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PhysicalLocation &&
+          other.id == this.id &&
+          other.nameEncrypted == this.nameEncrypted &&
+          other.descriptionEncrypted == this.descriptionEncrypted &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
+  final Value<String> id;
+  final Value<String> nameEncrypted;
+  final Value<String?> descriptionEncrypted;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const PhysicalLocationsCompanion({
+    this.id = const Value.absent(),
+    this.nameEncrypted = const Value.absent(),
+    this.descriptionEncrypted = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PhysicalLocationsCompanion.insert({
+    required String id,
+    required String nameEncrypted,
+    this.descriptionEncrypted = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       nameEncrypted = Value(nameEncrypted),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<PhysicalLocation> custom({
+    Expression<String>? id,
+    Expression<String>? nameEncrypted,
+    Expression<String>? descriptionEncrypted,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameEncrypted != null) 'name_encrypted': nameEncrypted,
+      if (descriptionEncrypted != null)
+        'description_encrypted': descriptionEncrypted,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PhysicalLocationsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? nameEncrypted,
+    Value<String?>? descriptionEncrypted,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return PhysicalLocationsCompanion(
+      id: id ?? this.id,
+      nameEncrypted: nameEncrypted ?? this.nameEncrypted,
+      descriptionEncrypted: descriptionEncrypted ?? this.descriptionEncrypted,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (nameEncrypted.present) {
+      map['name_encrypted'] = Variable<String>(nameEncrypted.value);
+    }
+    if (descriptionEncrypted.present) {
+      map['description_encrypted'] = Variable<String>(
+        descriptionEncrypted.value,
+      );
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhysicalLocationsCompanion(')
+          ..write('id: $id, ')
+          ..write('nameEncrypted: $nameEncrypted, ')
+          ..write('descriptionEncrypted: $descriptionEncrypted, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1332,8 +2193,42 @@ class $DocumentsTable extends Documents
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES family_members (id)',
+      'REFERENCES family_members (id) ON DELETE SET NULL',
     ),
+  );
+  static const VerificationMeta _ownershipTypeMeta = const VerificationMeta(
+    'ownershipType',
+  );
+  @override
+  late final GeneratedColumn<String> ownershipType = GeneratedColumn<String>(
+    'ownership_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('personal'),
+  );
+  static const VerificationMeta _documentNumberEncryptedMeta =
+      const VerificationMeta('documentNumberEncrypted');
+  @override
+  late final GeneratedColumn<String> documentNumberEncrypted =
+      GeneratedColumn<String>(
+        'document_number_encrypted',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _issueDateMeta = const VerificationMeta(
+    'issueDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> issueDate = GeneratedColumn<DateTime>(
+    'issue_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _expiryDateMeta = const VerificationMeta(
     'expiryDate',
@@ -1345,6 +2240,63 @@ class $DocumentsTable extends Documents
     true,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
+  );
+  static const VerificationMeta _issuingAuthorityEncryptedMeta =
+      const VerificationMeta('issuingAuthorityEncrypted');
+  @override
+  late final GeneratedColumn<String> issuingAuthorityEncrypted =
+      GeneratedColumn<String>(
+        'issuing_authority_encrypted',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _descriptionEncryptedMeta =
+      const VerificationMeta('descriptionEncrypted');
+  @override
+  late final GeneratedColumn<String> descriptionEncrypted =
+      GeneratedColumn<String>(
+        'description_encrypted',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _notesEncryptedMeta = const VerificationMeta(
+    'notesEncrypted',
+  );
+  @override
+  late final GeneratedColumn<String> notesEncrypted = GeneratedColumn<String>(
+    'notes_encrypted',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _physicalLocationIdMeta =
+      const VerificationMeta('physicalLocationId');
+  @override
+  late final GeneratedColumn<String> physicalLocationId =
+      GeneratedColumn<String>(
+        'physical_location_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES physical_locations (id) ON DELETE SET NULL',
+        ),
+      );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('active'),
   );
   static const VerificationMeta _isFavoriteMeta = const VerificationMeta(
     'isFavorite',
@@ -1376,15 +2328,15 @@ class $DocumentsTable extends Documents
     ),
     defaultValue: const Constant(false),
   );
-  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
-    'deletedAt',
+  static const VerificationMeta _currentVersionIdMeta = const VerificationMeta(
+    'currentVersionId',
   );
   @override
-  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
-    'deleted_at',
+  late final GeneratedColumn<String> currentVersionId = GeneratedColumn<String>(
+    'current_version_id',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
@@ -1409,18 +2361,38 @@ class $DocumentsTable extends Documents
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     titleEncrypted,
     categoryId,
     primaryOwnerId,
+    ownershipType,
+    documentNumberEncrypted,
+    issueDate,
     expiryDate,
+    issuingAuthorityEncrypted,
+    descriptionEncrypted,
+    notesEncrypted,
+    physicalLocationId,
+    status,
     isFavorite,
     isArchived,
-    deletedAt,
+    currentVersionId,
     createdAt,
     updatedAt,
+    deletedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1467,10 +2439,76 @@ class $DocumentsTable extends Documents
         ),
       );
     }
+    if (data.containsKey('ownership_type')) {
+      context.handle(
+        _ownershipTypeMeta,
+        ownershipType.isAcceptableOrUnknown(
+          data['ownership_type']!,
+          _ownershipTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('document_number_encrypted')) {
+      context.handle(
+        _documentNumberEncryptedMeta,
+        documentNumberEncrypted.isAcceptableOrUnknown(
+          data['document_number_encrypted']!,
+          _documentNumberEncryptedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('issue_date')) {
+      context.handle(
+        _issueDateMeta,
+        issueDate.isAcceptableOrUnknown(data['issue_date']!, _issueDateMeta),
+      );
+    }
     if (data.containsKey('expiry_date')) {
       context.handle(
         _expiryDateMeta,
         expiryDate.isAcceptableOrUnknown(data['expiry_date']!, _expiryDateMeta),
+      );
+    }
+    if (data.containsKey('issuing_authority_encrypted')) {
+      context.handle(
+        _issuingAuthorityEncryptedMeta,
+        issuingAuthorityEncrypted.isAcceptableOrUnknown(
+          data['issuing_authority_encrypted']!,
+          _issuingAuthorityEncryptedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('description_encrypted')) {
+      context.handle(
+        _descriptionEncryptedMeta,
+        descriptionEncrypted.isAcceptableOrUnknown(
+          data['description_encrypted']!,
+          _descriptionEncryptedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes_encrypted')) {
+      context.handle(
+        _notesEncryptedMeta,
+        notesEncrypted.isAcceptableOrUnknown(
+          data['notes_encrypted']!,
+          _notesEncryptedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('physical_location_id')) {
+      context.handle(
+        _physicalLocationIdMeta,
+        physicalLocationId.isAcceptableOrUnknown(
+          data['physical_location_id']!,
+          _physicalLocationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
       );
     }
     if (data.containsKey('is_favorite')) {
@@ -1485,10 +2523,13 @@ class $DocumentsTable extends Documents
         isArchived.isAcceptableOrUnknown(data['is_archived']!, _isArchivedMeta),
       );
     }
-    if (data.containsKey('deleted_at')) {
+    if (data.containsKey('current_version_id')) {
       context.handle(
-        _deletedAtMeta,
-        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+        _currentVersionIdMeta,
+        currentVersionId.isAcceptableOrUnknown(
+          data['current_version_id']!,
+          _currentVersionIdMeta,
+        ),
       );
     }
     if (data.containsKey('created_at')) {
@@ -1506,6 +2547,12 @@ class $DocumentsTable extends Documents
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
     }
     return context;
   }
@@ -1532,10 +2579,42 @@ class $DocumentsTable extends Documents
         DriftSqlType.string,
         data['${effectivePrefix}primary_owner_id'],
       ),
+      ownershipType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ownership_type'],
+      )!,
+      documentNumberEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_number_encrypted'],
+      ),
+      issueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}issue_date'],
+      ),
       expiryDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}expiry_date'],
       ),
+      issuingAuthorityEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}issuing_authority_encrypted'],
+      ),
+      descriptionEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description_encrypted'],
+      ),
+      notesEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes_encrypted'],
+      ),
+      physicalLocationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}physical_location_id'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
       isFavorite: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_favorite'],
@@ -1544,9 +2623,9 @@ class $DocumentsTable extends Documents
         DriftSqlType.bool,
         data['${effectivePrefix}is_archived'],
       )!,
-      deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}deleted_at'],
+      currentVersionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}current_version_id'],
       ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -1556,6 +2635,10 @@ class $DocumentsTable extends Documents
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
     );
   }
 
@@ -1570,23 +2653,41 @@ class Document extends DataClass implements Insertable<Document> {
   final String titleEncrypted;
   final String categoryId;
   final String? primaryOwnerId;
+  final String ownershipType;
+  final String? documentNumberEncrypted;
+  final DateTime? issueDate;
   final DateTime? expiryDate;
+  final String? issuingAuthorityEncrypted;
+  final String? descriptionEncrypted;
+  final String? notesEncrypted;
+  final String? physicalLocationId;
+  final String status;
   final bool isFavorite;
   final bool isArchived;
-  final DateTime? deletedAt;
+  final String? currentVersionId;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final DateTime? deletedAt;
   const Document({
     required this.id,
     required this.titleEncrypted,
     required this.categoryId,
     this.primaryOwnerId,
+    required this.ownershipType,
+    this.documentNumberEncrypted,
+    this.issueDate,
     this.expiryDate,
+    this.issuingAuthorityEncrypted,
+    this.descriptionEncrypted,
+    this.notesEncrypted,
+    this.physicalLocationId,
+    required this.status,
     required this.isFavorite,
     required this.isArchived,
-    this.deletedAt,
+    this.currentVersionId,
     required this.createdAt,
     required this.updatedAt,
+    this.deletedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1597,16 +2698,43 @@ class Document extends DataClass implements Insertable<Document> {
     if (!nullToAbsent || primaryOwnerId != null) {
       map['primary_owner_id'] = Variable<String>(primaryOwnerId);
     }
+    map['ownership_type'] = Variable<String>(ownershipType);
+    if (!nullToAbsent || documentNumberEncrypted != null) {
+      map['document_number_encrypted'] = Variable<String>(
+        documentNumberEncrypted,
+      );
+    }
+    if (!nullToAbsent || issueDate != null) {
+      map['issue_date'] = Variable<DateTime>(issueDate);
+    }
     if (!nullToAbsent || expiryDate != null) {
       map['expiry_date'] = Variable<DateTime>(expiryDate);
     }
+    if (!nullToAbsent || issuingAuthorityEncrypted != null) {
+      map['issuing_authority_encrypted'] = Variable<String>(
+        issuingAuthorityEncrypted,
+      );
+    }
+    if (!nullToAbsent || descriptionEncrypted != null) {
+      map['description_encrypted'] = Variable<String>(descriptionEncrypted);
+    }
+    if (!nullToAbsent || notesEncrypted != null) {
+      map['notes_encrypted'] = Variable<String>(notesEncrypted);
+    }
+    if (!nullToAbsent || physicalLocationId != null) {
+      map['physical_location_id'] = Variable<String>(physicalLocationId);
+    }
+    map['status'] = Variable<String>(status);
     map['is_favorite'] = Variable<bool>(isFavorite);
     map['is_archived'] = Variable<bool>(isArchived);
-    if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    if (!nullToAbsent || currentVersionId != null) {
+      map['current_version_id'] = Variable<String>(currentVersionId);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     return map;
   }
 
@@ -1618,16 +2746,40 @@ class Document extends DataClass implements Insertable<Document> {
       primaryOwnerId: primaryOwnerId == null && nullToAbsent
           ? const Value.absent()
           : Value(primaryOwnerId),
+      ownershipType: Value(ownershipType),
+      documentNumberEncrypted: documentNumberEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentNumberEncrypted),
+      issueDate: issueDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(issueDate),
       expiryDate: expiryDate == null && nullToAbsent
           ? const Value.absent()
           : Value(expiryDate),
+      issuingAuthorityEncrypted:
+          issuingAuthorityEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(issuingAuthorityEncrypted),
+      descriptionEncrypted: descriptionEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(descriptionEncrypted),
+      notesEncrypted: notesEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notesEncrypted),
+      physicalLocationId: physicalLocationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(physicalLocationId),
+      status: Value(status),
       isFavorite: Value(isFavorite),
       isArchived: Value(isArchived),
+      currentVersionId: currentVersionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentVersionId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
     );
   }
 
@@ -1641,12 +2793,29 @@ class Document extends DataClass implements Insertable<Document> {
       titleEncrypted: serializer.fromJson<String>(json['titleEncrypted']),
       categoryId: serializer.fromJson<String>(json['categoryId']),
       primaryOwnerId: serializer.fromJson<String?>(json['primaryOwnerId']),
+      ownershipType: serializer.fromJson<String>(json['ownershipType']),
+      documentNumberEncrypted: serializer.fromJson<String?>(
+        json['documentNumberEncrypted'],
+      ),
+      issueDate: serializer.fromJson<DateTime?>(json['issueDate']),
       expiryDate: serializer.fromJson<DateTime?>(json['expiryDate']),
+      issuingAuthorityEncrypted: serializer.fromJson<String?>(
+        json['issuingAuthorityEncrypted'],
+      ),
+      descriptionEncrypted: serializer.fromJson<String?>(
+        json['descriptionEncrypted'],
+      ),
+      notesEncrypted: serializer.fromJson<String?>(json['notesEncrypted']),
+      physicalLocationId: serializer.fromJson<String?>(
+        json['physicalLocationId'],
+      ),
+      status: serializer.fromJson<String>(json['status']),
       isFavorite: serializer.fromJson<bool>(json['isFavorite']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
-      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      currentVersionId: serializer.fromJson<String?>(json['currentVersionId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
   @override
@@ -1657,12 +2826,25 @@ class Document extends DataClass implements Insertable<Document> {
       'titleEncrypted': serializer.toJson<String>(titleEncrypted),
       'categoryId': serializer.toJson<String>(categoryId),
       'primaryOwnerId': serializer.toJson<String?>(primaryOwnerId),
+      'ownershipType': serializer.toJson<String>(ownershipType),
+      'documentNumberEncrypted': serializer.toJson<String?>(
+        documentNumberEncrypted,
+      ),
+      'issueDate': serializer.toJson<DateTime?>(issueDate),
       'expiryDate': serializer.toJson<DateTime?>(expiryDate),
+      'issuingAuthorityEncrypted': serializer.toJson<String?>(
+        issuingAuthorityEncrypted,
+      ),
+      'descriptionEncrypted': serializer.toJson<String?>(descriptionEncrypted),
+      'notesEncrypted': serializer.toJson<String?>(notesEncrypted),
+      'physicalLocationId': serializer.toJson<String?>(physicalLocationId),
+      'status': serializer.toJson<String>(status),
       'isFavorite': serializer.toJson<bool>(isFavorite),
       'isArchived': serializer.toJson<bool>(isArchived),
-      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'currentVersionId': serializer.toJson<String?>(currentVersionId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
@@ -1671,12 +2853,21 @@ class Document extends DataClass implements Insertable<Document> {
     String? titleEncrypted,
     String? categoryId,
     Value<String?> primaryOwnerId = const Value.absent(),
+    String? ownershipType,
+    Value<String?> documentNumberEncrypted = const Value.absent(),
+    Value<DateTime?> issueDate = const Value.absent(),
     Value<DateTime?> expiryDate = const Value.absent(),
+    Value<String?> issuingAuthorityEncrypted = const Value.absent(),
+    Value<String?> descriptionEncrypted = const Value.absent(),
+    Value<String?> notesEncrypted = const Value.absent(),
+    Value<String?> physicalLocationId = const Value.absent(),
+    String? status,
     bool? isFavorite,
     bool? isArchived,
-    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<String?> currentVersionId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
   }) => Document(
     id: id ?? this.id,
     titleEncrypted: titleEncrypted ?? this.titleEncrypted,
@@ -1684,12 +2875,33 @@ class Document extends DataClass implements Insertable<Document> {
     primaryOwnerId: primaryOwnerId.present
         ? primaryOwnerId.value
         : this.primaryOwnerId,
+    ownershipType: ownershipType ?? this.ownershipType,
+    documentNumberEncrypted: documentNumberEncrypted.present
+        ? documentNumberEncrypted.value
+        : this.documentNumberEncrypted,
+    issueDate: issueDate.present ? issueDate.value : this.issueDate,
     expiryDate: expiryDate.present ? expiryDate.value : this.expiryDate,
+    issuingAuthorityEncrypted: issuingAuthorityEncrypted.present
+        ? issuingAuthorityEncrypted.value
+        : this.issuingAuthorityEncrypted,
+    descriptionEncrypted: descriptionEncrypted.present
+        ? descriptionEncrypted.value
+        : this.descriptionEncrypted,
+    notesEncrypted: notesEncrypted.present
+        ? notesEncrypted.value
+        : this.notesEncrypted,
+    physicalLocationId: physicalLocationId.present
+        ? physicalLocationId.value
+        : this.physicalLocationId,
+    status: status ?? this.status,
     isFavorite: isFavorite ?? this.isFavorite,
     isArchived: isArchived ?? this.isArchived,
-    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    currentVersionId: currentVersionId.present
+        ? currentVersionId.value
+        : this.currentVersionId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   Document copyWithCompanion(DocumentsCompanion data) {
     return Document(
@@ -1703,18 +2915,41 @@ class Document extends DataClass implements Insertable<Document> {
       primaryOwnerId: data.primaryOwnerId.present
           ? data.primaryOwnerId.value
           : this.primaryOwnerId,
+      ownershipType: data.ownershipType.present
+          ? data.ownershipType.value
+          : this.ownershipType,
+      documentNumberEncrypted: data.documentNumberEncrypted.present
+          ? data.documentNumberEncrypted.value
+          : this.documentNumberEncrypted,
+      issueDate: data.issueDate.present ? data.issueDate.value : this.issueDate,
       expiryDate: data.expiryDate.present
           ? data.expiryDate.value
           : this.expiryDate,
+      issuingAuthorityEncrypted: data.issuingAuthorityEncrypted.present
+          ? data.issuingAuthorityEncrypted.value
+          : this.issuingAuthorityEncrypted,
+      descriptionEncrypted: data.descriptionEncrypted.present
+          ? data.descriptionEncrypted.value
+          : this.descriptionEncrypted,
+      notesEncrypted: data.notesEncrypted.present
+          ? data.notesEncrypted.value
+          : this.notesEncrypted,
+      physicalLocationId: data.physicalLocationId.present
+          ? data.physicalLocationId.value
+          : this.physicalLocationId,
+      status: data.status.present ? data.status.value : this.status,
       isFavorite: data.isFavorite.present
           ? data.isFavorite.value
           : this.isFavorite,
       isArchived: data.isArchived.present
           ? data.isArchived.value
           : this.isArchived,
-      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      currentVersionId: data.currentVersionId.present
+          ? data.currentVersionId.value
+          : this.currentVersionId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
@@ -1725,12 +2960,21 @@ class Document extends DataClass implements Insertable<Document> {
           ..write('titleEncrypted: $titleEncrypted, ')
           ..write('categoryId: $categoryId, ')
           ..write('primaryOwnerId: $primaryOwnerId, ')
+          ..write('ownershipType: $ownershipType, ')
+          ..write('documentNumberEncrypted: $documentNumberEncrypted, ')
+          ..write('issueDate: $issueDate, ')
           ..write('expiryDate: $expiryDate, ')
+          ..write('issuingAuthorityEncrypted: $issuingAuthorityEncrypted, ')
+          ..write('descriptionEncrypted: $descriptionEncrypted, ')
+          ..write('notesEncrypted: $notesEncrypted, ')
+          ..write('physicalLocationId: $physicalLocationId, ')
+          ..write('status: $status, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('isArchived: $isArchived, ')
-          ..write('deletedAt: $deletedAt, ')
+          ..write('currentVersionId: $currentVersionId, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
@@ -1741,12 +2985,21 @@ class Document extends DataClass implements Insertable<Document> {
     titleEncrypted,
     categoryId,
     primaryOwnerId,
+    ownershipType,
+    documentNumberEncrypted,
+    issueDate,
     expiryDate,
+    issuingAuthorityEncrypted,
+    descriptionEncrypted,
+    notesEncrypted,
+    physicalLocationId,
+    status,
     isFavorite,
     isArchived,
-    deletedAt,
+    currentVersionId,
     createdAt,
     updatedAt,
+    deletedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -1756,12 +3009,21 @@ class Document extends DataClass implements Insertable<Document> {
           other.titleEncrypted == this.titleEncrypted &&
           other.categoryId == this.categoryId &&
           other.primaryOwnerId == this.primaryOwnerId &&
+          other.ownershipType == this.ownershipType &&
+          other.documentNumberEncrypted == this.documentNumberEncrypted &&
+          other.issueDate == this.issueDate &&
           other.expiryDate == this.expiryDate &&
+          other.issuingAuthorityEncrypted == this.issuingAuthorityEncrypted &&
+          other.descriptionEncrypted == this.descriptionEncrypted &&
+          other.notesEncrypted == this.notesEncrypted &&
+          other.physicalLocationId == this.physicalLocationId &&
+          other.status == this.status &&
           other.isFavorite == this.isFavorite &&
           other.isArchived == this.isArchived &&
-          other.deletedAt == this.deletedAt &&
+          other.currentVersionId == this.currentVersionId &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
 }
 
 class DocumentsCompanion extends UpdateCompanion<Document> {
@@ -1769,24 +3031,42 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
   final Value<String> titleEncrypted;
   final Value<String> categoryId;
   final Value<String?> primaryOwnerId;
+  final Value<String> ownershipType;
+  final Value<String?> documentNumberEncrypted;
+  final Value<DateTime?> issueDate;
   final Value<DateTime?> expiryDate;
+  final Value<String?> issuingAuthorityEncrypted;
+  final Value<String?> descriptionEncrypted;
+  final Value<String?> notesEncrypted;
+  final Value<String?> physicalLocationId;
+  final Value<String> status;
   final Value<bool> isFavorite;
   final Value<bool> isArchived;
-  final Value<DateTime?> deletedAt;
+  final Value<String?> currentVersionId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
   final Value<int> rowid;
   const DocumentsCompanion({
     this.id = const Value.absent(),
     this.titleEncrypted = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.primaryOwnerId = const Value.absent(),
+    this.ownershipType = const Value.absent(),
+    this.documentNumberEncrypted = const Value.absent(),
+    this.issueDate = const Value.absent(),
     this.expiryDate = const Value.absent(),
+    this.issuingAuthorityEncrypted = const Value.absent(),
+    this.descriptionEncrypted = const Value.absent(),
+    this.notesEncrypted = const Value.absent(),
+    this.physicalLocationId = const Value.absent(),
+    this.status = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.isArchived = const Value.absent(),
-    this.deletedAt = const Value.absent(),
+    this.currentVersionId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DocumentsCompanion.insert({
@@ -1794,12 +3074,21 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     required String titleEncrypted,
     required String categoryId,
     this.primaryOwnerId = const Value.absent(),
+    this.ownershipType = const Value.absent(),
+    this.documentNumberEncrypted = const Value.absent(),
+    this.issueDate = const Value.absent(),
     this.expiryDate = const Value.absent(),
+    this.issuingAuthorityEncrypted = const Value.absent(),
+    this.descriptionEncrypted = const Value.absent(),
+    this.notesEncrypted = const Value.absent(),
+    this.physicalLocationId = const Value.absent(),
+    this.status = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.isArchived = const Value.absent(),
-    this.deletedAt = const Value.absent(),
+    this.currentVersionId = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        titleEncrypted = Value(titleEncrypted),
@@ -1811,12 +3100,21 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     Expression<String>? titleEncrypted,
     Expression<String>? categoryId,
     Expression<String>? primaryOwnerId,
+    Expression<String>? ownershipType,
+    Expression<String>? documentNumberEncrypted,
+    Expression<DateTime>? issueDate,
     Expression<DateTime>? expiryDate,
+    Expression<String>? issuingAuthorityEncrypted,
+    Expression<String>? descriptionEncrypted,
+    Expression<String>? notesEncrypted,
+    Expression<String>? physicalLocationId,
+    Expression<String>? status,
     Expression<bool>? isFavorite,
     Expression<bool>? isArchived,
-    Expression<DateTime>? deletedAt,
+    Expression<String>? currentVersionId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1824,12 +3122,25 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
       if (titleEncrypted != null) 'title_encrypted': titleEncrypted,
       if (categoryId != null) 'category_id': categoryId,
       if (primaryOwnerId != null) 'primary_owner_id': primaryOwnerId,
+      if (ownershipType != null) 'ownership_type': ownershipType,
+      if (documentNumberEncrypted != null)
+        'document_number_encrypted': documentNumberEncrypted,
+      if (issueDate != null) 'issue_date': issueDate,
       if (expiryDate != null) 'expiry_date': expiryDate,
+      if (issuingAuthorityEncrypted != null)
+        'issuing_authority_encrypted': issuingAuthorityEncrypted,
+      if (descriptionEncrypted != null)
+        'description_encrypted': descriptionEncrypted,
+      if (notesEncrypted != null) 'notes_encrypted': notesEncrypted,
+      if (physicalLocationId != null)
+        'physical_location_id': physicalLocationId,
+      if (status != null) 'status': status,
       if (isFavorite != null) 'is_favorite': isFavorite,
       if (isArchived != null) 'is_archived': isArchived,
-      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (currentVersionId != null) 'current_version_id': currentVersionId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1839,12 +3150,21 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     Value<String>? titleEncrypted,
     Value<String>? categoryId,
     Value<String?>? primaryOwnerId,
+    Value<String>? ownershipType,
+    Value<String?>? documentNumberEncrypted,
+    Value<DateTime?>? issueDate,
     Value<DateTime?>? expiryDate,
+    Value<String?>? issuingAuthorityEncrypted,
+    Value<String?>? descriptionEncrypted,
+    Value<String?>? notesEncrypted,
+    Value<String?>? physicalLocationId,
+    Value<String>? status,
     Value<bool>? isFavorite,
     Value<bool>? isArchived,
-    Value<DateTime?>? deletedAt,
+    Value<String?>? currentVersionId,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
     return DocumentsCompanion(
@@ -1852,12 +3172,23 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
       titleEncrypted: titleEncrypted ?? this.titleEncrypted,
       categoryId: categoryId ?? this.categoryId,
       primaryOwnerId: primaryOwnerId ?? this.primaryOwnerId,
+      ownershipType: ownershipType ?? this.ownershipType,
+      documentNumberEncrypted:
+          documentNumberEncrypted ?? this.documentNumberEncrypted,
+      issueDate: issueDate ?? this.issueDate,
       expiryDate: expiryDate ?? this.expiryDate,
+      issuingAuthorityEncrypted:
+          issuingAuthorityEncrypted ?? this.issuingAuthorityEncrypted,
+      descriptionEncrypted: descriptionEncrypted ?? this.descriptionEncrypted,
+      notesEncrypted: notesEncrypted ?? this.notesEncrypted,
+      physicalLocationId: physicalLocationId ?? this.physicalLocationId,
+      status: status ?? this.status,
       isFavorite: isFavorite ?? this.isFavorite,
       isArchived: isArchived ?? this.isArchived,
-      deletedAt: deletedAt ?? this.deletedAt,
+      currentVersionId: currentVersionId ?? this.currentVersionId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1877,8 +3208,38 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     if (primaryOwnerId.present) {
       map['primary_owner_id'] = Variable<String>(primaryOwnerId.value);
     }
+    if (ownershipType.present) {
+      map['ownership_type'] = Variable<String>(ownershipType.value);
+    }
+    if (documentNumberEncrypted.present) {
+      map['document_number_encrypted'] = Variable<String>(
+        documentNumberEncrypted.value,
+      );
+    }
+    if (issueDate.present) {
+      map['issue_date'] = Variable<DateTime>(issueDate.value);
+    }
     if (expiryDate.present) {
       map['expiry_date'] = Variable<DateTime>(expiryDate.value);
+    }
+    if (issuingAuthorityEncrypted.present) {
+      map['issuing_authority_encrypted'] = Variable<String>(
+        issuingAuthorityEncrypted.value,
+      );
+    }
+    if (descriptionEncrypted.present) {
+      map['description_encrypted'] = Variable<String>(
+        descriptionEncrypted.value,
+      );
+    }
+    if (notesEncrypted.present) {
+      map['notes_encrypted'] = Variable<String>(notesEncrypted.value);
+    }
+    if (physicalLocationId.present) {
+      map['physical_location_id'] = Variable<String>(physicalLocationId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
     }
     if (isFavorite.present) {
       map['is_favorite'] = Variable<bool>(isFavorite.value);
@@ -1886,14 +3247,17 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     if (isArchived.present) {
       map['is_archived'] = Variable<bool>(isArchived.value);
     }
-    if (deletedAt.present) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    if (currentVersionId.present) {
+      map['current_version_id'] = Variable<String>(currentVersionId.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1908,12 +3272,21 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
           ..write('titleEncrypted: $titleEncrypted, ')
           ..write('categoryId: $categoryId, ')
           ..write('primaryOwnerId: $primaryOwnerId, ')
+          ..write('ownershipType: $ownershipType, ')
+          ..write('documentNumberEncrypted: $documentNumberEncrypted, ')
+          ..write('issueDate: $issueDate, ')
           ..write('expiryDate: $expiryDate, ')
+          ..write('issuingAuthorityEncrypted: $issuingAuthorityEncrypted, ')
+          ..write('descriptionEncrypted: $descriptionEncrypted, ')
+          ..write('notesEncrypted: $notesEncrypted, ')
+          ..write('physicalLocationId: $physicalLocationId, ')
+          ..write('status: $status, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('isArchived: $isArchived, ')
-          ..write('deletedAt: $deletedAt, ')
+          ..write('currentVersionId: $currentVersionId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1937,7 +3310,7 @@ class $DocumentOwnersTable extends DocumentOwners
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES documents (id)',
+      'REFERENCES documents (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _familyMemberIdMeta = const VerificationMeta(
@@ -2224,8 +3597,20 @@ class $DocumentFilesTable extends DocumentFiles
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES documents (id)',
+      'REFERENCES documents (id) ON DELETE CASCADE',
     ),
+  );
+  static const VerificationMeta _fileTypeMeta = const VerificationMeta(
+    'fileType',
+  );
+  @override
+  late final GeneratedColumn<String> fileType = GeneratedColumn<String>(
+    'file_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('original'),
   );
   static const VerificationMeta _mimeTypeMeta = const VerificationMeta(
     'mimeType',
@@ -2250,17 +3635,17 @@ class $DocumentFilesTable extends DocumentFiles
         requiredDuringInsert: true,
         defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
       );
-  static const VerificationMeta _integrityHashMeta = const VerificationMeta(
-    'integrityHash',
-  );
+  static const VerificationMeta _originalFilenameEncryptedMeta =
+      const VerificationMeta('originalFilenameEncrypted');
   @override
-  late final GeneratedColumn<String> integrityHash = GeneratedColumn<String>(
-    'integrity_hash',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumn<String> originalFilenameEncrypted =
+      GeneratedColumn<String>(
+        'original_filename_encrypted',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _sizeBytesMeta = const VerificationMeta(
     'sizeBytes',
   );
@@ -2270,6 +3655,17 @@ class $DocumentFilesTable extends DocumentFiles
     aliasedName,
     false,
     type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _integrityHashMeta = const VerificationMeta(
+    'integrityHash',
+  );
+  @override
+  late final GeneratedColumn<String> integrityHash = GeneratedColumn<String>(
+    'integrity_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _encryptionVersionMeta = const VerificationMeta(
@@ -2298,10 +3694,12 @@ class $DocumentFilesTable extends DocumentFiles
   List<GeneratedColumn> get $columns => [
     id,
     documentId,
+    fileType,
     mimeType,
     encryptedRelativePath,
-    integrityHash,
+    originalFilenameEncrypted,
     sizeBytes,
+    integrityHash,
     encryptionVersion,
     createdAt,
   ];
@@ -2330,6 +3728,12 @@ class $DocumentFilesTable extends DocumentFiles
     } else if (isInserting) {
       context.missing(_documentIdMeta);
     }
+    if (data.containsKey('file_type')) {
+      context.handle(
+        _fileTypeMeta,
+        fileType.isAcceptableOrUnknown(data['file_type']!, _fileTypeMeta),
+      );
+    }
     if (data.containsKey('mime_type')) {
       context.handle(
         _mimeTypeMeta,
@@ -2349,6 +3753,23 @@ class $DocumentFilesTable extends DocumentFiles
     } else if (isInserting) {
       context.missing(_encryptedRelativePathMeta);
     }
+    if (data.containsKey('original_filename_encrypted')) {
+      context.handle(
+        _originalFilenameEncryptedMeta,
+        originalFilenameEncrypted.isAcceptableOrUnknown(
+          data['original_filename_encrypted']!,
+          _originalFilenameEncryptedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('size_bytes')) {
+      context.handle(
+        _sizeBytesMeta,
+        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sizeBytesMeta);
+    }
     if (data.containsKey('integrity_hash')) {
       context.handle(
         _integrityHashMeta,
@@ -2359,14 +3780,6 @@ class $DocumentFilesTable extends DocumentFiles
       );
     } else if (isInserting) {
       context.missing(_integrityHashMeta);
-    }
-    if (data.containsKey('size_bytes')) {
-      context.handle(
-        _sizeBytesMeta,
-        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_sizeBytesMeta);
     }
     if (data.containsKey('encryption_version')) {
       context.handle(
@@ -2404,6 +3817,10 @@ class $DocumentFilesTable extends DocumentFiles
         DriftSqlType.string,
         data['${effectivePrefix}document_id'],
       )!,
+      fileType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_type'],
+      )!,
       mimeType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}mime_type'],
@@ -2412,13 +3829,17 @@ class $DocumentFilesTable extends DocumentFiles
         DriftSqlType.string,
         data['${effectivePrefix}encrypted_relative_path'],
       )!,
-      integrityHash: attachedDatabase.typeMapping.read(
+      originalFilenameEncrypted: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}integrity_hash'],
-      )!,
+        data['${effectivePrefix}original_filename_encrypted'],
+      ),
       sizeBytes: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}size_bytes'],
+      )!,
+      integrityHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}integrity_hash'],
       )!,
       encryptionVersion: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -2440,19 +3861,23 @@ class $DocumentFilesTable extends DocumentFiles
 class DocumentFile extends DataClass implements Insertable<DocumentFile> {
   final String id;
   final String documentId;
+  final String fileType;
   final String mimeType;
   final String encryptedRelativePath;
-  final String integrityHash;
+  final String? originalFilenameEncrypted;
   final int sizeBytes;
+  final String integrityHash;
   final int encryptionVersion;
   final DateTime createdAt;
   const DocumentFile({
     required this.id,
     required this.documentId,
+    required this.fileType,
     required this.mimeType,
     required this.encryptedRelativePath,
-    required this.integrityHash,
+    this.originalFilenameEncrypted,
     required this.sizeBytes,
+    required this.integrityHash,
     required this.encryptionVersion,
     required this.createdAt,
   });
@@ -2461,10 +3886,16 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['document_id'] = Variable<String>(documentId);
+    map['file_type'] = Variable<String>(fileType);
     map['mime_type'] = Variable<String>(mimeType);
     map['encrypted_relative_path'] = Variable<String>(encryptedRelativePath);
-    map['integrity_hash'] = Variable<String>(integrityHash);
+    if (!nullToAbsent || originalFilenameEncrypted != null) {
+      map['original_filename_encrypted'] = Variable<String>(
+        originalFilenameEncrypted,
+      );
+    }
     map['size_bytes'] = Variable<int>(sizeBytes);
+    map['integrity_hash'] = Variable<String>(integrityHash);
     map['encryption_version'] = Variable<int>(encryptionVersion);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -2474,10 +3905,15 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
     return DocumentFilesCompanion(
       id: Value(id),
       documentId: Value(documentId),
+      fileType: Value(fileType),
       mimeType: Value(mimeType),
       encryptedRelativePath: Value(encryptedRelativePath),
-      integrityHash: Value(integrityHash),
+      originalFilenameEncrypted:
+          originalFilenameEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originalFilenameEncrypted),
       sizeBytes: Value(sizeBytes),
+      integrityHash: Value(integrityHash),
       encryptionVersion: Value(encryptionVersion),
       createdAt: Value(createdAt),
     );
@@ -2491,12 +3927,16 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
     return DocumentFile(
       id: serializer.fromJson<String>(json['id']),
       documentId: serializer.fromJson<String>(json['documentId']),
+      fileType: serializer.fromJson<String>(json['fileType']),
       mimeType: serializer.fromJson<String>(json['mimeType']),
       encryptedRelativePath: serializer.fromJson<String>(
         json['encryptedRelativePath'],
       ),
-      integrityHash: serializer.fromJson<String>(json['integrityHash']),
+      originalFilenameEncrypted: serializer.fromJson<String?>(
+        json['originalFilenameEncrypted'],
+      ),
       sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
+      integrityHash: serializer.fromJson<String>(json['integrityHash']),
       encryptionVersion: serializer.fromJson<int>(json['encryptionVersion']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -2507,10 +3947,14 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'documentId': serializer.toJson<String>(documentId),
+      'fileType': serializer.toJson<String>(fileType),
       'mimeType': serializer.toJson<String>(mimeType),
       'encryptedRelativePath': serializer.toJson<String>(encryptedRelativePath),
-      'integrityHash': serializer.toJson<String>(integrityHash),
+      'originalFilenameEncrypted': serializer.toJson<String?>(
+        originalFilenameEncrypted,
+      ),
       'sizeBytes': serializer.toJson<int>(sizeBytes),
+      'integrityHash': serializer.toJson<String>(integrityHash),
       'encryptionVersion': serializer.toJson<int>(encryptionVersion),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -2519,19 +3963,25 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
   DocumentFile copyWith({
     String? id,
     String? documentId,
+    String? fileType,
     String? mimeType,
     String? encryptedRelativePath,
-    String? integrityHash,
+    Value<String?> originalFilenameEncrypted = const Value.absent(),
     int? sizeBytes,
+    String? integrityHash,
     int? encryptionVersion,
     DateTime? createdAt,
   }) => DocumentFile(
     id: id ?? this.id,
     documentId: documentId ?? this.documentId,
+    fileType: fileType ?? this.fileType,
     mimeType: mimeType ?? this.mimeType,
     encryptedRelativePath: encryptedRelativePath ?? this.encryptedRelativePath,
-    integrityHash: integrityHash ?? this.integrityHash,
+    originalFilenameEncrypted: originalFilenameEncrypted.present
+        ? originalFilenameEncrypted.value
+        : this.originalFilenameEncrypted,
     sizeBytes: sizeBytes ?? this.sizeBytes,
+    integrityHash: integrityHash ?? this.integrityHash,
     encryptionVersion: encryptionVersion ?? this.encryptionVersion,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -2541,14 +3991,18 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
       documentId: data.documentId.present
           ? data.documentId.value
           : this.documentId,
+      fileType: data.fileType.present ? data.fileType.value : this.fileType,
       mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
       encryptedRelativePath: data.encryptedRelativePath.present
           ? data.encryptedRelativePath.value
           : this.encryptedRelativePath,
+      originalFilenameEncrypted: data.originalFilenameEncrypted.present
+          ? data.originalFilenameEncrypted.value
+          : this.originalFilenameEncrypted,
+      sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
       integrityHash: data.integrityHash.present
           ? data.integrityHash.value
           : this.integrityHash,
-      sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
       encryptionVersion: data.encryptionVersion.present
           ? data.encryptionVersion.value
           : this.encryptionVersion,
@@ -2561,10 +4015,12 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
     return (StringBuffer('DocumentFile(')
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
+          ..write('fileType: $fileType, ')
           ..write('mimeType: $mimeType, ')
           ..write('encryptedRelativePath: $encryptedRelativePath, ')
-          ..write('integrityHash: $integrityHash, ')
+          ..write('originalFilenameEncrypted: $originalFilenameEncrypted, ')
           ..write('sizeBytes: $sizeBytes, ')
+          ..write('integrityHash: $integrityHash, ')
           ..write('encryptionVersion: $encryptionVersion, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -2575,10 +4031,12 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
   int get hashCode => Object.hash(
     id,
     documentId,
+    fileType,
     mimeType,
     encryptedRelativePath,
-    integrityHash,
+    originalFilenameEncrypted,
     sizeBytes,
+    integrityHash,
     encryptionVersion,
     createdAt,
   );
@@ -2588,10 +4046,12 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
       (other is DocumentFile &&
           other.id == this.id &&
           other.documentId == this.documentId &&
+          other.fileType == this.fileType &&
           other.mimeType == this.mimeType &&
           other.encryptedRelativePath == this.encryptedRelativePath &&
-          other.integrityHash == this.integrityHash &&
+          other.originalFilenameEncrypted == this.originalFilenameEncrypted &&
           other.sizeBytes == this.sizeBytes &&
+          other.integrityHash == this.integrityHash &&
           other.encryptionVersion == this.encryptionVersion &&
           other.createdAt == this.createdAt);
 }
@@ -2599,20 +4059,24 @@ class DocumentFile extends DataClass implements Insertable<DocumentFile> {
 class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
   final Value<String> id;
   final Value<String> documentId;
+  final Value<String> fileType;
   final Value<String> mimeType;
   final Value<String> encryptedRelativePath;
-  final Value<String> integrityHash;
+  final Value<String?> originalFilenameEncrypted;
   final Value<int> sizeBytes;
+  final Value<String> integrityHash;
   final Value<int> encryptionVersion;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const DocumentFilesCompanion({
     this.id = const Value.absent(),
     this.documentId = const Value.absent(),
+    this.fileType = const Value.absent(),
     this.mimeType = const Value.absent(),
     this.encryptedRelativePath = const Value.absent(),
-    this.integrityHash = const Value.absent(),
+    this.originalFilenameEncrypted = const Value.absent(),
     this.sizeBytes = const Value.absent(),
+    this.integrityHash = const Value.absent(),
     this.encryptionVersion = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2620,10 +4084,12 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
   DocumentFilesCompanion.insert({
     required String id,
     required String documentId,
+    this.fileType = const Value.absent(),
     required String mimeType,
     required String encryptedRelativePath,
-    required String integrityHash,
+    this.originalFilenameEncrypted = const Value.absent(),
     required int sizeBytes,
+    required String integrityHash,
     required int encryptionVersion,
     required DateTime createdAt,
     this.rowid = const Value.absent(),
@@ -2631,17 +4097,19 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
        documentId = Value(documentId),
        mimeType = Value(mimeType),
        encryptedRelativePath = Value(encryptedRelativePath),
-       integrityHash = Value(integrityHash),
        sizeBytes = Value(sizeBytes),
+       integrityHash = Value(integrityHash),
        encryptionVersion = Value(encryptionVersion),
        createdAt = Value(createdAt);
   static Insertable<DocumentFile> custom({
     Expression<String>? id,
     Expression<String>? documentId,
+    Expression<String>? fileType,
     Expression<String>? mimeType,
     Expression<String>? encryptedRelativePath,
-    Expression<String>? integrityHash,
+    Expression<String>? originalFilenameEncrypted,
     Expression<int>? sizeBytes,
+    Expression<String>? integrityHash,
     Expression<int>? encryptionVersion,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
@@ -2649,11 +4117,14 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (documentId != null) 'document_id': documentId,
+      if (fileType != null) 'file_type': fileType,
       if (mimeType != null) 'mime_type': mimeType,
       if (encryptedRelativePath != null)
         'encrypted_relative_path': encryptedRelativePath,
-      if (integrityHash != null) 'integrity_hash': integrityHash,
+      if (originalFilenameEncrypted != null)
+        'original_filename_encrypted': originalFilenameEncrypted,
       if (sizeBytes != null) 'size_bytes': sizeBytes,
+      if (integrityHash != null) 'integrity_hash': integrityHash,
       if (encryptionVersion != null) 'encryption_version': encryptionVersion,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -2663,10 +4134,12 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
   DocumentFilesCompanion copyWith({
     Value<String>? id,
     Value<String>? documentId,
+    Value<String>? fileType,
     Value<String>? mimeType,
     Value<String>? encryptedRelativePath,
-    Value<String>? integrityHash,
+    Value<String?>? originalFilenameEncrypted,
     Value<int>? sizeBytes,
+    Value<String>? integrityHash,
     Value<int>? encryptionVersion,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
@@ -2674,11 +4147,14 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
     return DocumentFilesCompanion(
       id: id ?? this.id,
       documentId: documentId ?? this.documentId,
+      fileType: fileType ?? this.fileType,
       mimeType: mimeType ?? this.mimeType,
       encryptedRelativePath:
           encryptedRelativePath ?? this.encryptedRelativePath,
-      integrityHash: integrityHash ?? this.integrityHash,
+      originalFilenameEncrypted:
+          originalFilenameEncrypted ?? this.originalFilenameEncrypted,
       sizeBytes: sizeBytes ?? this.sizeBytes,
+      integrityHash: integrityHash ?? this.integrityHash,
       encryptionVersion: encryptionVersion ?? this.encryptionVersion,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -2694,6 +4170,9 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
     if (documentId.present) {
       map['document_id'] = Variable<String>(documentId.value);
     }
+    if (fileType.present) {
+      map['file_type'] = Variable<String>(fileType.value);
+    }
     if (mimeType.present) {
       map['mime_type'] = Variable<String>(mimeType.value);
     }
@@ -2702,11 +4181,16 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
         encryptedRelativePath.value,
       );
     }
-    if (integrityHash.present) {
-      map['integrity_hash'] = Variable<String>(integrityHash.value);
+    if (originalFilenameEncrypted.present) {
+      map['original_filename_encrypted'] = Variable<String>(
+        originalFilenameEncrypted.value,
+      );
     }
     if (sizeBytes.present) {
       map['size_bytes'] = Variable<int>(sizeBytes.value);
+    }
+    if (integrityHash.present) {
+      map['integrity_hash'] = Variable<String>(integrityHash.value);
     }
     if (encryptionVersion.present) {
       map['encryption_version'] = Variable<int>(encryptionVersion.value);
@@ -2725,10 +4209,12 @@ class DocumentFilesCompanion extends UpdateCompanion<DocumentFile> {
     return (StringBuffer('DocumentFilesCompanion(')
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
+          ..write('fileType: $fileType, ')
           ..write('mimeType: $mimeType, ')
           ..write('encryptedRelativePath: $encryptedRelativePath, ')
-          ..write('integrityHash: $integrityHash, ')
+          ..write('originalFilenameEncrypted: $originalFilenameEncrypted, ')
           ..write('sizeBytes: $sizeBytes, ')
+          ..write('integrityHash: $integrityHash, ')
           ..write('encryptionVersion: $encryptionVersion, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
@@ -2763,7 +4249,7 @@ class $DocumentPagesTable extends DocumentPages
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES documents (id)',
+      'REFERENCES documents (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _documentFileIdMeta = const VerificationMeta(
@@ -2777,7 +4263,7 @@ class $DocumentPagesTable extends DocumentPages
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES document_files (id)',
+      'REFERENCES document_files (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _pageNumberMeta = const VerificationMeta(
@@ -2791,6 +4277,28 @@ class $DocumentPagesTable extends DocumentPages
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _encryptedPathMeta = const VerificationMeta(
+    'encryptedPath',
+  );
+  @override
+  late final GeneratedColumn<String> encryptedPath = GeneratedColumn<String>(
+    'encrypted_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _thumbnailPathMeta = const VerificationMeta(
+    'thumbnailPath',
+  );
+  @override
+  late final GeneratedColumn<String> thumbnailPath = GeneratedColumn<String>(
+    'thumbnail_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _rotationMeta = const VerificationMeta(
     'rotation',
   );
@@ -2803,13 +4311,47 @@ class $DocumentPagesTable extends DocumentPages
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _widthMeta = const VerificationMeta('width');
+  @override
+  late final GeneratedColumn<int> width = GeneratedColumn<int>(
+    'width',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _heightMeta = const VerificationMeta('height');
+  @override
+  late final GeneratedColumn<int> height = GeneratedColumn<int>(
+    'height',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     documentId,
     documentFileId,
     pageNumber,
+    encryptedPath,
+    thumbnailPath,
     rotation,
+    width,
+    height,
+    createdAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2855,11 +4397,49 @@ class $DocumentPagesTable extends DocumentPages
     } else if (isInserting) {
       context.missing(_pageNumberMeta);
     }
+    if (data.containsKey('encrypted_path')) {
+      context.handle(
+        _encryptedPathMeta,
+        encryptedPath.isAcceptableOrUnknown(
+          data['encrypted_path']!,
+          _encryptedPathMeta,
+        ),
+      );
+    }
+    if (data.containsKey('thumbnail_path')) {
+      context.handle(
+        _thumbnailPathMeta,
+        thumbnailPath.isAcceptableOrUnknown(
+          data['thumbnail_path']!,
+          _thumbnailPathMeta,
+        ),
+      );
+    }
     if (data.containsKey('rotation')) {
       context.handle(
         _rotationMeta,
         rotation.isAcceptableOrUnknown(data['rotation']!, _rotationMeta),
       );
+    }
+    if (data.containsKey('width')) {
+      context.handle(
+        _widthMeta,
+        width.isAcceptableOrUnknown(data['width']!, _widthMeta),
+      );
+    }
+    if (data.containsKey('height')) {
+      context.handle(
+        _heightMeta,
+        height.isAcceptableOrUnknown(data['height']!, _heightMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
     }
     return context;
   }
@@ -2890,9 +4470,29 @@ class $DocumentPagesTable extends DocumentPages
         DriftSqlType.int,
         data['${effectivePrefix}page_number'],
       )!,
+      encryptedPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}encrypted_path'],
+      ),
+      thumbnailPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}thumbnail_path'],
+      ),
       rotation: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}rotation'],
+      )!,
+      width: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}width'],
+      ),
+      height: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}height'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
       )!,
     );
   }
@@ -2908,13 +4508,23 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
   final String documentId;
   final String documentFileId;
   final int pageNumber;
+  final String? encryptedPath;
+  final String? thumbnailPath;
   final int rotation;
+  final int? width;
+  final int? height;
+  final DateTime createdAt;
   const DocumentPage({
     required this.id,
     required this.documentId,
     required this.documentFileId,
     required this.pageNumber,
+    this.encryptedPath,
+    this.thumbnailPath,
     required this.rotation,
+    this.width,
+    this.height,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2923,7 +4533,20 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
     map['document_id'] = Variable<String>(documentId);
     map['document_file_id'] = Variable<String>(documentFileId);
     map['page_number'] = Variable<int>(pageNumber);
+    if (!nullToAbsent || encryptedPath != null) {
+      map['encrypted_path'] = Variable<String>(encryptedPath);
+    }
+    if (!nullToAbsent || thumbnailPath != null) {
+      map['thumbnail_path'] = Variable<String>(thumbnailPath);
+    }
     map['rotation'] = Variable<int>(rotation);
+    if (!nullToAbsent || width != null) {
+      map['width'] = Variable<int>(width);
+    }
+    if (!nullToAbsent || height != null) {
+      map['height'] = Variable<int>(height);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -2933,7 +4556,20 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
       documentId: Value(documentId),
       documentFileId: Value(documentFileId),
       pageNumber: Value(pageNumber),
+      encryptedPath: encryptedPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(encryptedPath),
+      thumbnailPath: thumbnailPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(thumbnailPath),
       rotation: Value(rotation),
+      width: width == null && nullToAbsent
+          ? const Value.absent()
+          : Value(width),
+      height: height == null && nullToAbsent
+          ? const Value.absent()
+          : Value(height),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -2947,7 +4583,12 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
       documentId: serializer.fromJson<String>(json['documentId']),
       documentFileId: serializer.fromJson<String>(json['documentFileId']),
       pageNumber: serializer.fromJson<int>(json['pageNumber']),
+      encryptedPath: serializer.fromJson<String?>(json['encryptedPath']),
+      thumbnailPath: serializer.fromJson<String?>(json['thumbnailPath']),
       rotation: serializer.fromJson<int>(json['rotation']),
+      width: serializer.fromJson<int?>(json['width']),
+      height: serializer.fromJson<int?>(json['height']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -2958,7 +4599,12 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
       'documentId': serializer.toJson<String>(documentId),
       'documentFileId': serializer.toJson<String>(documentFileId),
       'pageNumber': serializer.toJson<int>(pageNumber),
+      'encryptedPath': serializer.toJson<String?>(encryptedPath),
+      'thumbnailPath': serializer.toJson<String?>(thumbnailPath),
       'rotation': serializer.toJson<int>(rotation),
+      'width': serializer.toJson<int?>(width),
+      'height': serializer.toJson<int?>(height),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -2967,13 +4613,27 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
     String? documentId,
     String? documentFileId,
     int? pageNumber,
+    Value<String?> encryptedPath = const Value.absent(),
+    Value<String?> thumbnailPath = const Value.absent(),
     int? rotation,
+    Value<int?> width = const Value.absent(),
+    Value<int?> height = const Value.absent(),
+    DateTime? createdAt,
   }) => DocumentPage(
     id: id ?? this.id,
     documentId: documentId ?? this.documentId,
     documentFileId: documentFileId ?? this.documentFileId,
     pageNumber: pageNumber ?? this.pageNumber,
+    encryptedPath: encryptedPath.present
+        ? encryptedPath.value
+        : this.encryptedPath,
+    thumbnailPath: thumbnailPath.present
+        ? thumbnailPath.value
+        : this.thumbnailPath,
     rotation: rotation ?? this.rotation,
+    width: width.present ? width.value : this.width,
+    height: height.present ? height.value : this.height,
+    createdAt: createdAt ?? this.createdAt,
   );
   DocumentPage copyWithCompanion(DocumentPagesCompanion data) {
     return DocumentPage(
@@ -2987,7 +4647,16 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
       pageNumber: data.pageNumber.present
           ? data.pageNumber.value
           : this.pageNumber,
+      encryptedPath: data.encryptedPath.present
+          ? data.encryptedPath.value
+          : this.encryptedPath,
+      thumbnailPath: data.thumbnailPath.present
+          ? data.thumbnailPath.value
+          : this.thumbnailPath,
       rotation: data.rotation.present ? data.rotation.value : this.rotation,
+      width: data.width.present ? data.width.value : this.width,
+      height: data.height.present ? data.height.value : this.height,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -2998,14 +4667,29 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
           ..write('documentId: $documentId, ')
           ..write('documentFileId: $documentFileId, ')
           ..write('pageNumber: $pageNumber, ')
-          ..write('rotation: $rotation')
+          ..write('encryptedPath: $encryptedPath, ')
+          ..write('thumbnailPath: $thumbnailPath, ')
+          ..write('rotation: $rotation, ')
+          ..write('width: $width, ')
+          ..write('height: $height, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, documentId, documentFileId, pageNumber, rotation);
+  int get hashCode => Object.hash(
+    id,
+    documentId,
+    documentFileId,
+    pageNumber,
+    encryptedPath,
+    thumbnailPath,
+    rotation,
+    width,
+    height,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3014,7 +4698,12 @@ class DocumentPage extends DataClass implements Insertable<DocumentPage> {
           other.documentId == this.documentId &&
           other.documentFileId == this.documentFileId &&
           other.pageNumber == this.pageNumber &&
-          other.rotation == this.rotation);
+          other.encryptedPath == this.encryptedPath &&
+          other.thumbnailPath == this.thumbnailPath &&
+          other.rotation == this.rotation &&
+          other.width == this.width &&
+          other.height == this.height &&
+          other.createdAt == this.createdAt);
 }
 
 class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
@@ -3022,14 +4711,24 @@ class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
   final Value<String> documentId;
   final Value<String> documentFileId;
   final Value<int> pageNumber;
+  final Value<String?> encryptedPath;
+  final Value<String?> thumbnailPath;
   final Value<int> rotation;
+  final Value<int?> width;
+  final Value<int?> height;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const DocumentPagesCompanion({
     this.id = const Value.absent(),
     this.documentId = const Value.absent(),
     this.documentFileId = const Value.absent(),
     this.pageNumber = const Value.absent(),
+    this.encryptedPath = const Value.absent(),
+    this.thumbnailPath = const Value.absent(),
     this.rotation = const Value.absent(),
+    this.width = const Value.absent(),
+    this.height = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DocumentPagesCompanion.insert({
@@ -3037,18 +4736,29 @@ class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
     required String documentId,
     required String documentFileId,
     required int pageNumber,
+    this.encryptedPath = const Value.absent(),
+    this.thumbnailPath = const Value.absent(),
     this.rotation = const Value.absent(),
+    this.width = const Value.absent(),
+    this.height = const Value.absent(),
+    required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        documentId = Value(documentId),
        documentFileId = Value(documentFileId),
-       pageNumber = Value(pageNumber);
+       pageNumber = Value(pageNumber),
+       createdAt = Value(createdAt);
   static Insertable<DocumentPage> custom({
     Expression<String>? id,
     Expression<String>? documentId,
     Expression<String>? documentFileId,
     Expression<int>? pageNumber,
+    Expression<String>? encryptedPath,
+    Expression<String>? thumbnailPath,
     Expression<int>? rotation,
+    Expression<int>? width,
+    Expression<int>? height,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3056,7 +4766,12 @@ class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
       if (documentId != null) 'document_id': documentId,
       if (documentFileId != null) 'document_file_id': documentFileId,
       if (pageNumber != null) 'page_number': pageNumber,
+      if (encryptedPath != null) 'encrypted_path': encryptedPath,
+      if (thumbnailPath != null) 'thumbnail_path': thumbnailPath,
       if (rotation != null) 'rotation': rotation,
+      if (width != null) 'width': width,
+      if (height != null) 'height': height,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3066,7 +4781,12 @@ class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
     Value<String>? documentId,
     Value<String>? documentFileId,
     Value<int>? pageNumber,
+    Value<String?>? encryptedPath,
+    Value<String?>? thumbnailPath,
     Value<int>? rotation,
+    Value<int?>? width,
+    Value<int?>? height,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return DocumentPagesCompanion(
@@ -3074,7 +4794,12 @@ class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
       documentId: documentId ?? this.documentId,
       documentFileId: documentFileId ?? this.documentFileId,
       pageNumber: pageNumber ?? this.pageNumber,
+      encryptedPath: encryptedPath ?? this.encryptedPath,
+      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
       rotation: rotation ?? this.rotation,
+      width: width ?? this.width,
+      height: height ?? this.height,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3094,8 +4819,23 @@ class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
     if (pageNumber.present) {
       map['page_number'] = Variable<int>(pageNumber.value);
     }
+    if (encryptedPath.present) {
+      map['encrypted_path'] = Variable<String>(encryptedPath.value);
+    }
+    if (thumbnailPath.present) {
+      map['thumbnail_path'] = Variable<String>(thumbnailPath.value);
+    }
     if (rotation.present) {
       map['rotation'] = Variable<int>(rotation.value);
+    }
+    if (width.present) {
+      map['width'] = Variable<int>(width.value);
+    }
+    if (height.present) {
+      map['height'] = Variable<int>(height.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3110,7 +4850,12 @@ class DocumentPagesCompanion extends UpdateCompanion<DocumentPage> {
           ..write('documentId: $documentId, ')
           ..write('documentFileId: $documentFileId, ')
           ..write('pageNumber: $pageNumber, ')
+          ..write('encryptedPath: $encryptedPath, ')
+          ..write('thumbnailPath: $thumbnailPath, ')
           ..write('rotation: $rotation, ')
+          ..write('width: $width, ')
+          ..write('height: $height, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3143,7 +4888,7 @@ class $DocumentFieldValuesTable extends DocumentFieldValues
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES documents (id)',
+      'REFERENCES documents (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _fieldKeyMeta = const VerificationMeta(
@@ -3157,6 +4902,17 @@ class $DocumentFieldValuesTable extends DocumentFieldValues
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _labelEncryptedMeta = const VerificationMeta(
+    'labelEncrypted',
+  );
+  @override
+  late final GeneratedColumn<String> labelEncrypted = GeneratedColumn<String>(
+    'label_encrypted',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _valueEncryptedMeta = const VerificationMeta(
     'valueEncrypted',
   );
@@ -3167,6 +4923,18 @@ class $DocumentFieldValuesTable extends DocumentFieldValues
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueTypeMeta = const VerificationMeta(
+    'valueType',
+  );
+  @override
+  late final GeneratedColumn<String> valueType = GeneratedColumn<String>(
+    'value_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('text'),
   );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
     'sortOrder',
@@ -3180,13 +4948,39 @@ class $DocumentFieldValuesTable extends DocumentFieldValues
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     documentId,
     fieldKey,
+    labelEncrypted,
     valueEncrypted,
+    valueType,
     sortOrder,
+    createdAt,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3221,6 +5015,15 @@ class $DocumentFieldValuesTable extends DocumentFieldValues
     } else if (isInserting) {
       context.missing(_fieldKeyMeta);
     }
+    if (data.containsKey('label_encrypted')) {
+      context.handle(
+        _labelEncryptedMeta,
+        labelEncrypted.isAcceptableOrUnknown(
+          data['label_encrypted']!,
+          _labelEncryptedMeta,
+        ),
+      );
+    }
     if (data.containsKey('value_encrypted')) {
       context.handle(
         _valueEncryptedMeta,
@@ -3232,17 +5035,43 @@ class $DocumentFieldValuesTable extends DocumentFieldValues
     } else if (isInserting) {
       context.missing(_valueEncryptedMeta);
     }
+    if (data.containsKey('value_type')) {
+      context.handle(
+        _valueTypeMeta,
+        valueType.isAcceptableOrUnknown(data['value_type']!, _valueTypeMeta),
+      );
+    }
     if (data.containsKey('sort_order')) {
       context.handle(
         _sortOrderMeta,
         sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
       );
     }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {documentId, fieldKey},
+  ];
   @override
   DocumentFieldValue map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -3259,13 +5088,29 @@ class $DocumentFieldValuesTable extends DocumentFieldValues
         DriftSqlType.string,
         data['${effectivePrefix}field_key'],
       )!,
+      labelEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label_encrypted'],
+      ),
       valueEncrypted: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}value_encrypted'],
       )!,
+      valueType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value_type'],
+      )!,
       sortOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
       )!,
     );
   }
@@ -3281,14 +5126,22 @@ class DocumentFieldValue extends DataClass
   final String id;
   final String documentId;
   final String fieldKey;
+  final String? labelEncrypted;
   final String valueEncrypted;
+  final String valueType;
   final int sortOrder;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   const DocumentFieldValue({
     required this.id,
     required this.documentId,
     required this.fieldKey,
+    this.labelEncrypted,
     required this.valueEncrypted,
+    required this.valueType,
     required this.sortOrder,
+    required this.createdAt,
+    required this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3296,8 +5149,14 @@ class DocumentFieldValue extends DataClass
     map['id'] = Variable<String>(id);
     map['document_id'] = Variable<String>(documentId);
     map['field_key'] = Variable<String>(fieldKey);
+    if (!nullToAbsent || labelEncrypted != null) {
+      map['label_encrypted'] = Variable<String>(labelEncrypted);
+    }
     map['value_encrypted'] = Variable<String>(valueEncrypted);
+    map['value_type'] = Variable<String>(valueType);
     map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -3306,8 +5165,14 @@ class DocumentFieldValue extends DataClass
       id: Value(id),
       documentId: Value(documentId),
       fieldKey: Value(fieldKey),
+      labelEncrypted: labelEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(labelEncrypted),
       valueEncrypted: Value(valueEncrypted),
+      valueType: Value(valueType),
       sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -3320,8 +5185,12 @@ class DocumentFieldValue extends DataClass
       id: serializer.fromJson<String>(json['id']),
       documentId: serializer.fromJson<String>(json['documentId']),
       fieldKey: serializer.fromJson<String>(json['fieldKey']),
+      labelEncrypted: serializer.fromJson<String?>(json['labelEncrypted']),
       valueEncrypted: serializer.fromJson<String>(json['valueEncrypted']),
+      valueType: serializer.fromJson<String>(json['valueType']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -3331,8 +5200,12 @@ class DocumentFieldValue extends DataClass
       'id': serializer.toJson<String>(id),
       'documentId': serializer.toJson<String>(documentId),
       'fieldKey': serializer.toJson<String>(fieldKey),
+      'labelEncrypted': serializer.toJson<String?>(labelEncrypted),
       'valueEncrypted': serializer.toJson<String>(valueEncrypted),
+      'valueType': serializer.toJson<String>(valueType),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
@@ -3340,14 +5213,24 @@ class DocumentFieldValue extends DataClass
     String? id,
     String? documentId,
     String? fieldKey,
+    Value<String?> labelEncrypted = const Value.absent(),
     String? valueEncrypted,
+    String? valueType,
     int? sortOrder,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) => DocumentFieldValue(
     id: id ?? this.id,
     documentId: documentId ?? this.documentId,
     fieldKey: fieldKey ?? this.fieldKey,
+    labelEncrypted: labelEncrypted.present
+        ? labelEncrypted.value
+        : this.labelEncrypted,
     valueEncrypted: valueEncrypted ?? this.valueEncrypted,
+    valueType: valueType ?? this.valueType,
     sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
   );
   DocumentFieldValue copyWithCompanion(DocumentFieldValuesCompanion data) {
     return DocumentFieldValue(
@@ -3356,10 +5239,16 @@ class DocumentFieldValue extends DataClass
           ? data.documentId.value
           : this.documentId,
       fieldKey: data.fieldKey.present ? data.fieldKey.value : this.fieldKey,
+      labelEncrypted: data.labelEncrypted.present
+          ? data.labelEncrypted.value
+          : this.labelEncrypted,
       valueEncrypted: data.valueEncrypted.present
           ? data.valueEncrypted.value
           : this.valueEncrypted,
+      valueType: data.valueType.present ? data.valueType.value : this.valueType,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -3369,15 +5258,28 @@ class DocumentFieldValue extends DataClass
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
           ..write('fieldKey: $fieldKey, ')
+          ..write('labelEncrypted: $labelEncrypted, ')
           ..write('valueEncrypted: $valueEncrypted, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('valueType: $valueType, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, documentId, fieldKey, valueEncrypted, sortOrder);
+  int get hashCode => Object.hash(
+    id,
+    documentId,
+    fieldKey,
+    labelEncrypted,
+    valueEncrypted,
+    valueType,
+    sortOrder,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3385,50 +5287,76 @@ class DocumentFieldValue extends DataClass
           other.id == this.id &&
           other.documentId == this.documentId &&
           other.fieldKey == this.fieldKey &&
+          other.labelEncrypted == this.labelEncrypted &&
           other.valueEncrypted == this.valueEncrypted &&
-          other.sortOrder == this.sortOrder);
+          other.valueType == this.valueType &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class DocumentFieldValuesCompanion extends UpdateCompanion<DocumentFieldValue> {
   final Value<String> id;
   final Value<String> documentId;
   final Value<String> fieldKey;
+  final Value<String?> labelEncrypted;
   final Value<String> valueEncrypted;
+  final Value<String> valueType;
   final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const DocumentFieldValuesCompanion({
     this.id = const Value.absent(),
     this.documentId = const Value.absent(),
     this.fieldKey = const Value.absent(),
+    this.labelEncrypted = const Value.absent(),
     this.valueEncrypted = const Value.absent(),
+    this.valueType = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DocumentFieldValuesCompanion.insert({
     required String id,
     required String documentId,
     required String fieldKey,
+    this.labelEncrypted = const Value.absent(),
     required String valueEncrypted,
+    this.valueType = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        documentId = Value(documentId),
        fieldKey = Value(fieldKey),
-       valueEncrypted = Value(valueEncrypted);
+       valueEncrypted = Value(valueEncrypted),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
   static Insertable<DocumentFieldValue> custom({
     Expression<String>? id,
     Expression<String>? documentId,
     Expression<String>? fieldKey,
+    Expression<String>? labelEncrypted,
     Expression<String>? valueEncrypted,
+    Expression<String>? valueType,
     Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (documentId != null) 'document_id': documentId,
       if (fieldKey != null) 'field_key': fieldKey,
+      if (labelEncrypted != null) 'label_encrypted': labelEncrypted,
       if (valueEncrypted != null) 'value_encrypted': valueEncrypted,
+      if (valueType != null) 'value_type': valueType,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3437,16 +5365,24 @@ class DocumentFieldValuesCompanion extends UpdateCompanion<DocumentFieldValue> {
     Value<String>? id,
     Value<String>? documentId,
     Value<String>? fieldKey,
+    Value<String?>? labelEncrypted,
     Value<String>? valueEncrypted,
+    Value<String>? valueType,
     Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return DocumentFieldValuesCompanion(
       id: id ?? this.id,
       documentId: documentId ?? this.documentId,
       fieldKey: fieldKey ?? this.fieldKey,
+      labelEncrypted: labelEncrypted ?? this.labelEncrypted,
       valueEncrypted: valueEncrypted ?? this.valueEncrypted,
+      valueType: valueType ?? this.valueType,
       sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3463,11 +5399,23 @@ class DocumentFieldValuesCompanion extends UpdateCompanion<DocumentFieldValue> {
     if (fieldKey.present) {
       map['field_key'] = Variable<String>(fieldKey.value);
     }
+    if (labelEncrypted.present) {
+      map['label_encrypted'] = Variable<String>(labelEncrypted.value);
+    }
     if (valueEncrypted.present) {
       map['value_encrypted'] = Variable<String>(valueEncrypted.value);
     }
+    if (valueType.present) {
+      map['value_type'] = Variable<String>(valueType.value);
+    }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3481,8 +5429,12 @@ class DocumentFieldValuesCompanion extends UpdateCompanion<DocumentFieldValue> {
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
           ..write('fieldKey: $fieldKey, ')
+          ..write('labelEncrypted: $labelEncrypted, ')
           ..write('valueEncrypted: $valueEncrypted, ')
+          ..write('valueType: $valueType, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3526,8 +5478,24 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
         requiredDuringInsert: true,
         defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
       );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, nameEncrypted, normalizedNameHash];
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    nameEncrypted,
+    normalizedNameHash,
+    createdAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -3567,6 +5535,14 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
     } else if (isInserting) {
       context.missing(_normalizedNameHashMeta);
     }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
     return context;
   }
 
@@ -3588,6 +5564,10 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
         DriftSqlType.string,
         data['${effectivePrefix}normalized_name_hash'],
       )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
     );
   }
 
@@ -3601,10 +5581,12 @@ class Tag extends DataClass implements Insertable<Tag> {
   final String id;
   final String nameEncrypted;
   final String normalizedNameHash;
+  final DateTime createdAt;
   const Tag({
     required this.id,
     required this.nameEncrypted,
     required this.normalizedNameHash,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3612,6 +5594,7 @@ class Tag extends DataClass implements Insertable<Tag> {
     map['id'] = Variable<String>(id);
     map['name_encrypted'] = Variable<String>(nameEncrypted);
     map['normalized_name_hash'] = Variable<String>(normalizedNameHash);
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -3620,6 +5603,7 @@ class Tag extends DataClass implements Insertable<Tag> {
       id: Value(id),
       nameEncrypted: Value(nameEncrypted),
       normalizedNameHash: Value(normalizedNameHash),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -3634,6 +5618,7 @@ class Tag extends DataClass implements Insertable<Tag> {
       normalizedNameHash: serializer.fromJson<String>(
         json['normalizedNameHash'],
       ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -3643,6 +5628,7 @@ class Tag extends DataClass implements Insertable<Tag> {
       'id': serializer.toJson<String>(id),
       'nameEncrypted': serializer.toJson<String>(nameEncrypted),
       'normalizedNameHash': serializer.toJson<String>(normalizedNameHash),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -3650,10 +5636,12 @@ class Tag extends DataClass implements Insertable<Tag> {
     String? id,
     String? nameEncrypted,
     String? normalizedNameHash,
+    DateTime? createdAt,
   }) => Tag(
     id: id ?? this.id,
     nameEncrypted: nameEncrypted ?? this.nameEncrypted,
     normalizedNameHash: normalizedNameHash ?? this.normalizedNameHash,
+    createdAt: createdAt ?? this.createdAt,
   );
   Tag copyWithCompanion(TagsCompanion data) {
     return Tag(
@@ -3664,6 +5652,7 @@ class Tag extends DataClass implements Insertable<Tag> {
       normalizedNameHash: data.normalizedNameHash.present
           ? data.normalizedNameHash.value
           : this.normalizedNameHash,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -3672,45 +5661,53 @@ class Tag extends DataClass implements Insertable<Tag> {
     return (StringBuffer('Tag(')
           ..write('id: $id, ')
           ..write('nameEncrypted: $nameEncrypted, ')
-          ..write('normalizedNameHash: $normalizedNameHash')
+          ..write('normalizedNameHash: $normalizedNameHash, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, nameEncrypted, normalizedNameHash);
+  int get hashCode =>
+      Object.hash(id, nameEncrypted, normalizedNameHash, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Tag &&
           other.id == this.id &&
           other.nameEncrypted == this.nameEncrypted &&
-          other.normalizedNameHash == this.normalizedNameHash);
+          other.normalizedNameHash == this.normalizedNameHash &&
+          other.createdAt == this.createdAt);
 }
 
 class TagsCompanion extends UpdateCompanion<Tag> {
   final Value<String> id;
   final Value<String> nameEncrypted;
   final Value<String> normalizedNameHash;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const TagsCompanion({
     this.id = const Value.absent(),
     this.nameEncrypted = const Value.absent(),
     this.normalizedNameHash = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TagsCompanion.insert({
     required String id,
     required String nameEncrypted,
     required String normalizedNameHash,
+    required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        nameEncrypted = Value(nameEncrypted),
-       normalizedNameHash = Value(normalizedNameHash);
+       normalizedNameHash = Value(normalizedNameHash),
+       createdAt = Value(createdAt);
   static Insertable<Tag> custom({
     Expression<String>? id,
     Expression<String>? nameEncrypted,
     Expression<String>? normalizedNameHash,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3718,6 +5715,7 @@ class TagsCompanion extends UpdateCompanion<Tag> {
       if (nameEncrypted != null) 'name_encrypted': nameEncrypted,
       if (normalizedNameHash != null)
         'normalized_name_hash': normalizedNameHash,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3726,12 +5724,14 @@ class TagsCompanion extends UpdateCompanion<Tag> {
     Value<String>? id,
     Value<String>? nameEncrypted,
     Value<String>? normalizedNameHash,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return TagsCompanion(
       id: id ?? this.id,
       nameEncrypted: nameEncrypted ?? this.nameEncrypted,
       normalizedNameHash: normalizedNameHash ?? this.normalizedNameHash,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3748,6 +5748,9 @@ class TagsCompanion extends UpdateCompanion<Tag> {
     if (normalizedNameHash.present) {
       map['normalized_name_hash'] = Variable<String>(normalizedNameHash.value);
     }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3760,6 +5763,7 @@ class TagsCompanion extends UpdateCompanion<Tag> {
           ..write('id: $id, ')
           ..write('nameEncrypted: $nameEncrypted, ')
           ..write('normalizedNameHash: $normalizedNameHash, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3783,7 +5787,7 @@ class $DocumentTagsTable extends DocumentTags
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES documents (id)',
+      'REFERENCES documents (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
@@ -3795,7 +5799,7 @@ class $DocumentTagsTable extends DocumentTags
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES tags (id)',
+      'REFERENCES tags (id) ON DELETE CASCADE',
     ),
   );
   @override
@@ -3989,284 +5993,6 @@ class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
   }
 }
 
-class $PhysicalLocationsTable extends PhysicalLocations
-    with TableInfo<$PhysicalLocationsTable, PhysicalLocation> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PhysicalLocationsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameEncryptedMeta = const VerificationMeta(
-    'nameEncrypted',
-  );
-  @override
-  late final GeneratedColumn<String> nameEncrypted = GeneratedColumn<String>(
-    'name_encrypted',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _notesEncryptedMeta = const VerificationMeta(
-    'notesEncrypted',
-  );
-  @override
-  late final GeneratedColumn<String> notesEncrypted = GeneratedColumn<String>(
-    'notes_encrypted',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, nameEncrypted, notesEncrypted];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'physical_locations';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<PhysicalLocation> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('name_encrypted')) {
-      context.handle(
-        _nameEncryptedMeta,
-        nameEncrypted.isAcceptableOrUnknown(
-          data['name_encrypted']!,
-          _nameEncryptedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_nameEncryptedMeta);
-    }
-    if (data.containsKey('notes_encrypted')) {
-      context.handle(
-        _notesEncryptedMeta,
-        notesEncrypted.isAcceptableOrUnknown(
-          data['notes_encrypted']!,
-          _notesEncryptedMeta,
-        ),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  PhysicalLocation map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PhysicalLocation(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      nameEncrypted: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_encrypted'],
-      )!,
-      notesEncrypted: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}notes_encrypted'],
-      ),
-    );
-  }
-
-  @override
-  $PhysicalLocationsTable createAlias(String alias) {
-    return $PhysicalLocationsTable(attachedDatabase, alias);
-  }
-}
-
-class PhysicalLocation extends DataClass
-    implements Insertable<PhysicalLocation> {
-  final String id;
-  final String nameEncrypted;
-  final String? notesEncrypted;
-  const PhysicalLocation({
-    required this.id,
-    required this.nameEncrypted,
-    this.notesEncrypted,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['name_encrypted'] = Variable<String>(nameEncrypted);
-    if (!nullToAbsent || notesEncrypted != null) {
-      map['notes_encrypted'] = Variable<String>(notesEncrypted);
-    }
-    return map;
-  }
-
-  PhysicalLocationsCompanion toCompanion(bool nullToAbsent) {
-    return PhysicalLocationsCompanion(
-      id: Value(id),
-      nameEncrypted: Value(nameEncrypted),
-      notesEncrypted: notesEncrypted == null && nullToAbsent
-          ? const Value.absent()
-          : Value(notesEncrypted),
-    );
-  }
-
-  factory PhysicalLocation.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PhysicalLocation(
-      id: serializer.fromJson<String>(json['id']),
-      nameEncrypted: serializer.fromJson<String>(json['nameEncrypted']),
-      notesEncrypted: serializer.fromJson<String?>(json['notesEncrypted']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'nameEncrypted': serializer.toJson<String>(nameEncrypted),
-      'notesEncrypted': serializer.toJson<String?>(notesEncrypted),
-    };
-  }
-
-  PhysicalLocation copyWith({
-    String? id,
-    String? nameEncrypted,
-    Value<String?> notesEncrypted = const Value.absent(),
-  }) => PhysicalLocation(
-    id: id ?? this.id,
-    nameEncrypted: nameEncrypted ?? this.nameEncrypted,
-    notesEncrypted: notesEncrypted.present
-        ? notesEncrypted.value
-        : this.notesEncrypted,
-  );
-  PhysicalLocation copyWithCompanion(PhysicalLocationsCompanion data) {
-    return PhysicalLocation(
-      id: data.id.present ? data.id.value : this.id,
-      nameEncrypted: data.nameEncrypted.present
-          ? data.nameEncrypted.value
-          : this.nameEncrypted,
-      notesEncrypted: data.notesEncrypted.present
-          ? data.notesEncrypted.value
-          : this.notesEncrypted,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PhysicalLocation(')
-          ..write('id: $id, ')
-          ..write('nameEncrypted: $nameEncrypted, ')
-          ..write('notesEncrypted: $notesEncrypted')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, nameEncrypted, notesEncrypted);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PhysicalLocation &&
-          other.id == this.id &&
-          other.nameEncrypted == this.nameEncrypted &&
-          other.notesEncrypted == this.notesEncrypted);
-}
-
-class PhysicalLocationsCompanion extends UpdateCompanion<PhysicalLocation> {
-  final Value<String> id;
-  final Value<String> nameEncrypted;
-  final Value<String?> notesEncrypted;
-  final Value<int> rowid;
-  const PhysicalLocationsCompanion({
-    this.id = const Value.absent(),
-    this.nameEncrypted = const Value.absent(),
-    this.notesEncrypted = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  PhysicalLocationsCompanion.insert({
-    required String id,
-    required String nameEncrypted,
-    this.notesEncrypted = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       nameEncrypted = Value(nameEncrypted);
-  static Insertable<PhysicalLocation> custom({
-    Expression<String>? id,
-    Expression<String>? nameEncrypted,
-    Expression<String>? notesEncrypted,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (nameEncrypted != null) 'name_encrypted': nameEncrypted,
-      if (notesEncrypted != null) 'notes_encrypted': notesEncrypted,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  PhysicalLocationsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? nameEncrypted,
-    Value<String?>? notesEncrypted,
-    Value<int>? rowid,
-  }) {
-    return PhysicalLocationsCompanion(
-      id: id ?? this.id,
-      nameEncrypted: nameEncrypted ?? this.nameEncrypted,
-      notesEncrypted: notesEncrypted ?? this.notesEncrypted,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (nameEncrypted.present) {
-      map['name_encrypted'] = Variable<String>(nameEncrypted.value);
-    }
-    if (notesEncrypted.present) {
-      map['notes_encrypted'] = Variable<String>(notesEncrypted.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PhysicalLocationsCompanion(')
-          ..write('id: $id, ')
-          ..write('nameEncrypted: $nameEncrypted, ')
-          ..write('notesEncrypted: $notesEncrypted, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $RemindersTable extends Reminders
     with TableInfo<$RemindersTable, Reminder> {
   @override
@@ -4293,8 +6019,42 @@ class $RemindersTable extends Reminders
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES documents (id)',
+      'REFERENCES documents (id) ON DELETE CASCADE',
     ),
+  );
+  static const VerificationMeta _reminderTypeMeta = const VerificationMeta(
+    'reminderType',
+  );
+  @override
+  late final GeneratedColumn<String> reminderType = GeneratedColumn<String>(
+    'reminder_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('expiry'),
+  );
+  static const VerificationMeta _targetDateMeta = const VerificationMeta(
+    'targetDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> targetDate = GeneratedColumn<DateTime>(
+    'target_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _offsetDaysMeta = const VerificationMeta(
+    'offsetDays',
+  );
+  @override
+  late final GeneratedColumn<int> offsetDays = GeneratedColumn<int>(
+    'offset_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _scheduledAtMeta = const VerificationMeta(
     'scheduledAt',
@@ -4314,7 +6074,8 @@ class $RemindersTable extends Reminders
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('scheduled'),
   );
   static const VerificationMeta _notificationIdMeta = const VerificationMeta(
     'notificationId',
@@ -4327,13 +6088,52 @@ class $RemindersTable extends Reminders
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _snoozedUntilMeta = const VerificationMeta(
+    'snoozedUntil',
+  );
+  @override
+  late final GeneratedColumn<DateTime> snoozedUntil = GeneratedColumn<DateTime>(
+    'snoozed_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     documentId,
+    reminderType,
+    targetDate,
+    offsetDays,
     scheduledAt,
     status,
     notificationId,
+    snoozedUntil,
+    createdAt,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4360,6 +6160,29 @@ class $RemindersTable extends Reminders
     } else if (isInserting) {
       context.missing(_documentIdMeta);
     }
+    if (data.containsKey('reminder_type')) {
+      context.handle(
+        _reminderTypeMeta,
+        reminderType.isAcceptableOrUnknown(
+          data['reminder_type']!,
+          _reminderTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('target_date')) {
+      context.handle(
+        _targetDateMeta,
+        targetDate.isAcceptableOrUnknown(data['target_date']!, _targetDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_targetDateMeta);
+    }
+    if (data.containsKey('offset_days')) {
+      context.handle(
+        _offsetDaysMeta,
+        offsetDays.isAcceptableOrUnknown(data['offset_days']!, _offsetDaysMeta),
+      );
+    }
     if (data.containsKey('scheduled_at')) {
       context.handle(
         _scheduledAtMeta,
@@ -4376,8 +6199,6 @@ class $RemindersTable extends Reminders
         _statusMeta,
         status.isAcceptableOrUnknown(data['status']!, _statusMeta),
       );
-    } else if (isInserting) {
-      context.missing(_statusMeta);
     }
     if (data.containsKey('notification_id')) {
       context.handle(
@@ -4387,6 +6208,31 @@ class $RemindersTable extends Reminders
           _notificationIdMeta,
         ),
       );
+    }
+    if (data.containsKey('snoozed_until')) {
+      context.handle(
+        _snoozedUntilMeta,
+        snoozedUntil.isAcceptableOrUnknown(
+          data['snoozed_until']!,
+          _snoozedUntilMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
     }
     return context;
   }
@@ -4405,6 +6251,18 @@ class $RemindersTable extends Reminders
         DriftSqlType.string,
         data['${effectivePrefix}document_id'],
       )!,
+      reminderType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reminder_type'],
+      )!,
+      targetDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}target_date'],
+      )!,
+      offsetDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}offset_days'],
+      ),
       scheduledAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}scheduled_at'],
@@ -4417,6 +6275,18 @@ class $RemindersTable extends Reminders
         DriftSqlType.int,
         data['${effectivePrefix}notification_id'],
       ),
+      snoozedUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}snoozed_until'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -4429,26 +6299,48 @@ class $RemindersTable extends Reminders
 class Reminder extends DataClass implements Insertable<Reminder> {
   final String id;
   final String documentId;
+  final String reminderType;
+  final DateTime targetDate;
+  final int? offsetDays;
   final DateTime scheduledAt;
   final String status;
   final int? notificationId;
+  final DateTime? snoozedUntil;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   const Reminder({
     required this.id,
     required this.documentId,
+    required this.reminderType,
+    required this.targetDate,
+    this.offsetDays,
     required this.scheduledAt,
     required this.status,
     this.notificationId,
+    this.snoozedUntil,
+    required this.createdAt,
+    required this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['document_id'] = Variable<String>(documentId);
+    map['reminder_type'] = Variable<String>(reminderType);
+    map['target_date'] = Variable<DateTime>(targetDate);
+    if (!nullToAbsent || offsetDays != null) {
+      map['offset_days'] = Variable<int>(offsetDays);
+    }
     map['scheduled_at'] = Variable<DateTime>(scheduledAt);
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || notificationId != null) {
       map['notification_id'] = Variable<int>(notificationId);
     }
+    if (!nullToAbsent || snoozedUntil != null) {
+      map['snoozed_until'] = Variable<DateTime>(snoozedUntil);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -4456,11 +6348,21 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return RemindersCompanion(
       id: Value(id),
       documentId: Value(documentId),
+      reminderType: Value(reminderType),
+      targetDate: Value(targetDate),
+      offsetDays: offsetDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(offsetDays),
       scheduledAt: Value(scheduledAt),
       status: Value(status),
       notificationId: notificationId == null && nullToAbsent
           ? const Value.absent()
           : Value(notificationId),
+      snoozedUntil: snoozedUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(snoozedUntil),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -4472,9 +6374,15 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return Reminder(
       id: serializer.fromJson<String>(json['id']),
       documentId: serializer.fromJson<String>(json['documentId']),
+      reminderType: serializer.fromJson<String>(json['reminderType']),
+      targetDate: serializer.fromJson<DateTime>(json['targetDate']),
+      offsetDays: serializer.fromJson<int?>(json['offsetDays']),
       scheduledAt: serializer.fromJson<DateTime>(json['scheduledAt']),
       status: serializer.fromJson<String>(json['status']),
       notificationId: serializer.fromJson<int?>(json['notificationId']),
+      snoozedUntil: serializer.fromJson<DateTime?>(json['snoozedUntil']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -4483,26 +6391,44 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'documentId': serializer.toJson<String>(documentId),
+      'reminderType': serializer.toJson<String>(reminderType),
+      'targetDate': serializer.toJson<DateTime>(targetDate),
+      'offsetDays': serializer.toJson<int?>(offsetDays),
       'scheduledAt': serializer.toJson<DateTime>(scheduledAt),
       'status': serializer.toJson<String>(status),
       'notificationId': serializer.toJson<int?>(notificationId),
+      'snoozedUntil': serializer.toJson<DateTime?>(snoozedUntil),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
   Reminder copyWith({
     String? id,
     String? documentId,
+    String? reminderType,
+    DateTime? targetDate,
+    Value<int?> offsetDays = const Value.absent(),
     DateTime? scheduledAt,
     String? status,
     Value<int?> notificationId = const Value.absent(),
+    Value<DateTime?> snoozedUntil = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) => Reminder(
     id: id ?? this.id,
     documentId: documentId ?? this.documentId,
+    reminderType: reminderType ?? this.reminderType,
+    targetDate: targetDate ?? this.targetDate,
+    offsetDays: offsetDays.present ? offsetDays.value : this.offsetDays,
     scheduledAt: scheduledAt ?? this.scheduledAt,
     status: status ?? this.status,
     notificationId: notificationId.present
         ? notificationId.value
         : this.notificationId,
+    snoozedUntil: snoozedUntil.present ? snoozedUntil.value : this.snoozedUntil,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
   );
   Reminder copyWithCompanion(RemindersCompanion data) {
     return Reminder(
@@ -4510,6 +6436,15 @@ class Reminder extends DataClass implements Insertable<Reminder> {
       documentId: data.documentId.present
           ? data.documentId.value
           : this.documentId,
+      reminderType: data.reminderType.present
+          ? data.reminderType.value
+          : this.reminderType,
+      targetDate: data.targetDate.present
+          ? data.targetDate.value
+          : this.targetDate,
+      offsetDays: data.offsetDays.present
+          ? data.offsetDays.value
+          : this.offsetDays,
       scheduledAt: data.scheduledAt.present
           ? data.scheduledAt.value
           : this.scheduledAt,
@@ -4517,6 +6452,11 @@ class Reminder extends DataClass implements Insertable<Reminder> {
       notificationId: data.notificationId.present
           ? data.notificationId.value
           : this.notificationId,
+      snoozedUntil: data.snoozedUntil.present
+          ? data.snoozedUntil.value
+          : this.snoozedUntil,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -4525,67 +6465,122 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return (StringBuffer('Reminder(')
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
+          ..write('reminderType: $reminderType, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('offsetDays: $offsetDays, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('status: $status, ')
-          ..write('notificationId: $notificationId')
+          ..write('notificationId: $notificationId, ')
+          ..write('snoozedUntil: $snoozedUntil, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, documentId, scheduledAt, status, notificationId);
+  int get hashCode => Object.hash(
+    id,
+    documentId,
+    reminderType,
+    targetDate,
+    offsetDays,
+    scheduledAt,
+    status,
+    notificationId,
+    snoozedUntil,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Reminder &&
           other.id == this.id &&
           other.documentId == this.documentId &&
+          other.reminderType == this.reminderType &&
+          other.targetDate == this.targetDate &&
+          other.offsetDays == this.offsetDays &&
           other.scheduledAt == this.scheduledAt &&
           other.status == this.status &&
-          other.notificationId == this.notificationId);
+          other.notificationId == this.notificationId &&
+          other.snoozedUntil == this.snoozedUntil &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class RemindersCompanion extends UpdateCompanion<Reminder> {
   final Value<String> id;
   final Value<String> documentId;
+  final Value<String> reminderType;
+  final Value<DateTime> targetDate;
+  final Value<int?> offsetDays;
   final Value<DateTime> scheduledAt;
   final Value<String> status;
   final Value<int?> notificationId;
+  final Value<DateTime?> snoozedUntil;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const RemindersCompanion({
     this.id = const Value.absent(),
     this.documentId = const Value.absent(),
+    this.reminderType = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.offsetDays = const Value.absent(),
     this.scheduledAt = const Value.absent(),
     this.status = const Value.absent(),
     this.notificationId = const Value.absent(),
+    this.snoozedUntil = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RemindersCompanion.insert({
     required String id,
     required String documentId,
+    this.reminderType = const Value.absent(),
+    required DateTime targetDate,
+    this.offsetDays = const Value.absent(),
     required DateTime scheduledAt,
-    required String status,
+    this.status = const Value.absent(),
     this.notificationId = const Value.absent(),
+    this.snoozedUntil = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        documentId = Value(documentId),
+       targetDate = Value(targetDate),
        scheduledAt = Value(scheduledAt),
-       status = Value(status);
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
   static Insertable<Reminder> custom({
     Expression<String>? id,
     Expression<String>? documentId,
+    Expression<String>? reminderType,
+    Expression<DateTime>? targetDate,
+    Expression<int>? offsetDays,
     Expression<DateTime>? scheduledAt,
     Expression<String>? status,
     Expression<int>? notificationId,
+    Expression<DateTime>? snoozedUntil,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (documentId != null) 'document_id': documentId,
+      if (reminderType != null) 'reminder_type': reminderType,
+      if (targetDate != null) 'target_date': targetDate,
+      if (offsetDays != null) 'offset_days': offsetDays,
       if (scheduledAt != null) 'scheduled_at': scheduledAt,
       if (status != null) 'status': status,
       if (notificationId != null) 'notification_id': notificationId,
+      if (snoozedUntil != null) 'snoozed_until': snoozedUntil,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4593,17 +6588,29 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   RemindersCompanion copyWith({
     Value<String>? id,
     Value<String>? documentId,
+    Value<String>? reminderType,
+    Value<DateTime>? targetDate,
+    Value<int?>? offsetDays,
     Value<DateTime>? scheduledAt,
     Value<String>? status,
     Value<int?>? notificationId,
+    Value<DateTime?>? snoozedUntil,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return RemindersCompanion(
       id: id ?? this.id,
       documentId: documentId ?? this.documentId,
+      reminderType: reminderType ?? this.reminderType,
+      targetDate: targetDate ?? this.targetDate,
+      offsetDays: offsetDays ?? this.offsetDays,
       scheduledAt: scheduledAt ?? this.scheduledAt,
       status: status ?? this.status,
       notificationId: notificationId ?? this.notificationId,
+      snoozedUntil: snoozedUntil ?? this.snoozedUntil,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4617,6 +6624,15 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     if (documentId.present) {
       map['document_id'] = Variable<String>(documentId.value);
     }
+    if (reminderType.present) {
+      map['reminder_type'] = Variable<String>(reminderType.value);
+    }
+    if (targetDate.present) {
+      map['target_date'] = Variable<DateTime>(targetDate.value);
+    }
+    if (offsetDays.present) {
+      map['offset_days'] = Variable<int>(offsetDays.value);
+    }
     if (scheduledAt.present) {
       map['scheduled_at'] = Variable<DateTime>(scheduledAt.value);
     }
@@ -4625,6 +6641,15 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     }
     if (notificationId.present) {
       map['notification_id'] = Variable<int>(notificationId.value);
+    }
+    if (snoozedUntil.present) {
+      map['snoozed_until'] = Variable<DateTime>(snoozedUntil.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -4637,9 +6662,15 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     return (StringBuffer('RemindersCompanion(')
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
+          ..write('reminderType: $reminderType, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('offsetDays: $offsetDays, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('status: $status, ')
           ..write('notificationId: $notificationId, ')
+          ..write('snoozedUntil: $snoozedUntil, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4660,6 +6691,17 @@ class $BackupRecordsTable extends BackupRecords
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _relativePathMeta = const VerificationMeta(
+    'relativePath',
+  );
+  @override
+  late final GeneratedColumn<String> relativePath = GeneratedColumn<String>(
+    'relative_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
@@ -4698,7 +6740,13 @@ class $BackupRecordsTable extends BackupRecords
     ),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, createdAt, sizeBytes, verified];
+  List<GeneratedColumn> get $columns => [
+    id,
+    relativePath,
+    createdAt,
+    sizeBytes,
+    verified,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -4715,6 +6763,15 @@ class $BackupRecordsTable extends BackupRecords
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('relative_path')) {
+      context.handle(
+        _relativePathMeta,
+        relativePath.isAcceptableOrUnknown(
+          data['relative_path']!,
+          _relativePathMeta,
+        ),
+      );
     }
     if (data.containsKey('created_at')) {
       context.handle(
@@ -4753,6 +6810,10 @@ class $BackupRecordsTable extends BackupRecords
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      relativePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relative_path'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4776,11 +6837,13 @@ class $BackupRecordsTable extends BackupRecords
 
 class BackupRecord extends DataClass implements Insertable<BackupRecord> {
   final String id;
+  final String? relativePath;
   final DateTime createdAt;
   final int sizeBytes;
   final bool verified;
   const BackupRecord({
     required this.id,
+    this.relativePath,
     required this.createdAt,
     required this.sizeBytes,
     required this.verified,
@@ -4789,6 +6852,9 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || relativePath != null) {
+      map['relative_path'] = Variable<String>(relativePath);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['size_bytes'] = Variable<int>(sizeBytes);
     map['verified'] = Variable<bool>(verified);
@@ -4798,6 +6864,9 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
   BackupRecordsCompanion toCompanion(bool nullToAbsent) {
     return BackupRecordsCompanion(
       id: Value(id),
+      relativePath: relativePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(relativePath),
       createdAt: Value(createdAt),
       sizeBytes: Value(sizeBytes),
       verified: Value(verified),
@@ -4811,6 +6880,7 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return BackupRecord(
       id: serializer.fromJson<String>(json['id']),
+      relativePath: serializer.fromJson<String?>(json['relativePath']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
       verified: serializer.fromJson<bool>(json['verified']),
@@ -4821,6 +6891,7 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'relativePath': serializer.toJson<String?>(relativePath),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'sizeBytes': serializer.toJson<int>(sizeBytes),
       'verified': serializer.toJson<bool>(verified),
@@ -4829,11 +6900,13 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
 
   BackupRecord copyWith({
     String? id,
+    Value<String?> relativePath = const Value.absent(),
     DateTime? createdAt,
     int? sizeBytes,
     bool? verified,
   }) => BackupRecord(
     id: id ?? this.id,
+    relativePath: relativePath.present ? relativePath.value : this.relativePath,
     createdAt: createdAt ?? this.createdAt,
     sizeBytes: sizeBytes ?? this.sizeBytes,
     verified: verified ?? this.verified,
@@ -4841,6 +6914,9 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
   BackupRecord copyWithCompanion(BackupRecordsCompanion data) {
     return BackupRecord(
       id: data.id.present ? data.id.value : this.id,
+      relativePath: data.relativePath.present
+          ? data.relativePath.value
+          : this.relativePath,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
       verified: data.verified.present ? data.verified.value : this.verified,
@@ -4851,6 +6927,7 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
   String toString() {
     return (StringBuffer('BackupRecord(')
           ..write('id: $id, ')
+          ..write('relativePath: $relativePath, ')
           ..write('createdAt: $createdAt, ')
           ..write('sizeBytes: $sizeBytes, ')
           ..write('verified: $verified')
@@ -4859,12 +6936,14 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
   }
 
   @override
-  int get hashCode => Object.hash(id, createdAt, sizeBytes, verified);
+  int get hashCode =>
+      Object.hash(id, relativePath, createdAt, sizeBytes, verified);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is BackupRecord &&
           other.id == this.id &&
+          other.relativePath == this.relativePath &&
           other.createdAt == this.createdAt &&
           other.sizeBytes == this.sizeBytes &&
           other.verified == this.verified);
@@ -4872,12 +6951,14 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
 
 class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
   final Value<String> id;
+  final Value<String?> relativePath;
   final Value<DateTime> createdAt;
   final Value<int> sizeBytes;
   final Value<bool> verified;
   final Value<int> rowid;
   const BackupRecordsCompanion({
     this.id = const Value.absent(),
+    this.relativePath = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.sizeBytes = const Value.absent(),
     this.verified = const Value.absent(),
@@ -4885,6 +6966,7 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
   });
   BackupRecordsCompanion.insert({
     required String id,
+    this.relativePath = const Value.absent(),
     required DateTime createdAt,
     required int sizeBytes,
     required bool verified,
@@ -4895,6 +6977,7 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
        verified = Value(verified);
   static Insertable<BackupRecord> custom({
     Expression<String>? id,
+    Expression<String>? relativePath,
     Expression<DateTime>? createdAt,
     Expression<int>? sizeBytes,
     Expression<bool>? verified,
@@ -4902,6 +6985,7 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (relativePath != null) 'relative_path': relativePath,
       if (createdAt != null) 'created_at': createdAt,
       if (sizeBytes != null) 'size_bytes': sizeBytes,
       if (verified != null) 'verified': verified,
@@ -4911,6 +6995,7 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
 
   BackupRecordsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? relativePath,
     Value<DateTime>? createdAt,
     Value<int>? sizeBytes,
     Value<bool>? verified,
@@ -4918,6 +7003,7 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
   }) {
     return BackupRecordsCompanion(
       id: id ?? this.id,
+      relativePath: relativePath ?? this.relativePath,
       createdAt: createdAt ?? this.createdAt,
       sizeBytes: sizeBytes ?? this.sizeBytes,
       verified: verified ?? this.verified,
@@ -4930,6 +7016,9 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (relativePath.present) {
+      map['relative_path'] = Variable<String>(relativePath.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -4950,6 +7039,7 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
   String toString() {
     return (StringBuffer('BackupRecordsCompanion(')
           ..write('id: $id, ')
+          ..write('relativePath: $relativePath, ')
           ..write('createdAt: $createdAt, ')
           ..write('sizeBytes: $sizeBytes, ')
           ..write('verified: $verified, ')
@@ -4985,8 +7075,19 @@ class $AppSettingsTable extends AppSettings
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
-  List<GeneratedColumn> get $columns => [key, valueEncrypted];
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, valueEncrypted, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -5018,6 +7119,14 @@ class $AppSettingsTable extends AppSettings
     } else if (isInserting) {
       context.missing(_valueEncryptedMeta);
     }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
     return context;
   }
 
@@ -5035,6 +7144,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}value_encrypted'],
       )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -5047,12 +7160,18 @@ class $AppSettingsTable extends AppSettings
 class AppSetting extends DataClass implements Insertable<AppSetting> {
   final String key;
   final String valueEncrypted;
-  const AppSetting({required this.key, required this.valueEncrypted});
+  final DateTime updatedAt;
+  const AppSetting({
+    required this.key,
+    required this.valueEncrypted,
+    required this.updatedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['key'] = Variable<String>(key);
     map['value_encrypted'] = Variable<String>(valueEncrypted);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -5060,6 +7179,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     return AppSettingsCompanion(
       key: Value(key),
       valueEncrypted: Value(valueEncrypted),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -5071,6 +7191,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     return AppSetting(
       key: serializer.fromJson<String>(json['key']),
       valueEncrypted: serializer.fromJson<String>(json['valueEncrypted']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -5079,12 +7200,18 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     return <String, dynamic>{
       'key': serializer.toJson<String>(key),
       'valueEncrypted': serializer.toJson<String>(valueEncrypted),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  AppSetting copyWith({String? key, String? valueEncrypted}) => AppSetting(
+  AppSetting copyWith({
+    String? key,
+    String? valueEncrypted,
+    DateTime? updatedAt,
+  }) => AppSetting(
     key: key ?? this.key,
     valueEncrypted: valueEncrypted ?? this.valueEncrypted,
+    updatedAt: updatedAt ?? this.updatedAt,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -5092,6 +7219,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       valueEncrypted: data.valueEncrypted.present
           ? data.valueEncrypted.value
           : this.valueEncrypted,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -5099,44 +7227,52 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   String toString() {
     return (StringBuffer('AppSetting(')
           ..write('key: $key, ')
-          ..write('valueEncrypted: $valueEncrypted')
+          ..write('valueEncrypted: $valueEncrypted, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(key, valueEncrypted);
+  int get hashCode => Object.hash(key, valueEncrypted, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AppSetting &&
           other.key == this.key &&
-          other.valueEncrypted == this.valueEncrypted);
+          other.valueEncrypted == this.valueEncrypted &&
+          other.updatedAt == this.updatedAt);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<String> key;
   final Value<String> valueEncrypted;
+  final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const AppSettingsCompanion({
     this.key = const Value.absent(),
     this.valueEncrypted = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     required String key,
     required String valueEncrypted,
+    required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : key = Value(key),
-       valueEncrypted = Value(valueEncrypted);
+       valueEncrypted = Value(valueEncrypted),
+       updatedAt = Value(updatedAt);
   static Insertable<AppSetting> custom({
     Expression<String>? key,
     Expression<String>? valueEncrypted,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (key != null) 'key': key,
       if (valueEncrypted != null) 'value_encrypted': valueEncrypted,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -5144,11 +7280,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   AppSettingsCompanion copyWith({
     Value<String>? key,
     Value<String>? valueEncrypted,
+    Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return AppSettingsCompanion(
       key: key ?? this.key,
       valueEncrypted: valueEncrypted ?? this.valueEncrypted,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -5162,6 +7300,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (valueEncrypted.present) {
       map['value_encrypted'] = Variable<String>(valueEncrypted.value);
     }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -5173,6 +7314,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     return (StringBuffer('AppSettingsCompanion(')
           ..write('key: $key, ')
           ..write('valueEncrypted: $valueEncrypted, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5662,6 +7804,8 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
   late final $FamilyMembersTable familyMembers = $FamilyMembersTable(this);
   late final $DocumentCategoriesTable documentCategories =
       $DocumentCategoriesTable(this);
+  late final $PhysicalLocationsTable physicalLocations =
+      $PhysicalLocationsTable(this);
   late final $DocumentsTable documents = $DocumentsTable(this);
   late final $DocumentOwnersTable documentOwners = $DocumentOwnersTable(this);
   late final $DocumentFilesTable documentFiles = $DocumentFilesTable(this);
@@ -5670,8 +7814,6 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
       $DocumentFieldValuesTable(this);
   late final $TagsTable tags = $TagsTable(this);
   late final $DocumentTagsTable documentTags = $DocumentTagsTable(this);
-  late final $PhysicalLocationsTable physicalLocations =
-      $PhysicalLocationsTable(this);
   late final $RemindersTable reminders = $RemindersTable(this);
   late final $BackupRecordsTable backupRecords = $BackupRecordsTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
@@ -5685,6 +7827,7 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
     vaults,
     familyMembers,
     documentCategories,
+    physicalLocations,
     documents,
     documentOwners,
     documentFiles,
@@ -5692,12 +7835,91 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
     documentFieldValues,
     tags,
     documentTags,
-    physicalLocations,
     reminders,
     backupRecords,
     appSettings,
     pendingOperations,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'document_categories',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_categories', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'family_members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('documents', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'physical_locations',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('documents', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_owners', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_files', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_pages', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'document_files',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_pages', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_field_values', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_tags', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tags',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_tags', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('reminders', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$VaultsTableCreateCompanionBuilder = VaultsCompanion Function({
@@ -5909,7 +8131,12 @@ typedef $$FamilyMembersTableCreateCompanionBuilder =
     FamilyMembersCompanion Function({
       required String id,
       required String displayNameEncrypted,
+      Value<String?> nicknameEncrypted,
       required String relationship,
+      Value<DateTime?> dateOfBirth,
+      Value<String?> bloodGroup,
+      Value<String?> avatarFileId,
+      Value<String?> notesEncrypted,
       Value<bool> isOwner,
       Value<bool> isArchived,
       required DateTime createdAt,
@@ -5920,7 +8147,12 @@ typedef $$FamilyMembersTableUpdateCompanionBuilder =
     FamilyMembersCompanion Function({
       Value<String> id,
       Value<String> displayNameEncrypted,
+      Value<String?> nicknameEncrypted,
       Value<String> relationship,
+      Value<DateTime?> dateOfBirth,
+      Value<String?> bloodGroup,
+      Value<String?> avatarFileId,
+      Value<String?> notesEncrypted,
       Value<bool> isOwner,
       Value<bool> isArchived,
       Value<DateTime> createdAt,
@@ -5992,8 +8224,33 @@ class $$FamilyMembersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get nicknameEncrypted => $composableBuilder(
+    column: $table.nicknameEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get relationship => $composableBuilder(
     column: $table.relationship,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bloodGroup => $composableBuilder(
+    column: $table.bloodGroup,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get avatarFileId => $composableBuilder(
+    column: $table.avatarFileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notesEncrypted => $composableBuilder(
+    column: $table.notesEncrypted,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6087,8 +8344,33 @@ class $$FamilyMembersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get nicknameEncrypted => $composableBuilder(
+    column: $table.nicknameEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get relationship => $composableBuilder(
     column: $table.relationship,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bloodGroup => $composableBuilder(
+    column: $table.bloodGroup,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get avatarFileId => $composableBuilder(
+    column: $table.avatarFileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notesEncrypted => $composableBuilder(
+    column: $table.notesEncrypted,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -6130,8 +8412,33 @@ class $$FamilyMembersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get nicknameEncrypted => $composableBuilder(
+    column: $table.nicknameEncrypted,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get relationship => $composableBuilder(
     column: $table.relationship,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get bloodGroup => $composableBuilder(
+    column: $table.bloodGroup,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get avatarFileId => $composableBuilder(
+    column: $table.avatarFileId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notesEncrypted => $composableBuilder(
+    column: $table.notesEncrypted,
     builder: (column) => column,
   );
 
@@ -6232,7 +8539,12 @@ class $$FamilyMembersTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> displayNameEncrypted = const Value.absent(),
+                Value<String?> nicknameEncrypted = const Value.absent(),
                 Value<String> relationship = const Value.absent(),
+                Value<DateTime?> dateOfBirth = const Value.absent(),
+                Value<String?> bloodGroup = const Value.absent(),
+                Value<String?> avatarFileId = const Value.absent(),
+                Value<String?> notesEncrypted = const Value.absent(),
                 Value<bool> isOwner = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -6241,7 +8553,12 @@ class $$FamilyMembersTableTableManager
               }) => FamilyMembersCompanion(
                 id: id,
                 displayNameEncrypted: displayNameEncrypted,
+                nicknameEncrypted: nicknameEncrypted,
                 relationship: relationship,
+                dateOfBirth: dateOfBirth,
+                bloodGroup: bloodGroup,
+                avatarFileId: avatarFileId,
+                notesEncrypted: notesEncrypted,
                 isOwner: isOwner,
                 isArchived: isArchived,
                 createdAt: createdAt,
@@ -6252,7 +8569,12 @@ class $$FamilyMembersTableTableManager
               ({
                 required String id,
                 required String displayNameEncrypted,
+                Value<String?> nicknameEncrypted = const Value.absent(),
                 required String relationship,
+                Value<DateTime?> dateOfBirth = const Value.absent(),
+                Value<String?> bloodGroup = const Value.absent(),
+                Value<String?> avatarFileId = const Value.absent(),
+                Value<String?> notesEncrypted = const Value.absent(),
                 Value<bool> isOwner = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 required DateTime createdAt,
@@ -6261,7 +8583,12 @@ class $$FamilyMembersTableTableManager
               }) => FamilyMembersCompanion.insert(
                 id: id,
                 displayNameEncrypted: displayNameEncrypted,
+                nicknameEncrypted: nicknameEncrypted,
                 relationship: relationship,
+                dateOfBirth: dateOfBirth,
+                bloodGroup: bloodGroup,
+                avatarFileId: avatarFileId,
+                notesEncrypted: notesEncrypted,
                 isOwner: isOwner,
                 isArchived: isArchived,
                 createdAt: createdAt,
@@ -6356,9 +8683,13 @@ typedef $$DocumentCategoriesTableCreateCompanionBuilder =
       required String id,
       required String code,
       Value<String?> parentId,
+      Value<String?> nameKey,
       Value<String?> customNameEncrypted,
       Value<bool> isSystem,
       Value<int> sortOrder,
+      Value<String> iconKey,
+      required DateTime createdAt,
+      required DateTime updatedAt,
       Value<int> rowid,
     });
 typedef $$DocumentCategoriesTableUpdateCompanionBuilder =
@@ -6366,9 +8697,13 @@ typedef $$DocumentCategoriesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> code,
       Value<String?> parentId,
+      Value<String?> nameKey,
       Value<String?> customNameEncrypted,
       Value<bool> isSystem,
       Value<int> sortOrder,
+      Value<String> iconKey,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 
@@ -6384,6 +8719,24 @@ final class $$DocumentCategoriesTableReferences
     super.$_table,
     super.$_typedResult,
   );
+
+  static $DocumentCategoriesTable _parentIdTable(_$VaultDatabase db) => db
+      .documentCategories
+      .createAlias('document_categories__parent_id__document_categories__id');
+
+  $$DocumentCategoriesTableProcessedTableManager? get parentId {
+    final $_column = $_itemColumn<String>('parent_id');
+    if ($_column == null) return null;
+    final manager = $$DocumentCategoriesTableTableManager(
+      $_db,
+      $_db.documentCategories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_parentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static MultiTypedResultKey<$DocumentsTable, List<Document>>
   _documentsRefsTable(_$VaultDatabase db) => MultiTypedResultKey.fromTable(
@@ -6423,8 +8776,8 @@ class $$DocumentCategoriesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get parentId => $composableBuilder(
-    column: $table.parentId,
+  ColumnFilters<String> get nameKey => $composableBuilder(
+    column: $table.nameKey,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6442,6 +8795,44 @@ class $$DocumentCategoriesTableFilterComposer
     column: $table.sortOrder,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get iconKey => $composableBuilder(
+    column: $table.iconKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DocumentCategoriesTableFilterComposer get parentId {
+    final $$DocumentCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentId,
+      referencedTable: $db.documentCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.documentCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   Expression<bool> documentsRefs(
     Expression<bool> Function($$DocumentsTableFilterComposer f) f,
@@ -6488,8 +8879,8 @@ class $$DocumentCategoriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get parentId => $composableBuilder(
-    column: $table.parentId,
+  ColumnOrderings<String> get nameKey => $composableBuilder(
+    column: $table.nameKey,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -6507,6 +8898,44 @@ class $$DocumentCategoriesTableOrderingComposer
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get iconKey => $composableBuilder(
+    column: $table.iconKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DocumentCategoriesTableOrderingComposer get parentId {
+    final $$DocumentCategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentId,
+      referencedTable: $db.documentCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentCategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.documentCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$DocumentCategoriesTableAnnotationComposer
@@ -6524,8 +8953,8 @@ class $$DocumentCategoriesTableAnnotationComposer
   GeneratedColumn<String> get code =>
       $composableBuilder(column: $table.code, builder: (column) => column);
 
-  GeneratedColumn<String> get parentId =>
-      $composableBuilder(column: $table.parentId, builder: (column) => column);
+  GeneratedColumn<String> get nameKey =>
+      $composableBuilder(column: $table.nameKey, builder: (column) => column);
 
   GeneratedColumn<String> get customNameEncrypted => $composableBuilder(
     column: $table.customNameEncrypted,
@@ -6537,6 +8966,39 @@ class $$DocumentCategoriesTableAnnotationComposer
 
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<String> get iconKey =>
+      $composableBuilder(column: $table.iconKey, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$DocumentCategoriesTableAnnotationComposer get parentId {
+    final $$DocumentCategoriesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.parentId,
+          referencedTable: $db.documentCategories,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$DocumentCategoriesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.documentCategories,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
 
   Expression<T> documentsRefs<T extends Object>(
     Expression<T> Function($$DocumentsTableAnnotationComposer a) f,
@@ -6577,7 +9039,7 @@ class $$DocumentCategoriesTableTableManager
           $$DocumentCategoriesTableUpdateCompanionBuilder,
           (DocumentCategory, $$DocumentCategoriesTableReferences),
           DocumentCategory,
-          PrefetchHooks Function({bool documentsRefs})
+          PrefetchHooks Function({bool parentId, bool documentsRefs})
         > {
   $$DocumentCategoriesTableTableManager(
     _$VaultDatabase db,
@@ -6600,17 +9062,25 @@ class $$DocumentCategoriesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> code = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
+                Value<String?> nameKey = const Value.absent(),
                 Value<String?> customNameEncrypted = const Value.absent(),
                 Value<bool> isSystem = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<String> iconKey = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentCategoriesCompanion(
                 id: id,
                 code: code,
                 parentId: parentId,
+                nameKey: nameKey,
                 customNameEncrypted: customNameEncrypted,
                 isSystem: isSystem,
                 sortOrder: sortOrder,
+                iconKey: iconKey,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6618,17 +9088,25 @@ class $$DocumentCategoriesTableTableManager
                 required String id,
                 required String code,
                 Value<String?> parentId = const Value.absent(),
+                Value<String?> nameKey = const Value.absent(),
                 Value<String?> customNameEncrypted = const Value.absent(),
                 Value<bool> isSystem = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<String> iconKey = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => DocumentCategoriesCompanion.insert(
                 id: id,
                 code: code,
                 parentId: parentId,
+                nameKey: nameKey,
                 customNameEncrypted: customNameEncrypted,
                 isSystem: isSystem,
                 sortOrder: sortOrder,
+                iconKey: iconKey,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -6641,11 +9119,40 @@ class $$DocumentCategoriesTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({documentsRefs = false}) {
+          prefetchHooksCallback: ({parentId = false, documentsRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [if (documentsRefs) db.documents],
-              addJoins: null,
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (parentId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.parentId,
+                        referencedTable: $$DocumentCategoriesTableReferences
+                            ._parentIdTable(db),
+                        referencedColumn: $$DocumentCategoriesTableReferences
+                            ._parentIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (documentsRefs)
@@ -6687,6 +9194,326 @@ typedef $$DocumentCategoriesTableProcessedTableManager =
       $$DocumentCategoriesTableUpdateCompanionBuilder,
       (DocumentCategory, $$DocumentCategoriesTableReferences),
       DocumentCategory,
+      PrefetchHooks Function({bool parentId, bool documentsRefs})
+    >;
+typedef $$PhysicalLocationsTableCreateCompanionBuilder =
+    PhysicalLocationsCompanion Function({
+      required String id,
+      required String nameEncrypted,
+      Value<String?> descriptionEncrypted,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$PhysicalLocationsTableUpdateCompanionBuilder =
+    PhysicalLocationsCompanion Function({
+      Value<String> id,
+      Value<String> nameEncrypted,
+      Value<String?> descriptionEncrypted,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$PhysicalLocationsTableReferences
+    extends
+        BaseReferences<
+          _$VaultDatabase,
+          $PhysicalLocationsTable,
+          PhysicalLocation
+        > {
+  $$PhysicalLocationsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$DocumentsTable, List<Document>>
+  _documentsRefsTable(_$VaultDatabase db) => MultiTypedResultKey.fromTable(
+    db.documents,
+    aliasName: 'physical_locations__id__documents__physical_location_id',
+  );
+
+  $$DocumentsTableProcessedTableManager get documentsRefs {
+    final manager = $$DocumentsTableTableManager($_db, $_db.documents).filter(
+      (f) => f.physicalLocationId.id.sqlEquals($_itemColumn<String>('id')!),
+    );
+
+    final cache = $_typedResult.readTableOrNull(_documentsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$PhysicalLocationsTableFilterComposer
+    extends Composer<_$VaultDatabase, $PhysicalLocationsTable> {
+  $$PhysicalLocationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEncrypted => $composableBuilder(
+    column: $table.nameEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get descriptionEncrypted => $composableBuilder(
+    column: $table.descriptionEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> documentsRefs(
+    Expression<bool> Function($$DocumentsTableFilterComposer f) f,
+  ) {
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.physicalLocationId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$PhysicalLocationsTableOrderingComposer
+    extends Composer<_$VaultDatabase, $PhysicalLocationsTable> {
+  $$PhysicalLocationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEncrypted => $composableBuilder(
+    column: $table.nameEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get descriptionEncrypted => $composableBuilder(
+    column: $table.descriptionEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PhysicalLocationsTableAnnotationComposer
+    extends Composer<_$VaultDatabase, $PhysicalLocationsTable> {
+  $$PhysicalLocationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEncrypted => $composableBuilder(
+    column: $table.nameEncrypted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get descriptionEncrypted => $composableBuilder(
+    column: $table.descriptionEncrypted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> documentsRefs<T extends Object>(
+    Expression<T> Function($$DocumentsTableAnnotationComposer a) f,
+  ) {
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.physicalLocationId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$PhysicalLocationsTableTableManager
+    extends
+        RootTableManager<
+          _$VaultDatabase,
+          $PhysicalLocationsTable,
+          PhysicalLocation,
+          $$PhysicalLocationsTableFilterComposer,
+          $$PhysicalLocationsTableOrderingComposer,
+          $$PhysicalLocationsTableAnnotationComposer,
+          $$PhysicalLocationsTableCreateCompanionBuilder,
+          $$PhysicalLocationsTableUpdateCompanionBuilder,
+          (PhysicalLocation, $$PhysicalLocationsTableReferences),
+          PhysicalLocation,
+          PrefetchHooks Function({bool documentsRefs})
+        > {
+  $$PhysicalLocationsTableTableManager(
+    _$VaultDatabase db,
+    $PhysicalLocationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PhysicalLocationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PhysicalLocationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PhysicalLocationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> nameEncrypted = const Value.absent(),
+                Value<String?> descriptionEncrypted = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PhysicalLocationsCompanion(
+                id: id,
+                nameEncrypted: nameEncrypted,
+                descriptionEncrypted: descriptionEncrypted,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String nameEncrypted,
+                Value<String?> descriptionEncrypted = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PhysicalLocationsCompanion.insert(
+                id: id,
+                nameEncrypted: nameEncrypted,
+                descriptionEncrypted: descriptionEncrypted,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PhysicalLocationsTable, PhysicalLocation>(table),
+                  $$PhysicalLocationsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({documentsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (documentsRefs) db.documents],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (documentsRefs)
+                    await $_getPrefetchedData<
+                      PhysicalLocation,
+                      $PhysicalLocationsTable,
+                      Document
+                    >(
+                      currentTable: table,
+                      referencedTable: $$PhysicalLocationsTableReferences
+                          ._documentsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$PhysicalLocationsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).documentsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.physicalLocationId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PhysicalLocationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$VaultDatabase,
+      $PhysicalLocationsTable,
+      PhysicalLocation,
+      $$PhysicalLocationsTableFilterComposer,
+      $$PhysicalLocationsTableOrderingComposer,
+      $$PhysicalLocationsTableAnnotationComposer,
+      $$PhysicalLocationsTableCreateCompanionBuilder,
+      $$PhysicalLocationsTableUpdateCompanionBuilder,
+      (PhysicalLocation, $$PhysicalLocationsTableReferences),
+      PhysicalLocation,
       PrefetchHooks Function({bool documentsRefs})
     >;
 typedef $$DocumentsTableCreateCompanionBuilder = DocumentsCompanion Function({
@@ -6694,12 +9521,21 @@ typedef $$DocumentsTableCreateCompanionBuilder = DocumentsCompanion Function({
   required String titleEncrypted,
   required String categoryId,
   Value<String?> primaryOwnerId,
+  Value<String> ownershipType,
+  Value<String?> documentNumberEncrypted,
+  Value<DateTime?> issueDate,
   Value<DateTime?> expiryDate,
+  Value<String?> issuingAuthorityEncrypted,
+  Value<String?> descriptionEncrypted,
+  Value<String?> notesEncrypted,
+  Value<String?> physicalLocationId,
+  Value<String> status,
   Value<bool> isFavorite,
   Value<bool> isArchived,
-  Value<DateTime?> deletedAt,
+  Value<String?> currentVersionId,
   required DateTime createdAt,
   required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
 typedef $$DocumentsTableUpdateCompanionBuilder = DocumentsCompanion Function({
@@ -6707,12 +9543,21 @@ typedef $$DocumentsTableUpdateCompanionBuilder = DocumentsCompanion Function({
   Value<String> titleEncrypted,
   Value<String> categoryId,
   Value<String?> primaryOwnerId,
+  Value<String> ownershipType,
+  Value<String?> documentNumberEncrypted,
+  Value<DateTime?> issueDate,
   Value<DateTime?> expiryDate,
+  Value<String?> issuingAuthorityEncrypted,
+  Value<String?> descriptionEncrypted,
+  Value<String?> notesEncrypted,
+  Value<String?> physicalLocationId,
+  Value<String> status,
   Value<bool> isFavorite,
   Value<bool> isArchived,
-  Value<DateTime?> deletedAt,
+  Value<String?> currentVersionId,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
 
@@ -6750,6 +9595,25 @@ final class $$DocumentsTableReferences
       $_db.familyMembers,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_primaryOwnerIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $PhysicalLocationsTable _physicalLocationIdTable(_$VaultDatabase db) =>
+      db.physicalLocations.createAlias(
+        'documents__physical_location_id__physical_locations__id',
+      );
+
+  $$PhysicalLocationsTableProcessedTableManager? get physicalLocationId {
+    final $_column = $_itemColumn<String>('physical_location_id');
+    if ($_column == null) return null;
+    final manager = $$PhysicalLocationsTableTableManager(
+      $_db,
+      $_db.physicalLocations,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_physicalLocationIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -6890,8 +9754,43 @@ class $$DocumentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get ownershipType => $composableBuilder(
+    column: $table.ownershipType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentNumberEncrypted => $composableBuilder(
+    column: $table.documentNumberEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get issueDate => $composableBuilder(
+    column: $table.issueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get expiryDate => $composableBuilder(
     column: $table.expiryDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get issuingAuthorityEncrypted => $composableBuilder(
+    column: $table.issuingAuthorityEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get descriptionEncrypted => $composableBuilder(
+    column: $table.descriptionEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notesEncrypted => $composableBuilder(
+    column: $table.notesEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6905,8 +9804,8 @@ class $$DocumentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
-    column: $table.deletedAt,
+  ColumnFilters<String> get currentVersionId => $composableBuilder(
+    column: $table.currentVersionId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6917,6 +9816,11 @@ class $$DocumentsTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6957,6 +9861,29 @@ class $$DocumentsTableFilterComposer
           }) => $$FamilyMembersTableFilterComposer(
             $db: $db,
             $table: $db.familyMembers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PhysicalLocationsTableFilterComposer get physicalLocationId {
+    final $$PhysicalLocationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.physicalLocationId,
+      referencedTable: $db.physicalLocations,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PhysicalLocationsTableFilterComposer(
+            $db: $db,
+            $table: $db.physicalLocations,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -7136,8 +10063,43 @@ class $$DocumentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get ownershipType => $composableBuilder(
+    column: $table.ownershipType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentNumberEncrypted => $composableBuilder(
+    column: $table.documentNumberEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get issueDate => $composableBuilder(
+    column: $table.issueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get expiryDate => $composableBuilder(
     column: $table.expiryDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get issuingAuthorityEncrypted => $composableBuilder(
+    column: $table.issuingAuthorityEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get descriptionEncrypted => $composableBuilder(
+    column: $table.descriptionEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notesEncrypted => $composableBuilder(
+    column: $table.notesEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7151,8 +10113,8 @@ class $$DocumentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
-    column: $table.deletedAt,
+  ColumnOrderings<String> get currentVersionId => $composableBuilder(
+    column: $table.currentVersionId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7163,6 +10125,11 @@ class $$DocumentsTableOrderingComposer
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7211,6 +10178,29 @@ class $$DocumentsTableOrderingComposer
     );
     return composer;
   }
+
+  $$PhysicalLocationsTableOrderingComposer get physicalLocationId {
+    final $$PhysicalLocationsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.physicalLocationId,
+      referencedTable: $db.physicalLocations,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PhysicalLocationsTableOrderingComposer(
+            $db: $db,
+            $table: $db.physicalLocations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$DocumentsTableAnnotationComposer
@@ -7230,10 +10220,41 @@ class $$DocumentsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get ownershipType => $composableBuilder(
+    column: $table.ownershipType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get documentNumberEncrypted => $composableBuilder(
+    column: $table.documentNumberEncrypted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get issueDate =>
+      $composableBuilder(column: $table.issueDate, builder: (column) => column);
+
   GeneratedColumn<DateTime> get expiryDate => $composableBuilder(
     column: $table.expiryDate,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get issuingAuthorityEncrypted => $composableBuilder(
+    column: $table.issuingAuthorityEncrypted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get descriptionEncrypted => $composableBuilder(
+    column: $table.descriptionEncrypted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notesEncrypted => $composableBuilder(
+    column: $table.notesEncrypted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
 
   GeneratedColumn<bool> get isFavorite => $composableBuilder(
     column: $table.isFavorite,
@@ -7245,14 +10266,19 @@ class $$DocumentsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<DateTime> get deletedAt =>
-      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+  GeneratedColumn<String> get currentVersionId => $composableBuilder(
+    column: $table.currentVersionId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
   $$DocumentCategoriesTableAnnotationComposer get categoryId {
     final $$DocumentCategoriesTableAnnotationComposer composer =
@@ -7298,6 +10324,30 @@ class $$DocumentsTableAnnotationComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return composer;
+  }
+
+  $$PhysicalLocationsTableAnnotationComposer get physicalLocationId {
+    final $$PhysicalLocationsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.physicalLocationId,
+          referencedTable: $db.physicalLocations,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PhysicalLocationsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.physicalLocations,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return composer;
   }
 
@@ -7469,6 +10519,7 @@ class $$DocumentsTableTableManager
           PrefetchHooks Function({
             bool categoryId,
             bool primaryOwnerId,
+            bool physicalLocationId,
             bool documentOwnersRefs,
             bool documentFilesRefs,
             bool documentPagesRefs,
@@ -7494,24 +10545,42 @@ class $$DocumentsTableTableManager
                 Value<String> titleEncrypted = const Value.absent(),
                 Value<String> categoryId = const Value.absent(),
                 Value<String?> primaryOwnerId = const Value.absent(),
+                Value<String> ownershipType = const Value.absent(),
+                Value<String?> documentNumberEncrypted = const Value.absent(),
+                Value<DateTime?> issueDate = const Value.absent(),
                 Value<DateTime?> expiryDate = const Value.absent(),
+                Value<String?> issuingAuthorityEncrypted = const Value.absent(),
+                Value<String?> descriptionEncrypted = const Value.absent(),
+                Value<String?> notesEncrypted = const Value.absent(),
+                Value<String?> physicalLocationId = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
-                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> currentVersionId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion(
                 id: id,
                 titleEncrypted: titleEncrypted,
                 categoryId: categoryId,
                 primaryOwnerId: primaryOwnerId,
+                ownershipType: ownershipType,
+                documentNumberEncrypted: documentNumberEncrypted,
+                issueDate: issueDate,
                 expiryDate: expiryDate,
+                issuingAuthorityEncrypted: issuingAuthorityEncrypted,
+                descriptionEncrypted: descriptionEncrypted,
+                notesEncrypted: notesEncrypted,
+                physicalLocationId: physicalLocationId,
+                status: status,
                 isFavorite: isFavorite,
                 isArchived: isArchived,
-                deletedAt: deletedAt,
+                currentVersionId: currentVersionId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                deletedAt: deletedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -7520,24 +10589,42 @@ class $$DocumentsTableTableManager
                 required String titleEncrypted,
                 required String categoryId,
                 Value<String?> primaryOwnerId = const Value.absent(),
+                Value<String> ownershipType = const Value.absent(),
+                Value<String?> documentNumberEncrypted = const Value.absent(),
+                Value<DateTime?> issueDate = const Value.absent(),
                 Value<DateTime?> expiryDate = const Value.absent(),
+                Value<String?> issuingAuthorityEncrypted = const Value.absent(),
+                Value<String?> descriptionEncrypted = const Value.absent(),
+                Value<String?> notesEncrypted = const Value.absent(),
+                Value<String?> physicalLocationId = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
-                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> currentVersionId = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion.insert(
                 id: id,
                 titleEncrypted: titleEncrypted,
                 categoryId: categoryId,
                 primaryOwnerId: primaryOwnerId,
+                ownershipType: ownershipType,
+                documentNumberEncrypted: documentNumberEncrypted,
+                issueDate: issueDate,
                 expiryDate: expiryDate,
+                issuingAuthorityEncrypted: issuingAuthorityEncrypted,
+                descriptionEncrypted: descriptionEncrypted,
+                notesEncrypted: notesEncrypted,
+                physicalLocationId: physicalLocationId,
+                status: status,
                 isFavorite: isFavorite,
                 isArchived: isArchived,
-                deletedAt: deletedAt,
+                currentVersionId: currentVersionId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                deletedAt: deletedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -7552,6 +10639,7 @@ class $$DocumentsTableTableManager
               ({
                 categoryId = false,
                 primaryOwnerId = false,
+                physicalLocationId = false,
                 documentOwnersRefs = false,
                 documentFilesRefs = false,
                 documentPagesRefs = false,
@@ -7604,6 +10692,17 @@ class $$DocumentsTableTableManager
                                 ._primaryOwnerIdTable(db),
                             referencedColumn: $$DocumentsTableReferences
                                 ._primaryOwnerIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+                        if (physicalLocationId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.physicalLocationId,
+                            referencedTable: $$DocumentsTableReferences
+                                ._physicalLocationIdTable(db),
+                            referencedColumn: $$DocumentsTableReferences
+                                ._physicalLocationIdTable(db)
                                 .id,
                           ) as T;
                         }
@@ -7761,6 +10860,7 @@ typedef $$DocumentsTableProcessedTableManager =
       PrefetchHooks Function({
         bool categoryId,
         bool primaryOwnerId,
+        bool physicalLocationId,
         bool documentOwnersRefs,
         bool documentFilesRefs,
         bool documentPagesRefs,
@@ -8143,10 +11243,12 @@ typedef $$DocumentFilesTableCreateCompanionBuilder =
     DocumentFilesCompanion Function({
       required String id,
       required String documentId,
+      Value<String> fileType,
       required String mimeType,
       required String encryptedRelativePath,
-      required String integrityHash,
+      Value<String?> originalFilenameEncrypted,
       required int sizeBytes,
+      required String integrityHash,
       required int encryptionVersion,
       required DateTime createdAt,
       Value<int> rowid,
@@ -8155,10 +11257,12 @@ typedef $$DocumentFilesTableUpdateCompanionBuilder =
     DocumentFilesCompanion Function({
       Value<String> id,
       Value<String> documentId,
+      Value<String> fileType,
       Value<String> mimeType,
       Value<String> encryptedRelativePath,
-      Value<String> integrityHash,
+      Value<String?> originalFilenameEncrypted,
       Value<int> sizeBytes,
+      Value<String> integrityHash,
       Value<int> encryptionVersion,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -8222,6 +11326,11 @@ class $$DocumentFilesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get fileType => $composableBuilder(
+    column: $table.fileType,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get mimeType => $composableBuilder(
     column: $table.mimeType,
     builder: (column) => ColumnFilters(column),
@@ -8232,13 +11341,18 @@ class $$DocumentFilesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get integrityHash => $composableBuilder(
-    column: $table.integrityHash,
+  ColumnFilters<String> get originalFilenameEncrypted => $composableBuilder(
+    column: $table.originalFilenameEncrypted,
     builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<int> get sizeBytes => $composableBuilder(
     column: $table.sizeBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get integrityHash => $composableBuilder(
+    column: $table.integrityHash,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8315,6 +11429,11 @@ class $$DocumentFilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get fileType => $composableBuilder(
+    column: $table.fileType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get mimeType => $composableBuilder(
     column: $table.mimeType,
     builder: (column) => ColumnOrderings(column),
@@ -8325,13 +11444,18 @@ class $$DocumentFilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get integrityHash => $composableBuilder(
-    column: $table.integrityHash,
+  ColumnOrderings<String> get originalFilenameEncrypted => $composableBuilder(
+    column: $table.originalFilenameEncrypted,
     builder: (column) => ColumnOrderings(column),
   );
 
   ColumnOrderings<int> get sizeBytes => $composableBuilder(
     column: $table.sizeBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get integrityHash => $composableBuilder(
+    column: $table.integrityHash,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8381,6 +11505,9 @@ class $$DocumentFilesTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get fileType =>
+      $composableBuilder(column: $table.fileType, builder: (column) => column);
+
   GeneratedColumn<String> get mimeType =>
       $composableBuilder(column: $table.mimeType, builder: (column) => column);
 
@@ -8389,13 +11516,18 @@ class $$DocumentFilesTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get integrityHash => $composableBuilder(
-    column: $table.integrityHash,
+  GeneratedColumn<String> get originalFilenameEncrypted => $composableBuilder(
+    column: $table.originalFilenameEncrypted,
     builder: (column) => column,
   );
 
   GeneratedColumn<int> get sizeBytes =>
       $composableBuilder(column: $table.sizeBytes, builder: (column) => column);
+
+  GeneratedColumn<String> get integrityHash => $composableBuilder(
+    column: $table.integrityHash,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get encryptionVersion => $composableBuilder(
     column: $table.encryptionVersion,
@@ -8486,20 +11618,24 @@ class $$DocumentFilesTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> documentId = const Value.absent(),
+                Value<String> fileType = const Value.absent(),
                 Value<String> mimeType = const Value.absent(),
                 Value<String> encryptedRelativePath = const Value.absent(),
-                Value<String> integrityHash = const Value.absent(),
+                Value<String?> originalFilenameEncrypted = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
+                Value<String> integrityHash = const Value.absent(),
                 Value<int> encryptionVersion = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentFilesCompanion(
                 id: id,
                 documentId: documentId,
+                fileType: fileType,
                 mimeType: mimeType,
                 encryptedRelativePath: encryptedRelativePath,
-                integrityHash: integrityHash,
+                originalFilenameEncrypted: originalFilenameEncrypted,
                 sizeBytes: sizeBytes,
+                integrityHash: integrityHash,
                 encryptionVersion: encryptionVersion,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -8508,20 +11644,24 @@ class $$DocumentFilesTableTableManager
               ({
                 required String id,
                 required String documentId,
+                Value<String> fileType = const Value.absent(),
                 required String mimeType,
                 required String encryptedRelativePath,
-                required String integrityHash,
+                Value<String?> originalFilenameEncrypted = const Value.absent(),
                 required int sizeBytes,
+                required String integrityHash,
                 required int encryptionVersion,
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => DocumentFilesCompanion.insert(
                 id: id,
                 documentId: documentId,
+                fileType: fileType,
                 mimeType: mimeType,
                 encryptedRelativePath: encryptedRelativePath,
-                integrityHash: integrityHash,
+                originalFilenameEncrypted: originalFilenameEncrypted,
                 sizeBytes: sizeBytes,
+                integrityHash: integrityHash,
                 encryptionVersion: encryptionVersion,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -8622,7 +11762,12 @@ typedef $$DocumentPagesTableCreateCompanionBuilder =
       required String documentId,
       required String documentFileId,
       required int pageNumber,
+      Value<String?> encryptedPath,
+      Value<String?> thumbnailPath,
       Value<int> rotation,
+      Value<int?> width,
+      Value<int?> height,
+      required DateTime createdAt,
       Value<int> rowid,
     });
 typedef $$DocumentPagesTableUpdateCompanionBuilder =
@@ -8631,7 +11776,12 @@ typedef $$DocumentPagesTableUpdateCompanionBuilder =
       Value<String> documentId,
       Value<String> documentFileId,
       Value<int> pageNumber,
+      Value<String?> encryptedPath,
+      Value<String?> thumbnailPath,
       Value<int> rotation,
+      Value<int?> width,
+      Value<int?> height,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
@@ -8698,8 +11848,33 @@ class $$DocumentPagesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get encryptedPath => $composableBuilder(
+    column: $table.encryptedPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get thumbnailPath => $composableBuilder(
+    column: $table.thumbnailPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get rotation => $composableBuilder(
     column: $table.rotation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get width => $composableBuilder(
+    column: $table.width,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get height => $composableBuilder(
+    column: $table.height,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8769,8 +11944,33 @@ class $$DocumentPagesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get encryptedPath => $composableBuilder(
+    column: $table.encryptedPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get thumbnailPath => $composableBuilder(
+    column: $table.thumbnailPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get rotation => $composableBuilder(
     column: $table.rotation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get width => $composableBuilder(
+    column: $table.width,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get height => $composableBuilder(
+    column: $table.height,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8838,8 +12038,27 @@ class $$DocumentPagesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get encryptedPath => $composableBuilder(
+    column: $table.encryptedPath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get thumbnailPath => $composableBuilder(
+    column: $table.thumbnailPath,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get rotation =>
       $composableBuilder(column: $table.rotation, builder: (column) => column);
+
+  GeneratedColumn<int> get width =>
+      $composableBuilder(column: $table.width, builder: (column) => column);
+
+  GeneratedColumn<int> get height =>
+      $composableBuilder(column: $table.height, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   $$DocumentsTableAnnotationComposer get documentId {
     final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
@@ -8922,14 +12141,24 @@ class $$DocumentPagesTableTableManager
                 Value<String> documentId = const Value.absent(),
                 Value<String> documentFileId = const Value.absent(),
                 Value<int> pageNumber = const Value.absent(),
+                Value<String?> encryptedPath = const Value.absent(),
+                Value<String?> thumbnailPath = const Value.absent(),
                 Value<int> rotation = const Value.absent(),
+                Value<int?> width = const Value.absent(),
+                Value<int?> height = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentPagesCompanion(
                 id: id,
                 documentId: documentId,
                 documentFileId: documentFileId,
                 pageNumber: pageNumber,
+                encryptedPath: encryptedPath,
+                thumbnailPath: thumbnailPath,
                 rotation: rotation,
+                width: width,
+                height: height,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8938,14 +12167,24 @@ class $$DocumentPagesTableTableManager
                 required String documentId,
                 required String documentFileId,
                 required int pageNumber,
+                Value<String?> encryptedPath = const Value.absent(),
+                Value<String?> thumbnailPath = const Value.absent(),
                 Value<int> rotation = const Value.absent(),
+                Value<int?> width = const Value.absent(),
+                Value<int?> height = const Value.absent(),
+                required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => DocumentPagesCompanion.insert(
                 id: id,
                 documentId: documentId,
                 documentFileId: documentFileId,
                 pageNumber: pageNumber,
+                encryptedPath: encryptedPath,
+                thumbnailPath: thumbnailPath,
                 rotation: rotation,
+                width: width,
+                height: height,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -9030,8 +12269,12 @@ typedef $$DocumentFieldValuesTableCreateCompanionBuilder =
       required String id,
       required String documentId,
       required String fieldKey,
+      Value<String?> labelEncrypted,
       required String valueEncrypted,
+      Value<String> valueType,
       Value<int> sortOrder,
+      required DateTime createdAt,
+      required DateTime updatedAt,
       Value<int> rowid,
     });
 typedef $$DocumentFieldValuesTableUpdateCompanionBuilder =
@@ -9039,8 +12282,12 @@ typedef $$DocumentFieldValuesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> documentId,
       Value<String> fieldKey,
+      Value<String?> labelEncrypted,
       Value<String> valueEncrypted,
+      Value<String> valueType,
       Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 
@@ -9094,13 +12341,33 @@ class $$DocumentFieldValuesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get labelEncrypted => $composableBuilder(
+    column: $table.labelEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get valueEncrypted => $composableBuilder(
     column: $table.valueEncrypted,
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get valueType => $composableBuilder(
+    column: $table.valueType,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9147,13 +12414,33 @@ class $$DocumentFieldValuesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get labelEncrypted => $composableBuilder(
+    column: $table.labelEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get valueEncrypted => $composableBuilder(
     column: $table.valueEncrypted,
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get valueType => $composableBuilder(
+    column: $table.valueType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -9196,13 +12483,27 @@ class $$DocumentFieldValuesTableAnnotationComposer
   GeneratedColumn<String> get fieldKey =>
       $composableBuilder(column: $table.fieldKey, builder: (column) => column);
 
+  GeneratedColumn<String> get labelEncrypted => $composableBuilder(
+    column: $table.labelEncrypted,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get valueEncrypted => $composableBuilder(
     column: $table.valueEncrypted,
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get valueType =>
+      $composableBuilder(column: $table.valueType, builder: (column) => column);
+
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   $$DocumentsTableAnnotationComposer get documentId {
     final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
@@ -9267,15 +12568,23 @@ class $$DocumentFieldValuesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> documentId = const Value.absent(),
                 Value<String> fieldKey = const Value.absent(),
+                Value<String?> labelEncrypted = const Value.absent(),
                 Value<String> valueEncrypted = const Value.absent(),
+                Value<String> valueType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentFieldValuesCompanion(
                 id: id,
                 documentId: documentId,
                 fieldKey: fieldKey,
+                labelEncrypted: labelEncrypted,
                 valueEncrypted: valueEncrypted,
+                valueType: valueType,
                 sortOrder: sortOrder,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9283,15 +12592,23 @@ class $$DocumentFieldValuesTableTableManager
                 required String id,
                 required String documentId,
                 required String fieldKey,
+                Value<String?> labelEncrypted = const Value.absent(),
                 required String valueEncrypted,
+                Value<String> valueType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => DocumentFieldValuesCompanion.insert(
                 id: id,
                 documentId: documentId,
                 fieldKey: fieldKey,
+                labelEncrypted: labelEncrypted,
                 valueEncrypted: valueEncrypted,
+                valueType: valueType,
                 sortOrder: sortOrder,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -9365,12 +12682,14 @@ typedef $$TagsTableCreateCompanionBuilder = TagsCompanion Function({
   required String id,
   required String nameEncrypted,
   required String normalizedNameHash,
+  required DateTime createdAt,
   Value<int> rowid,
 });
 typedef $$TagsTableUpdateCompanionBuilder = TagsCompanion Function({
   Value<String> id,
   Value<String> nameEncrypted,
   Value<String> normalizedNameHash,
+  Value<DateTime> createdAt,
   Value<int> rowid,
 });
 
@@ -9417,6 +12736,11 @@ class $$TagsTableFilterComposer extends Composer<_$VaultDatabase, $TagsTable> {
 
   ColumnFilters<String> get normalizedNameHash => $composableBuilder(
     column: $table.normalizedNameHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9469,6 +12793,11 @@ class $$TagsTableOrderingComposer
     column: $table.normalizedNameHash,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$TagsTableAnnotationComposer
@@ -9492,6 +12821,9 @@ class $$TagsTableAnnotationComposer
     column: $table.normalizedNameHash,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   Expression<T> documentTagsRefs<T extends Object>(
     Expression<T> Function($$DocumentTagsTableAnnotationComposer a) f,
@@ -9550,11 +12882,13 @@ class $$TagsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> nameEncrypted = const Value.absent(),
                 Value<String> normalizedNameHash = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TagsCompanion(
                 id: id,
                 nameEncrypted: nameEncrypted,
                 normalizedNameHash: normalizedNameHash,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9562,11 +12896,13 @@ class $$TagsTableTableManager
                 required String id,
                 required String nameEncrypted,
                 required String normalizedNameHash,
+                required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => TagsCompanion.insert(
                 id: id,
                 nameEncrypted: nameEncrypted,
                 normalizedNameHash: normalizedNameHash,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -9959,208 +13295,32 @@ typedef $$DocumentTagsTableProcessedTableManager =
       DocumentTag,
       PrefetchHooks Function({bool documentId, bool tagId})
     >;
-typedef $$PhysicalLocationsTableCreateCompanionBuilder =
-    PhysicalLocationsCompanion Function({
-      required String id,
-      required String nameEncrypted,
-      Value<String?> notesEncrypted,
-      Value<int> rowid,
-    });
-typedef $$PhysicalLocationsTableUpdateCompanionBuilder =
-    PhysicalLocationsCompanion Function({
-      Value<String> id,
-      Value<String> nameEncrypted,
-      Value<String?> notesEncrypted,
-      Value<int> rowid,
-    });
-
-class $$PhysicalLocationsTableFilterComposer
-    extends Composer<_$VaultDatabase, $PhysicalLocationsTable> {
-  $$PhysicalLocationsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get nameEncrypted => $composableBuilder(
-    column: $table.nameEncrypted,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get notesEncrypted => $composableBuilder(
-    column: $table.notesEncrypted,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$PhysicalLocationsTableOrderingComposer
-    extends Composer<_$VaultDatabase, $PhysicalLocationsTable> {
-  $$PhysicalLocationsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get nameEncrypted => $composableBuilder(
-    column: $table.nameEncrypted,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get notesEncrypted => $composableBuilder(
-    column: $table.notesEncrypted,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$PhysicalLocationsTableAnnotationComposer
-    extends Composer<_$VaultDatabase, $PhysicalLocationsTable> {
-  $$PhysicalLocationsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get nameEncrypted => $composableBuilder(
-    column: $table.nameEncrypted,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get notesEncrypted => $composableBuilder(
-    column: $table.notesEncrypted,
-    builder: (column) => column,
-  );
-}
-
-class $$PhysicalLocationsTableTableManager
-    extends
-        RootTableManager<
-          _$VaultDatabase,
-          $PhysicalLocationsTable,
-          PhysicalLocation,
-          $$PhysicalLocationsTableFilterComposer,
-          $$PhysicalLocationsTableOrderingComposer,
-          $$PhysicalLocationsTableAnnotationComposer,
-          $$PhysicalLocationsTableCreateCompanionBuilder,
-          $$PhysicalLocationsTableUpdateCompanionBuilder,
-          (
-            PhysicalLocation,
-            BaseReferences<
-              _$VaultDatabase,
-              $PhysicalLocationsTable,
-              PhysicalLocation
-            >,
-          ),
-          PhysicalLocation,
-          PrefetchHooks Function()
-        > {
-  $$PhysicalLocationsTableTableManager(
-    _$VaultDatabase db,
-    $PhysicalLocationsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$PhysicalLocationsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$PhysicalLocationsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$PhysicalLocationsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> nameEncrypted = const Value.absent(),
-                Value<String?> notesEncrypted = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PhysicalLocationsCompanion(
-                id: id,
-                nameEncrypted: nameEncrypted,
-                notesEncrypted: notesEncrypted,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String nameEncrypted,
-                Value<String?> notesEncrypted = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PhysicalLocationsCompanion.insert(
-                id: id,
-                nameEncrypted: nameEncrypted,
-                notesEncrypted: notesEncrypted,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable<$PhysicalLocationsTable, PhysicalLocation>(table),
-                  BaseReferences<
-                    _$VaultDatabase,
-                    $PhysicalLocationsTable,
-                    PhysicalLocation
-                  >(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$PhysicalLocationsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$VaultDatabase,
-      $PhysicalLocationsTable,
-      PhysicalLocation,
-      $$PhysicalLocationsTableFilterComposer,
-      $$PhysicalLocationsTableOrderingComposer,
-      $$PhysicalLocationsTableAnnotationComposer,
-      $$PhysicalLocationsTableCreateCompanionBuilder,
-      $$PhysicalLocationsTableUpdateCompanionBuilder,
-      (
-        PhysicalLocation,
-        BaseReferences<
-          _$VaultDatabase,
-          $PhysicalLocationsTable,
-          PhysicalLocation
-        >,
-      ),
-      PhysicalLocation,
-      PrefetchHooks Function()
-    >;
 typedef $$RemindersTableCreateCompanionBuilder = RemindersCompanion Function({
   required String id,
   required String documentId,
+  Value<String> reminderType,
+  required DateTime targetDate,
+  Value<int?> offsetDays,
   required DateTime scheduledAt,
-  required String status,
+  Value<String> status,
   Value<int?> notificationId,
+  Value<DateTime?> snoozedUntil,
+  required DateTime createdAt,
+  required DateTime updatedAt,
   Value<int> rowid,
 });
 typedef $$RemindersTableUpdateCompanionBuilder = RemindersCompanion Function({
   Value<String> id,
   Value<String> documentId,
+  Value<String> reminderType,
+  Value<DateTime> targetDate,
+  Value<int?> offsetDays,
   Value<DateTime> scheduledAt,
   Value<String> status,
   Value<int?> notificationId,
+  Value<DateTime?> snoozedUntil,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
   Value<int> rowid,
 });
 
@@ -10200,6 +13360,21 @@ class $$RemindersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get reminderType => $composableBuilder(
+    column: $table.reminderType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get offsetDays => $composableBuilder(
+    column: $table.offsetDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get scheduledAt => $composableBuilder(
     column: $table.scheduledAt,
     builder: (column) => ColumnFilters(column),
@@ -10212,6 +13387,21 @@ class $$RemindersTableFilterComposer
 
   ColumnFilters<int> get notificationId => $composableBuilder(
     column: $table.notificationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get snoozedUntil => $composableBuilder(
+    column: $table.snoozedUntil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10253,6 +13443,21 @@ class $$RemindersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get reminderType => $composableBuilder(
+    column: $table.reminderType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get offsetDays => $composableBuilder(
+    column: $table.offsetDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get scheduledAt => $composableBuilder(
     column: $table.scheduledAt,
     builder: (column) => ColumnOrderings(column),
@@ -10265,6 +13470,21 @@ class $$RemindersTableOrderingComposer
 
   ColumnOrderings<int> get notificationId => $composableBuilder(
     column: $table.notificationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get snoozedUntil => $composableBuilder(
+    column: $table.snoozedUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -10304,6 +13524,21 @@ class $$RemindersTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get reminderType => $composableBuilder(
+    column: $table.reminderType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get offsetDays => $composableBuilder(
+    column: $table.offsetDays,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get scheduledAt => $composableBuilder(
     column: $table.scheduledAt,
     builder: (column) => column,
@@ -10316,6 +13551,17 @@ class $$RemindersTableAnnotationComposer
     column: $table.notificationId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get snoozedUntil => $composableBuilder(
+    column: $table.snoozedUntil,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   $$DocumentsTableAnnotationComposer get documentId {
     final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
@@ -10371,32 +13617,56 @@ class $$RemindersTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> documentId = const Value.absent(),
+                Value<String> reminderType = const Value.absent(),
+                Value<DateTime> targetDate = const Value.absent(),
+                Value<int?> offsetDays = const Value.absent(),
                 Value<DateTime> scheduledAt = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<int?> notificationId = const Value.absent(),
+                Value<DateTime?> snoozedUntil = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RemindersCompanion(
                 id: id,
                 documentId: documentId,
+                reminderType: reminderType,
+                targetDate: targetDate,
+                offsetDays: offsetDays,
                 scheduledAt: scheduledAt,
                 status: status,
                 notificationId: notificationId,
+                snoozedUntil: snoozedUntil,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
                 required String documentId,
+                Value<String> reminderType = const Value.absent(),
+                required DateTime targetDate,
+                Value<int?> offsetDays = const Value.absent(),
                 required DateTime scheduledAt,
-                required String status,
+                Value<String> status = const Value.absent(),
                 Value<int?> notificationId = const Value.absent(),
+                Value<DateTime?> snoozedUntil = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => RemindersCompanion.insert(
                 id: id,
                 documentId: documentId,
+                reminderType: reminderType,
+                targetDate: targetDate,
+                offsetDays: offsetDays,
                 scheduledAt: scheduledAt,
                 status: status,
                 notificationId: notificationId,
+                snoozedUntil: snoozedUntil,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -10467,6 +13737,7 @@ typedef $$RemindersTableProcessedTableManager =
 typedef $$BackupRecordsTableCreateCompanionBuilder =
     BackupRecordsCompanion Function({
       required String id,
+      Value<String?> relativePath,
       required DateTime createdAt,
       required int sizeBytes,
       required bool verified,
@@ -10475,6 +13746,7 @@ typedef $$BackupRecordsTableCreateCompanionBuilder =
 typedef $$BackupRecordsTableUpdateCompanionBuilder =
     BackupRecordsCompanion Function({
       Value<String> id,
+      Value<String?> relativePath,
       Value<DateTime> createdAt,
       Value<int> sizeBytes,
       Value<bool> verified,
@@ -10492,6 +13764,11 @@ class $$BackupRecordsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10525,6 +13802,11 @@ class $$BackupRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -10552,6 +13834,11 @@ class $$BackupRecordsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -10597,12 +13884,14 @@ class $$BackupRecordsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> relativePath = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
                 Value<bool> verified = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BackupRecordsCompanion(
                 id: id,
+                relativePath: relativePath,
                 createdAt: createdAt,
                 sizeBytes: sizeBytes,
                 verified: verified,
@@ -10611,12 +13900,14 @@ class $$BackupRecordsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                Value<String?> relativePath = const Value.absent(),
                 required DateTime createdAt,
                 required int sizeBytes,
                 required bool verified,
                 Value<int> rowid = const Value.absent(),
               }) => BackupRecordsCompanion.insert(
                 id: id,
+                relativePath: relativePath,
                 createdAt: createdAt,
                 sizeBytes: sizeBytes,
                 verified: verified,
@@ -10660,12 +13951,14 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
     AppSettingsCompanion Function({
       required String key,
       required String valueEncrypted,
+      required DateTime updatedAt,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
       Value<String> key,
       Value<String> valueEncrypted,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 
@@ -10685,6 +13978,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get valueEncrypted => $composableBuilder(
     column: $table.valueEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -10707,6 +14005,11 @@ class $$AppSettingsTableOrderingComposer
     column: $table.valueEncrypted,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -10725,6 +14028,9 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.valueEncrypted,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
 class $$AppSettingsTableTableManager
@@ -10760,20 +14066,24 @@ class $$AppSettingsTableTableManager
               ({
                 Value<String> key = const Value.absent(),
                 Value<String> valueEncrypted = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion(
                 key: key,
                 valueEncrypted: valueEncrypted,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String key,
                 required String valueEncrypted,
+                required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 key: key,
                 valueEncrypted: valueEncrypted,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -11084,6 +14394,8 @@ class $VaultDatabaseManager {
       $$FamilyMembersTableTableManager(_db, _db.familyMembers);
   $$DocumentCategoriesTableTableManager get documentCategories =>
       $$DocumentCategoriesTableTableManager(_db, _db.documentCategories);
+  $$PhysicalLocationsTableTableManager get physicalLocations =>
+      $$PhysicalLocationsTableTableManager(_db, _db.physicalLocations);
   $$DocumentsTableTableManager get documents =>
       $$DocumentsTableTableManager(_db, _db.documents);
   $$DocumentOwnersTableTableManager get documentOwners =>
@@ -11097,8 +14409,6 @@ class $VaultDatabaseManager {
   $$TagsTableTableManager get tags => $$TagsTableTableManager(_db, _db.tags);
   $$DocumentTagsTableTableManager get documentTags =>
       $$DocumentTagsTableTableManager(_db, _db.documentTags);
-  $$PhysicalLocationsTableTableManager get physicalLocations =>
-      $$PhysicalLocationsTableTableManager(_db, _db.physicalLocations);
   $$RemindersTableTableManager get reminders =>
       $$RemindersTableTableManager(_db, _db.reminders);
   $$BackupRecordsTableTableManager get backupRecords =>
