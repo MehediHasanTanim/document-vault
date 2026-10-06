@@ -5,6 +5,8 @@ import '../application/creation/document_creation_service.dart';
 import '../application/creation/document_selection.dart';
 import '../application/creation/document_templates.dart';
 import '../application/ingestion/import_models.dart';
+import '../../reminders/application/reminder_models.dart';
+import '../../reminders/presentation/reminder_screens.dart';
 
 class DocumentTagChoice {
   const DocumentTagChoice({required this.id, required this.label});
@@ -32,6 +34,7 @@ class DocumentMetadataFormScreen extends StatefulWidget {
     this.recentCategoryIds = const [],
     this.onCreateTag,
     this.onSaved,
+    this.onSaveReminder,
     super.key,
   });
 
@@ -44,6 +47,8 @@ class DocumentMetadataFormScreen extends StatefulWidget {
   final List<String> recentCategoryIds;
   final Future<DocumentTagChoice?> Function(String name)? onCreateTag;
   final ValueChanged<DocumentSaveResult>? onSaved;
+  final Future<void> Function(DocumentSaveResult result, ReminderSetup setup)?
+  onSaveReminder;
 
   @override
   State<DocumentMetadataFormScreen> createState() =>
@@ -70,6 +75,7 @@ class _DocumentMetadataFormScreenState
   String? _locationId;
   DateTime? _issueDate;
   DateTime? _expiryDate;
+  ReminderSetup? _reminderSetup;
   var _household = false;
 
   @override
@@ -111,6 +117,10 @@ class _DocumentMetadataFormScreenState
     setState(() {});
     if (state.status == DocumentSaveStatus.success && state.result != null) {
       widget.onSaved?.call(state.result!);
+      final setup = _reminderSetup;
+      if (setup != null && widget.onSaveReminder != null) {
+        widget.onSaveReminder!(state.result!, setup);
+      }
     }
   }
 
@@ -162,8 +172,22 @@ class _DocumentMetadataFormScreenState
               _dateTile(
                 label: 'Expiry date / মেয়াদ শেষের তারিখ',
                 value: _expiryDate,
-                onPick: (date) => setState(() => _expiryDate = date),
+                onPick: (date) => setState(() {
+                  _expiryDate = date;
+                  _reminderSetup = null;
+                }),
               ),
+              if (_expiryDate != null)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.notifications_outlined),
+                  title: Text(
+                    _reminderSetup == null
+                        ? 'Set reminder / রিমাইন্ডার সেট করুন'
+                        : 'Reminder set / রিমাইন্ডার সেট করা হয়েছে',
+                  ),
+                  onTap: _setReminder,
+                ),
               TextField(
                 controller: _authority,
                 textInputAction: TextInputAction.next,
@@ -464,6 +488,26 @@ class _DocumentMetadataFormScreenState
       );
     }
     return const SizedBox.shrink();
+  }
+
+  Future<void> _setReminder() async {
+    final expiry = _expiryDate;
+    if (expiry == null) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => ReminderSetupSheet(
+        documentTitle: _title.text.trim().isEmpty
+            ? 'Document / ডকুমেন্ট'
+            : _title.text.trim(),
+        expiryDate: expiry,
+        initial:
+            _reminderSetup ??
+            const ReminderSetup(rules: [ReminderRule.daysBefore(30)]),
+        onSave: (setup) => setState(() => _reminderSetup = setup),
+      ),
+    );
   }
 
   Future<void> _createTag() async {

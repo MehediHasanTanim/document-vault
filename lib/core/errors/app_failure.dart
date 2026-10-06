@@ -27,3 +27,7 @@ final class InsufficientStorageFailure extends AppFailure {
 final class PermissionFailure extends AppFailure {
   const PermissionFailure(super.message, {super.cause});
 }
+
+final class NotificationSchedulingFailure extends AppFailure {
+  const NotificationSchedulingFailure(super.message, {super.cause});
+}

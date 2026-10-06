@@ -77,7 +77,11 @@ abstract interface class PhysicalLocationRepository {
 
 abstract interface class ReminderRepository {
   Stream<List<Reminder>> watchScheduled();
+  Future<List<Reminder>> listAll();
+  Future<List<Reminder>> listForDocument(String documentId);
+  Future<Reminder?> getById(String id);
   Future<void> save(RemindersCompanion reminder);
+  Future<void> update(RemindersCompanion reminder);
   Future<void> updateStatus(String id, String status, DateTime updatedAt);
   Future<void> delete(String id);
 }
@@ -407,8 +411,35 @@ class DriftReminderRepository implements ReminderRepository {
           .watch();
 
   @override
+  Future<List<Reminder>> listAll() => _db.select(_db.reminders).get();
+
+  @override
+  Future<List<Reminder>> listForDocument(String documentId) => (_db.select(
+    _db.reminders,
+  )..where((reminder) => reminder.documentId.equals(documentId))).get();
+
+  @override
+  Future<Reminder?> getById(String id) => (_db.select(
+    _db.reminders,
+  )..where((reminder) => reminder.id.equals(id))).getSingleOrNull();
+
+  @override
   Future<void> save(RemindersCompanion reminder) =>
       _db.into(_db.reminders).insertOnConflictUpdate(reminder);
+
+  @override
+  Future<void> update(RemindersCompanion reminder) {
+    if (!reminder.id.present) {
+      throw ArgumentError.value(
+        reminder,
+        'reminder',
+        'Reminder id is required.',
+      );
+    }
+    return (_db.update(_db.reminders)
+          ..where((existing) => existing.id.equals(reminder.id.value)))
+        .write(reminder);
+  }
 
   @override
   Future<void> updateStatus(String id, String status, DateTime updatedAt) =>

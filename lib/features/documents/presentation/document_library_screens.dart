@@ -247,11 +247,13 @@ class DocumentDetailsScreen extends StatelessWidget {
     required this.details,
     required this.thumbnails,
     this.onOpenPreview,
+    this.onEditReminder,
     super.key,
   });
   final DocumentDetailsData details;
   final ProtectedThumbnailService thumbnails;
   final VoidCallback? onOpenPreview;
+  final VoidCallback? onEditReminder;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -312,6 +314,12 @@ class DocumentDetailsScreen extends StatelessWidget {
               details.reminder.enabled ? 'Enabled / চালু' : 'Off / বন্ধ',
             ),
             _line('Next / পরবর্তী', _date(details.reminder.nextScheduledAt)),
+            if (onEditReminder != null)
+              OutlinedButton.icon(
+                onPressed: onEditReminder,
+                icon: const Icon(Icons.notifications_outlined),
+                label: const Text('Edit reminder / রিমাইন্ডার পরিবর্তন করুন'),
+              ),
           ]),
           _section(context, 'Record / রেকর্ড', [
             _line('Created / তৈরি', _date(details.card.createdAt)),
