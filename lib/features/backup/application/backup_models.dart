@@ -35,6 +35,15 @@ class BackupPassword {
     return BackupPassword._(password);
   }
 
+  /// Wraps a password supplied to open an existing backup. Restore must not
+  /// impose current password-creation rules on older user backups.
+  static BackupPassword forRestore(String password) {
+    if (password.isEmpty) {
+      throw const ValidationFailure('Enter the backup password.');
+    }
+    return BackupPassword._(password);
+  }
+
   static BackupPasswordStrength passwordStrength(String value) {
     if (value.length < 12) return BackupPasswordStrength.weak;
     final groups = [
@@ -207,11 +216,43 @@ class BackupManifest {
 
 class BackupVerificationResult {
   const BackupVerificationResult({
+    required this.header,
     required this.manifest,
     required this.sizeBytes,
   });
+  final BackupPackageHeader header;
   final BackupManifest manifest;
   final int sizeBytes;
+}
+
+class RestoreSummary {
+  const RestoreSummary({
+    required this.backupDate,
+    required this.documentCount,
+    required this.familyMemberCount,
+    required this.approximateSizeBytes,
+    required this.schemaVersion,
+  });
+  final DateTime backupDate;
+  final int documentCount;
+  final int familyMemberCount;
+  final int approximateSizeBytes;
+  final int schemaVersion;
+}
+
+enum RestoreProgressStage {
+  selecting,
+  authenticating,
+  extracting,
+  validating,
+  creatingRollback,
+  activating,
+  finalizing,
+}
+
+class RestoreProgress {
+  const RestoreProgress(this.stage);
+  final RestoreProgressStage stage;
 }
 
 enum BackupDestinationType { deviceFolder, systemProvider }

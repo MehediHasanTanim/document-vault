@@ -90,18 +90,9 @@ class BackupPackageCodec {
     RandomAccessFile? input;
     try {
       input = await file.open(mode: FileMode.read);
-      final magic = await _readExactly(input, _magic.length);
-      if (!_same(magic, _magic)) {
-        throw const BackupFailure('Backup is unsupported or damaged.');
-      }
-      final headerLength = _readU32(await _readExactly(input, 4));
-      if (headerLength <= 0 || headerLength > 16 * 1024) {
-        throw const BackupFailure('Backup is unsupported or damaged.');
-      }
-      final headerBytes = await _readExactly(input, headerLength);
-      final header = BackupPackageHeader.fromJson(
-        jsonDecode(utf8.decode(headerBytes)) as Map<String, dynamic>,
-      );
+      final envelope = await _readEnvelopeHeader(input);
+      final headerBytes = envelope.bytes;
+      final header = envelope.header;
       final key = await _deriveKey(password, header);
       final reader = _StreamByteReader(_decryptChunks(input, key, headerBytes));
       final manifestHeader = await _readEntryHeader(reader);
@@ -121,6 +112,7 @@ class BackupPackageCodec {
         throw const BackupFailure('Backup is unsupported or damaged.');
       }
       return BackupVerificationResult(
+        header: header,
         manifest: manifest,
         sizeBytes: await file.length(),
       );
@@ -129,6 +121,88 @@ class BackupPackageCodec {
     } on Object catch (error) {
       // Wrong passwords, corruption, and invalid framing intentionally share a
       // privacy-safe public error message.
+      throw BackupFailure(
+        'Backup password is incorrect or backup is damaged.',
+        cause: error,
+      );
+    } finally {
+      await input?.close();
+    }
+  }
+
+  /// Reads only non-sensitive format/KDF information. This is safe to call
+  /// immediately after file selection and intentionally does not authenticate
+  /// or reveal manifest content.
+  Future<BackupPackageHeader> inspectHeader(File file) async {
+    RandomAccessFile? input;
+    try {
+      input = await file.open(mode: FileMode.read);
+      return (await _readEnvelopeHeader(input)).header;
+    } on BackupFailure {
+      rethrow;
+    } on Object catch (error) {
+      throw BackupFailure('Backup is unsupported or damaged.', cause: error);
+    } finally {
+      await input?.close();
+    }
+  }
+
+  /// Authenticates and streams a backup into a private staging layout. Files
+  /// are written only after their record framing begins, then checked against
+  /// the encrypted manifest before their atomic rename.
+  Future<BackupVerificationResult> extract({
+    required File file,
+    required BackupPassword password,
+    required File databaseDestination,
+    required Directory documentsDestination,
+  }) async {
+    RandomAccessFile? input;
+    try {
+      input = await file.open(mode: FileMode.read);
+      final envelope = await _readEnvelopeHeader(input);
+      final key = await _deriveKey(password, envelope.header);
+      final reader = _StreamByteReader(
+        _decryptChunks(input, key, envelope.bytes),
+      );
+      final manifestHeader = await _readEntryHeader(reader);
+      if (manifestHeader.id != 'manifest.json' ||
+          manifestHeader.sizeBytes > 1024 * 1024) {
+        throw const BackupFailure('Backup is unsupported or damaged.');
+      }
+      final manifest = BackupManifest.fromJson(
+        jsonDecode(
+          utf8.decode(await reader.readExactly(manifestHeader.sizeBytes)),
+        ) as Map<String, dynamic>,
+      );
+      if (manifest.database.id != 'database.sqlite') {
+        throw const BackupFailure('Backup is unsupported or damaged.');
+      }
+      await _extractEntry(reader, manifest.database, databaseDestination);
+      for (final entry in manifest.files) {
+        if (!entry.id.startsWith('files/') ||
+            !_isSafeEncryptedRelativePath(
+              entry.id.substring('files/'.length),
+            )) {
+          throw const BackupFailure('Backup is unsupported or damaged.');
+        }
+        final relative = entry.id.substring('files/'.length);
+        await _extractEntry(
+          reader,
+          entry,
+          File('${documentsDestination.path}/$relative'),
+        );
+      }
+      if (!await reader.isAtEnd()) {
+        throw const BackupFailure('Backup is unsupported or damaged.');
+      }
+      return BackupVerificationResult(
+        header: envelope.header,
+        manifest: manifest,
+        sizeBytes: await file.length(),
+      );
+    } on BackupFailure {
+      rethrow;
+    } on Object catch (error) {
       throw BackupFailure(
         'Backup password is incorrect or backup is damaged.',
         cause: error,
@@ -221,6 +295,62 @@ class BackupPackageCodec {
     }
   }
 
+  Future<void> _extractEntry(
+    _StreamByteReader reader,
+    BackupManifestEntry expected,
+    File destination,
+  ) async {
+    final header = await _readEntryHeader(reader);
+    if (header.id != expected.id || header.sizeBytes != expected.sizeBytes) {
+      throw const BackupFailure('Backup is unsupported or damaged.');
+    }
+    await destination.parent.create(recursive: true);
+    final pending = File('${destination.path}.partial');
+    IOSink? sink;
+    final hashSink = Sha256().toSync().newHashSink();
+    var remaining = header.sizeBytes;
+    try {
+      sink = pending.openWrite(mode: FileMode.writeOnly);
+      while (remaining > 0) {
+        final bytes = await reader.readUpTo(
+          remaining > 64 * 1024 ? 64 * 1024 : remaining,
+        );
+        hashSink.add(bytes);
+        sink.add(bytes);
+        remaining -= bytes.length;
+      }
+      hashSink.close();
+      await sink.flush();
+      await sink.close();
+      sink = null;
+      if (_hex((await hashSink.hash()).bytes) != expected.sha256) {
+        throw const BackupFailure('Backup is unsupported or damaged.');
+      }
+      await pending.rename(destination.path);
+    } finally {
+      await sink?.close();
+      if (await pending.exists()) await pending.delete();
+    }
+  }
+
+  Future<_EnvelopeHeader> _readEnvelopeHeader(RandomAccessFile input) async {
+    final magic = await _readExactly(input, _magic.length);
+    if (!_same(magic, _magic)) {
+      throw const BackupFailure('Backup is unsupported or damaged.');
+    }
+    final headerLength = _readU32(await _readExactly(input, 4));
+    if (headerLength <= 0 || headerLength > 16 * 1024) {
+      throw const BackupFailure('Backup is unsupported or damaged.');
+    }
+    final bytes = await _readExactly(input, headerLength);
+    return _EnvelopeHeader(
+      BackupPackageHeader.fromJson(
+        jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>,
+      ),
+      bytes,
+    );
+  }
+
   Stream<List<int>> _decryptChunks(
     RandomAccessFile input,
     SecretKey key,
@@ -261,9 +391,16 @@ class BackupPackageCodec {
 
   void _validateSnapshot(BackupSnapshot snapshot) {
     _validateInput(snapshot.database);
+    if (snapshot.database.id != 'database.sqlite') {
+      throw const BackupFailure('Backup input is invalid.');
+    }
     final ids = <String>{snapshot.database.id};
     for (final file in snapshot.files) {
       _validateInput(file);
+      if (!file.id.startsWith('files/') ||
+          !_isSafeEncryptedRelativePath(file.id.substring('files/'.length))) {
+        throw const BackupFailure('Backup input is invalid.');
+      }
       if (!ids.add(file.id)) {
         throw const BackupFailure('Backup input contains duplicate files.');
       }
@@ -278,6 +415,15 @@ class BackupPackageCodec {
         !RegExp(r'^[A-Za-z0-9_.\-/]+$').hasMatch(input.id)) {
       throw const BackupFailure('Backup input is invalid.');
     }
+  }
+
+  static bool _isSafeEncryptedRelativePath(String value) {
+    final parts = value.split('/');
+    return parts.isNotEmpty &&
+        RegExp(r'^[A-Za-z0-9_-]+\.dvf$').hasMatch(parts.last) &&
+        parts
+            .take(parts.length - 1)
+            .every(RegExp(r'^[A-Za-z0-9_-]+$').hasMatch);
   }
 
   static Future<_EntryHeader> _readEntryHeader(_StreamByteReader reader) async {
@@ -427,4 +573,10 @@ class _EntryHeader {
   const _EntryHeader(this.id, this.sizeBytes);
   final String id;
   final int sizeBytes;
+}
+
+class _EnvelopeHeader {
+  const _EnvelopeHeader(this.header, this.bytes);
+  final BackupPackageHeader header;
+  final List<int> bytes;
 }
