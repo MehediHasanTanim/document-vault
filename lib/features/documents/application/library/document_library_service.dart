@@ -219,6 +219,7 @@ class DocumentLibraryService {
       expiryDate: document.expiryDate as DateTime?,
       isFavorite: document.isFavorite as bool,
       isArchived: document.isArchived as bool,
+      isTrashed: document.deletedAt != null,
       updatedAt: document.updatedAt as DateTime,
       createdAt: document.createdAt as DateTime,
       fileTypes: files.map((file) => _fileType(file.mimeType)).toSet(),
@@ -232,7 +233,9 @@ class DocumentLibraryService {
     _LibraryContext context,
     DocumentLibraryQuery query,
   ) {
-    if (document.deletedAt != null) return false;
+    final trashed = document.deletedAt != null;
+    if (query.scope == DocumentLibraryScope.trash) return trashed;
+    if (trashed || document.status == 'superseded') return false;
     final archived = document.isArchived as bool;
     final scopeMatches = switch (query.scope) {
       DocumentLibraryScope.archived => archived,
@@ -250,12 +253,14 @@ class DocumentLibraryService {
             (query.filter.archive == ArchiveFilter.archived
                 ? archived
                 : !archived),
+      DocumentLibraryScope.trash => false,
     };
     if (!scopeMatches) {
       return false;
     }
     final filter = query.filter;
-    if (query.scope != DocumentLibraryScope.archived) {
+    if (query.scope != DocumentLibraryScope.archived &&
+        query.scope != DocumentLibraryScope.trash) {
       if (filter.archive == ArchiveFilter.archived && !archived) {
         return false;
       }

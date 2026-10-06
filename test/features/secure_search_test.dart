@@ -82,6 +82,39 @@ void main() {
     expect(recent.values, isEmpty);
   });
 
+  test(
+    'archived documents are searchable only through the archived filter',
+    () {
+      final index = SecureSearchIndex()
+        ..build([
+          _record(id: 'active'),
+          _record(id: 'archived', archived: true),
+        ]);
+      expect(
+        index
+            .search(
+              'nid',
+              clock: () => now,
+              filter: const DocumentLibraryFilter(),
+            )
+            .map((result) => result.documentId),
+        ['active'],
+      );
+      expect(
+        index
+            .search(
+              'nid',
+              clock: () => now,
+              filter: const DocumentLibraryFilter(
+                archive: ArchiveFilter.archived,
+              ),
+            )
+            .map((result) => result.documentId),
+        ['archived'],
+      );
+    },
+  );
+
   test('recent searches are not stored unless explicitly enabled', () {
     final private = InMemoryRecentSearches()..add('Passport');
     expect(private.values, isEmpty);
@@ -190,6 +223,7 @@ void main() {
 DocumentSearchRecord _record({
   String id = 'document-1',
   String title = 'জাতীয় পরিচয়পত্র NID',
+  bool archived = false,
 }) => DocumentSearchRecord(
   documentId: id,
   title: title,
@@ -204,7 +238,7 @@ DocumentSearchRecord _record({
   issuingAuthority: 'Department of Immigration',
   expiryDate: DateTime.utc(2030, 1, 1),
   isFavorite: true,
-  isArchived: false,
+  isArchived: archived,
   fileTypes: const {DocumentFileType.image},
 );
 

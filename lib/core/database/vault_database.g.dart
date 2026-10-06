@@ -3344,6 +3344,386 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
   }
 }
 
+class $DocumentVersionsTable extends DocumentVersions
+    with TableInfo<$DocumentVersionsTable, DocumentVersion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DocumentVersionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'document_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES documents (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _previousVersionIdMeta = const VerificationMeta(
+    'previousVersionId',
+  );
+  @override
+  late final GeneratedColumn<String> previousVersionId =
+      GeneratedColumn<String>(
+        'previous_version_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _isCurrentMeta = const VerificationMeta(
+    'isCurrent',
+  );
+  @override
+  late final GeneratedColumn<bool> isCurrent = GeneratedColumn<bool>(
+    'is_current',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_current" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    documentId,
+    previousVersionId,
+    isCurrent,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'document_versions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DocumentVersion> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('document_id')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['document_id']!, _documentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_documentIdMeta);
+    }
+    if (data.containsKey('previous_version_id')) {
+      context.handle(
+        _previousVersionIdMeta,
+        previousVersionId.isAcceptableOrUnknown(
+          data['previous_version_id']!,
+          _previousVersionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_current')) {
+      context.handle(
+        _isCurrentMeta,
+        isCurrent.isAcceptableOrUnknown(data['is_current']!, _isCurrentMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DocumentVersion map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DocumentVersion(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_id'],
+      )!,
+      previousVersionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_version_id'],
+      ),
+      isCurrent: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_current'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $DocumentVersionsTable createAlias(String alias) {
+    return $DocumentVersionsTable(attachedDatabase, alias);
+  }
+}
+
+class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
+  final String id;
+  final String documentId;
+  final String? previousVersionId;
+  final bool isCurrent;
+  final DateTime createdAt;
+  const DocumentVersion({
+    required this.id,
+    required this.documentId,
+    this.previousVersionId,
+    required this.isCurrent,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['document_id'] = Variable<String>(documentId);
+    if (!nullToAbsent || previousVersionId != null) {
+      map['previous_version_id'] = Variable<String>(previousVersionId);
+    }
+    map['is_current'] = Variable<bool>(isCurrent);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  DocumentVersionsCompanion toCompanion(bool nullToAbsent) {
+    return DocumentVersionsCompanion(
+      id: Value(id),
+      documentId: Value(documentId),
+      previousVersionId: previousVersionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(previousVersionId),
+      isCurrent: Value(isCurrent),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory DocumentVersion.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DocumentVersion(
+      id: serializer.fromJson<String>(json['id']),
+      documentId: serializer.fromJson<String>(json['documentId']),
+      previousVersionId: serializer.fromJson<String?>(
+        json['previousVersionId'],
+      ),
+      isCurrent: serializer.fromJson<bool>(json['isCurrent']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'documentId': serializer.toJson<String>(documentId),
+      'previousVersionId': serializer.toJson<String?>(previousVersionId),
+      'isCurrent': serializer.toJson<bool>(isCurrent),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  DocumentVersion copyWith({
+    String? id,
+    String? documentId,
+    Value<String?> previousVersionId = const Value.absent(),
+    bool? isCurrent,
+    DateTime? createdAt,
+  }) => DocumentVersion(
+    id: id ?? this.id,
+    documentId: documentId ?? this.documentId,
+    previousVersionId: previousVersionId.present
+        ? previousVersionId.value
+        : this.previousVersionId,
+    isCurrent: isCurrent ?? this.isCurrent,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  DocumentVersion copyWithCompanion(DocumentVersionsCompanion data) {
+    return DocumentVersion(
+      id: data.id.present ? data.id.value : this.id,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      previousVersionId: data.previousVersionId.present
+          ? data.previousVersionId.value
+          : this.previousVersionId,
+      isCurrent: data.isCurrent.present ? data.isCurrent.value : this.isCurrent,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentVersion(')
+          ..write('id: $id, ')
+          ..write('documentId: $documentId, ')
+          ..write('previousVersionId: $previousVersionId, ')
+          ..write('isCurrent: $isCurrent, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, documentId, previousVersionId, isCurrent, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DocumentVersion &&
+          other.id == this.id &&
+          other.documentId == this.documentId &&
+          other.previousVersionId == this.previousVersionId &&
+          other.isCurrent == this.isCurrent &&
+          other.createdAt == this.createdAt);
+}
+
+class DocumentVersionsCompanion extends UpdateCompanion<DocumentVersion> {
+  final Value<String> id;
+  final Value<String> documentId;
+  final Value<String?> previousVersionId;
+  final Value<bool> isCurrent;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const DocumentVersionsCompanion({
+    this.id = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.previousVersionId = const Value.absent(),
+    this.isCurrent = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DocumentVersionsCompanion.insert({
+    required String id,
+    required String documentId,
+    this.previousVersionId = const Value.absent(),
+    this.isCurrent = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       documentId = Value(documentId),
+       createdAt = Value(createdAt);
+  static Insertable<DocumentVersion> custom({
+    Expression<String>? id,
+    Expression<String>? documentId,
+    Expression<String>? previousVersionId,
+    Expression<bool>? isCurrent,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (documentId != null) 'document_id': documentId,
+      if (previousVersionId != null) 'previous_version_id': previousVersionId,
+      if (isCurrent != null) 'is_current': isCurrent,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DocumentVersionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? documentId,
+    Value<String?>? previousVersionId,
+    Value<bool>? isCurrent,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return DocumentVersionsCompanion(
+      id: id ?? this.id,
+      documentId: documentId ?? this.documentId,
+      previousVersionId: previousVersionId ?? this.previousVersionId,
+      isCurrent: isCurrent ?? this.isCurrent,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (documentId.present) {
+      map['document_id'] = Variable<String>(documentId.value);
+    }
+    if (previousVersionId.present) {
+      map['previous_version_id'] = Variable<String>(previousVersionId.value);
+    }
+    if (isCurrent.present) {
+      map['is_current'] = Variable<bool>(isCurrent.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentVersionsCompanion(')
+          ..write('id: $id, ')
+          ..write('documentId: $documentId, ')
+          ..write('previousVersionId: $previousVersionId, ')
+          ..write('isCurrent: $isCurrent, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $DocumentOwnersTable extends DocumentOwners
     with TableInfo<$DocumentOwnersTable, DocumentOwner> {
   @override
@@ -7858,6 +8238,9 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
   late final $PhysicalLocationsTable physicalLocations =
       $PhysicalLocationsTable(this);
   late final $DocumentsTable documents = $DocumentsTable(this);
+  late final $DocumentVersionsTable documentVersions = $DocumentVersionsTable(
+    this,
+  );
   late final $DocumentOwnersTable documentOwners = $DocumentOwnersTable(this);
   late final $DocumentFilesTable documentFiles = $DocumentFilesTable(this);
   late final $DocumentPagesTable documentPages = $DocumentPagesTable(this);
@@ -7880,6 +8263,7 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
     documentCategories,
     physicalLocations,
     documents,
+    documentVersions,
     documentOwners,
     documentFiles,
     documentPages,
@@ -7913,6 +8297,13 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('documents', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_versions', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -9692,6 +10083,27 @@ final class $$DocumentsTableReferences
     );
   }
 
+  static MultiTypedResultKey<$DocumentVersionsTable, List<DocumentVersion>>
+  _documentVersionsRefsTable(_$VaultDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.documentVersions,
+        aliasName: 'documents__id__document_versions__document_id',
+      );
+
+  $$DocumentVersionsTableProcessedTableManager get documentVersionsRefs {
+    final manager = $$DocumentVersionsTableTableManager(
+      $_db,
+      $_db.documentVersions,
+    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _documentVersionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$DocumentOwnersTable, List<DocumentOwner>>
   _documentOwnersRefsTable(_$VaultDatabase db) => MultiTypedResultKey.fromTable(
     db.documentOwners,
@@ -9963,6 +10375,31 @@ class $$DocumentsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> documentVersionsRefs(
+    Expression<bool> Function($$DocumentVersionsTableFilterComposer f) f,
+  ) {
+    final $$DocumentVersionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentVersions,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentVersionsTableFilterComposer(
+            $db: $db,
+            $table: $db.documentVersions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 
   Expression<bool> documentOwnersRefs(
@@ -10423,6 +10860,31 @@ class $$DocumentsTableAnnotationComposer
     return composer;
   }
 
+  Expression<T> documentVersionsRefs<T extends Object>(
+    Expression<T> Function($$DocumentVersionsTableAnnotationComposer a) f,
+  ) {
+    final $$DocumentVersionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentVersions,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentVersionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documentVersions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> documentOwnersRefs<T extends Object>(
     Expression<T> Function($$DocumentOwnersTableAnnotationComposer a) f,
   ) {
@@ -10592,6 +11054,7 @@ class $$DocumentsTableTableManager
             bool categoryId,
             bool primaryOwnerId,
             bool physicalLocationId,
+            bool documentVersionsRefs,
             bool documentOwnersRefs,
             bool documentFilesRefs,
             bool documentPagesRefs,
@@ -10712,6 +11175,7 @@ class $$DocumentsTableTableManager
                 categoryId = false,
                 primaryOwnerId = false,
                 physicalLocationId = false,
+                documentVersionsRefs = false,
                 documentOwnersRefs = false,
                 documentFilesRefs = false,
                 documentPagesRefs = false,
@@ -10722,6 +11186,7 @@ class $$DocumentsTableTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (documentVersionsRefs) db.documentVersions,
                     if (documentOwnersRefs) db.documentOwners,
                     if (documentFilesRefs) db.documentFiles,
                     if (documentPagesRefs) db.documentPages,
@@ -10783,6 +11248,27 @@ class $$DocumentsTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (documentVersionsRefs)
+                        await $_getPrefetchedData<
+                          Document,
+                          $DocumentsTable,
+                          DocumentVersion
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DocumentsTableReferences
+                              ._documentVersionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DocumentsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).documentVersionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.documentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (documentOwnersRefs)
                         await $_getPrefetchedData<
                           Document,
@@ -10933,6 +11419,7 @@ typedef $$DocumentsTableProcessedTableManager =
         bool categoryId,
         bool primaryOwnerId,
         bool physicalLocationId,
+        bool documentVersionsRefs,
         bool documentOwnersRefs,
         bool documentFilesRefs,
         bool documentPagesRefs,
@@ -10940,6 +11427,334 @@ typedef $$DocumentsTableProcessedTableManager =
         bool documentTagsRefs,
         bool remindersRefs,
       })
+    >;
+typedef $$DocumentVersionsTableCreateCompanionBuilder =
+    DocumentVersionsCompanion Function({
+      required String id,
+      required String documentId,
+      Value<String?> previousVersionId,
+      Value<bool> isCurrent,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$DocumentVersionsTableUpdateCompanionBuilder =
+    DocumentVersionsCompanion Function({
+      Value<String> id,
+      Value<String> documentId,
+      Value<String?> previousVersionId,
+      Value<bool> isCurrent,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$DocumentVersionsTableReferences
+    extends
+        BaseReferences<
+          _$VaultDatabase,
+          $DocumentVersionsTable,
+          DocumentVersion
+        > {
+  $$DocumentVersionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $DocumentsTable _documentIdTable(_$VaultDatabase db) =>
+      db.documents.createAlias('document_versions__document_id__documents__id');
+
+  $$DocumentsTableProcessedTableManager get documentId {
+    final $_column = $_itemColumn<String>('document_id')!;
+
+    final manager = $$DocumentsTableTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$DocumentVersionsTableFilterComposer
+    extends Composer<_$VaultDatabase, $DocumentVersionsTable> {
+  $$DocumentVersionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get previousVersionId => $composableBuilder(
+    column: $table.previousVersionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCurrent => $composableBuilder(
+    column: $table.isCurrent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DocumentsTableFilterComposer get documentId {
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DocumentVersionsTableOrderingComposer
+    extends Composer<_$VaultDatabase, $DocumentVersionsTable> {
+  $$DocumentVersionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get previousVersionId => $composableBuilder(
+    column: $table.previousVersionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCurrent => $composableBuilder(
+    column: $table.isCurrent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DocumentsTableOrderingComposer get documentId {
+    final $$DocumentsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DocumentVersionsTableAnnotationComposer
+    extends Composer<_$VaultDatabase, $DocumentVersionsTable> {
+  $$DocumentVersionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get previousVersionId => $composableBuilder(
+    column: $table.previousVersionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCurrent =>
+      $composableBuilder(column: $table.isCurrent, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$DocumentsTableAnnotationComposer get documentId {
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DocumentVersionsTableTableManager
+    extends
+        RootTableManager<
+          _$VaultDatabase,
+          $DocumentVersionsTable,
+          DocumentVersion,
+          $$DocumentVersionsTableFilterComposer,
+          $$DocumentVersionsTableOrderingComposer,
+          $$DocumentVersionsTableAnnotationComposer,
+          $$DocumentVersionsTableCreateCompanionBuilder,
+          $$DocumentVersionsTableUpdateCompanionBuilder,
+          (DocumentVersion, $$DocumentVersionsTableReferences),
+          DocumentVersion,
+          PrefetchHooks Function({bool documentId})
+        > {
+  $$DocumentVersionsTableTableManager(
+    _$VaultDatabase db,
+    $DocumentVersionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DocumentVersionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DocumentVersionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DocumentVersionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> documentId = const Value.absent(),
+                Value<String?> previousVersionId = const Value.absent(),
+                Value<bool> isCurrent = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DocumentVersionsCompanion(
+                id: id,
+                documentId: documentId,
+                previousVersionId: previousVersionId,
+                isCurrent: isCurrent,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String documentId,
+                Value<String?> previousVersionId = const Value.absent(),
+                Value<bool> isCurrent = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => DocumentVersionsCompanion.insert(
+                id: id,
+                documentId: documentId,
+                previousVersionId: previousVersionId,
+                isCurrent: isCurrent,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DocumentVersionsTable, DocumentVersion>(table),
+                  $$DocumentVersionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({documentId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (documentId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.documentId,
+                        referencedTable: $$DocumentVersionsTableReferences
+                            ._documentIdTable(db),
+                        referencedColumn: $$DocumentVersionsTableReferences
+                            ._documentIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$DocumentVersionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$VaultDatabase,
+      $DocumentVersionsTable,
+      DocumentVersion,
+      $$DocumentVersionsTableFilterComposer,
+      $$DocumentVersionsTableOrderingComposer,
+      $$DocumentVersionsTableAnnotationComposer,
+      $$DocumentVersionsTableCreateCompanionBuilder,
+      $$DocumentVersionsTableUpdateCompanionBuilder,
+      (DocumentVersion, $$DocumentVersionsTableReferences),
+      DocumentVersion,
+      PrefetchHooks Function({bool documentId})
     >;
 typedef $$DocumentOwnersTableCreateCompanionBuilder =
     DocumentOwnersCompanion Function({
@@ -14470,6 +15285,8 @@ class $VaultDatabaseManager {
       $$PhysicalLocationsTableTableManager(_db, _db.physicalLocations);
   $$DocumentsTableTableManager get documents =>
       $$DocumentsTableTableManager(_db, _db.documents);
+  $$DocumentVersionsTableTableManager get documentVersions =>
+      $$DocumentVersionsTableTableManager(_db, _db.documentVersions);
   $$DocumentOwnersTableTableManager get documentOwners =>
       $$DocumentOwnersTableTableManager(_db, _db.documentOwners);
   $$DocumentFilesTableTableManager get documentFiles =>

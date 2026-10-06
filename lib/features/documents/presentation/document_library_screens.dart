@@ -86,6 +86,7 @@ class _DocumentLibraryScreenState extends State<DocumentLibraryScreen> {
                 (DocumentLibraryScope.recent, 'Recent / সাম্প্রতিক'),
                 (DocumentLibraryScope.favorites, 'Favorites / পছন্দের'),
                 (DocumentLibraryScope.archived, 'Archived / আর্কাইভ'),
+                (DocumentLibraryScope.trash, 'Trash / ট্র্যাশ'),
               ]
               .map(
                 (value) => Padding(
@@ -248,12 +249,24 @@ class DocumentDetailsScreen extends StatelessWidget {
     required this.thumbnails,
     this.onOpenPreview,
     this.onEditReminder,
+    this.onSetFavorite,
+    this.onArchive,
+    this.onRestoreArchive,
+    this.onMoveToTrash,
+    this.onRestoreFromTrash,
+    this.onDeletePermanently,
     super.key,
   });
   final DocumentDetailsData details;
   final ProtectedThumbnailService thumbnails;
   final VoidCallback? onOpenPreview;
   final VoidCallback? onEditReminder;
+  final Future<void> Function(bool favorite)? onSetFavorite;
+  final Future<void> Function()? onArchive;
+  final Future<void> Function()? onRestoreArchive;
+  final Future<void> Function()? onMoveToTrash;
+  final Future<void> Function()? onRestoreFromTrash;
+  final Future<void> Function()? onDeletePermanently;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -263,7 +276,43 @@ class DocumentDetailsScreen extends StatelessWidget {
         IconButton(
           tooltip: 'Favorite / পছন্দের',
           icon: Icon(details.card.isFavorite ? Icons.star : Icons.star_outline),
-          onPressed: () {},
+          onPressed: onSetFavorite == null
+              ? null
+              : () => onSetFavorite!(!details.card.isFavorite),
+        ),
+        PopupMenuButton<_DocumentLifecycleAction>(
+          tooltip: 'Document actions / ডকুমেন্টের কাজ',
+          onSelected: (action) => _runAction(context, action),
+          itemBuilder: (context) => [
+            if (details.card.isTrashed) ...[
+              if (onRestoreFromTrash != null)
+                const PopupMenuItem(
+                  value: _DocumentLifecycleAction.restoreTrash,
+                  child: Text('Restore from Trash / ট্র্যাশ থেকে পুনরুদ্ধার'),
+                ),
+              if (onDeletePermanently != null)
+                const PopupMenuItem(
+                  value: _DocumentLifecycleAction.deletePermanently,
+                  child: Text('Delete permanently / স্থায়ীভাবে মুছুন'),
+                ),
+            ] else ...[
+              if (details.card.isArchived && onRestoreArchive != null)
+                const PopupMenuItem(
+                  value: _DocumentLifecycleAction.restoreArchive,
+                  child: Text('Restore from Archive / আর্কাইভ থেকে পুনরুদ্ধার'),
+                ),
+              if (!details.card.isArchived && onArchive != null)
+                const PopupMenuItem(
+                  value: _DocumentLifecycleAction.archive,
+                  child: Text('Archive / আর্কাইভ করুন'),
+                ),
+              if (onMoveToTrash != null)
+                const PopupMenuItem(
+                  value: _DocumentLifecycleAction.moveToTrash,
+                  child: Text('Move to Trash / ট্র্যাশে পাঠান'),
+                ),
+            ],
+          ],
         ),
       ],
     ),
@@ -331,6 +380,76 @@ class DocumentDetailsScreen extends StatelessWidget {
     ),
   );
 
+  Future<void> _runAction(
+    BuildContext context,
+    _DocumentLifecycleAction action,
+  ) async {
+    switch (action) {
+      case _DocumentLifecycleAction.archive:
+        await onArchive?.call();
+        return;
+      case _DocumentLifecycleAction.restoreArchive:
+        await onRestoreArchive?.call();
+        return;
+      case _DocumentLifecycleAction.moveToTrash:
+        if (await _confirm(
+          context,
+          title: 'Move to Trash? / ট্র্যাশে পাঠাবেন?',
+          body: 'You can restore this document before it is permanently deleted. / স্থায়ীভাবে মোছার আগে এটি পুনরুদ্ধার করা যাবে।',
+          action: 'Move to Trash / ট্র্যাশে পাঠান',
+        )) {
+          await onMoveToTrash?.call();
+        }
+        return;
+      case _DocumentLifecycleAction.restoreTrash:
+        await onRestoreFromTrash?.call();
+        return;
+      case _DocumentLifecycleAction.deletePermanently:
+        if (await _confirm(
+          context,
+          title: 'Delete permanently? / স্থায়ীভাবে মুছবেন?',
+          body: 'This removes the encrypted files and related reminders. It cannot be undone. / এনক্রিপ্ট করা ফাইল ও সম্পর্কিত রিমাইন্ডার মুছে যাবে। এটি ফেরানো যাবে না।',
+          action: 'Delete permanently / স্থায়ীভাবে মুছুন',
+          destructive: true,
+        )) {
+          await onDeletePermanently?.call();
+        }
+        return;
+    }
+  }
+
+  Future<bool> _confirm(
+    BuildContext context, {
+    required String title,
+    required String body,
+    required String action,
+    bool destructive = false,
+  }) async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(title),
+          content: Text(body),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel / বাতিল'),
+            ),
+            FilledButton(
+              style: destructive
+                  ? FilledButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                      foregroundColor: Theme.of(context).colorScheme.onError,
+                    )
+                  : null,
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(action),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+
   Widget _section(BuildContext context, String title, List<Widget> content) =>
       Padding(
         padding: const EdgeInsets.only(top: 24),
@@ -355,6 +474,14 @@ class DocumentDetailsScreen extends StatelessWidget {
   String? _mask(String? value) => value == null || value.length <= 4
       ? value
       : '${'•' * (value.length - 4)}${value.substring(value.length - 4)}';
+}
+
+enum _DocumentLifecycleAction {
+  archive,
+  restoreArchive,
+  moveToTrash,
+  restoreTrash,
+  deletePermanently,
 }
 
 class _LibraryControlsSheet extends StatefulWidget {

@@ -30,6 +30,11 @@ abstract interface class DocumentRepository {
   Stream<List<Document>> watchAll({bool includeTrashed = false});
   Future<void> create(DocumentWrite write);
   Future<void> update(DocumentsCompanion document);
+  Future<void> setFavorite(
+    String id, {
+    required bool favorite,
+    required DateTime updatedAt,
+  });
   Future<void> archive(
     String id, {
     required bool archived,
@@ -47,10 +52,23 @@ abstract interface class DocumentRepository {
     required List<DocumentFilesCompanion> files,
     required List<DocumentPagesCompanion> pages,
   });
+  Future<List<DocumentFile>> filesForDocument(String documentId);
 
   /// Deletes database records and returns file metadata for journalled storage
   /// cleanup. Callers must not delete encrypted files before this transaction.
   Future<List<DocumentFile>> deletePermanently(String id);
+}
+
+abstract interface class DocumentVersionRepository {
+  Future<List<DocumentVersion>> listForDocument(String documentId);
+
+  Future<void> createReplacement({
+    required String oldDocumentId,
+    required String replacementDocumentId,
+    required String oldVersionId,
+    required String replacementVersionId,
+    required DateTime createdAt,
+  });
 }
 
 abstract interface class TagRepository {
@@ -285,6 +303,18 @@ class DriftDocumentRepository implements DocumentRepository {
       _db.update(_db.documents).replace(document);
 
   @override
+  Future<void> setFavorite(
+    String id, {
+    required bool favorite,
+    required DateTime updatedAt,
+  }) => (_db.update(_db.documents)..where((d) => d.id.equals(id))).write(
+    DocumentsCompanion(
+      isFavorite: Value(favorite),
+      updatedAt: Value(updatedAt),
+    ),
+  );
+
+  @override
   Future<void> archive(
     String id, {
     required bool archived,
@@ -344,6 +374,11 @@ class DriftDocumentRepository implements DocumentRepository {
   });
 
   @override
+  Future<List<DocumentFile>> filesForDocument(String documentId) => (_db.select(
+    _db.documentFiles,
+  )..where((file) => file.documentId.equals(documentId))).get();
+
+  @override
   Future<List<DocumentFile>> deletePermanently(String id) =>
       _db.transaction(() async {
         final files = await (_db.select(
@@ -352,6 +387,89 @@ class DriftDocumentRepository implements DocumentRepository {
         await (_db.delete(_db.documents)..where((d) => d.id.equals(id))).go();
         return files;
       });
+}
+
+class DriftDocumentVersionRepository implements DocumentVersionRepository {
+  DriftDocumentVersionRepository(this._db);
+  final VaultDatabase _db;
+
+  @override
+  Future<List<DocumentVersion>> listForDocument(String documentId) =>
+      (_db.select(_db.documentVersions)
+            ..where((version) => version.documentId.equals(documentId))
+            ..orderBy([(version) => OrderingTerm.desc(version.createdAt)]))
+          .get();
+
+  @override
+  Future<void> createReplacement({
+    required String oldDocumentId,
+    required String replacementDocumentId,
+    required String oldVersionId,
+    required String replacementVersionId,
+    required DateTime createdAt,
+  }) => _db.transaction(() async {
+    final oldDocument =
+        await (_db.select(_db.documents)
+              ..where((document) => document.id.equals(oldDocumentId)))
+            .getSingleOrNull();
+    final replacementDocument =
+        await (_db.select(_db.documents)
+              ..where((document) => document.id.equals(replacementDocumentId)))
+            .getSingleOrNull();
+    if (oldDocument == null || replacementDocument == null) {
+      throw StateError('Both documents must exist before creating a version.');
+    }
+    final oldVersion = await (_db.select(
+      _db.documentVersions,
+    )..where((version) => version.id.equals(oldVersionId))).getSingleOrNull();
+    if (oldVersion == null) {
+      await _db
+          .into(_db.documentVersions)
+          .insert(
+            DocumentVersionsCompanion.insert(
+              id: oldVersionId,
+              documentId: oldDocumentId,
+              isCurrent: const Value(false),
+              createdAt: createdAt,
+            ),
+          );
+    } else {
+      await (_db.update(_db.documentVersions)
+            ..where((version) => version.id.equals(oldVersionId)))
+          .write(const DocumentVersionsCompanion(isCurrent: Value(false)));
+    }
+    await (_db.update(_db.documentVersions)
+          ..where((version) => version.documentId.equals(oldDocumentId)))
+        .write(const DocumentVersionsCompanion(isCurrent: Value(false)));
+    await _db
+        .into(_db.documentVersions)
+        .insert(
+          DocumentVersionsCompanion.insert(
+            id: replacementVersionId,
+            documentId: replacementDocumentId,
+            previousVersionId: Value(oldVersionId),
+            createdAt: createdAt,
+          ),
+        );
+    await (_db.update(
+      _db.documents,
+    )..where((document) => document.id.equals(oldDocumentId))).write(
+      DocumentsCompanion(
+        status: const Value('superseded'),
+        currentVersionId: Value(oldVersionId),
+        updatedAt: Value(createdAt),
+      ),
+    );
+    await (_db.update(
+      _db.documents,
+    )..where((document) => document.id.equals(replacementDocumentId))).write(
+      DocumentsCompanion(
+        status: const Value('active'),
+        currentVersionId: Value(replacementVersionId),
+        updatedAt: Value(createdAt),
+      ),
+    );
+  });
 }
 
 class DriftTagRepository implements TagRepository {

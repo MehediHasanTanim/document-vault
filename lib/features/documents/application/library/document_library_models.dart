@@ -1,7 +1,15 @@
 import '../../../../core/database/vault_database.dart';
 import '../../../../core/files/file_reference.dart';
 
-enum DocumentLibraryScope { all, recent, favorites, category, person, archived }
+enum DocumentLibraryScope {
+  all,
+  recent,
+  favorites,
+  category,
+  person,
+  archived,
+  trash,
+}
 
 enum DocumentSort {
   recentlyAdded,
@@ -107,6 +115,7 @@ class DocumentCardData {
     required this.expiryDate,
     required this.isFavorite,
     required this.isArchived,
+    required this.isTrashed,
     required this.updatedAt,
     required this.createdAt,
     required this.fileTypes,
@@ -122,6 +131,7 @@ class DocumentCardData {
   final DateTime? expiryDate;
   final bool isFavorite;
   final bool isArchived;
+  final bool isTrashed;
   final DateTime updatedAt;
   final DateTime createdAt;
   final Set<DocumentFileType> fileTypes;

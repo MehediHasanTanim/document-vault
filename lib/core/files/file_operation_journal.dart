@@ -181,8 +181,16 @@ class FileOperationJournal {
           failed++;
           continue;
         }
-        final committed = await _metadataWasCommitted(payload.fileIds);
+        final deletion = operation.operationType == 'document_delete';
+        final committed = deletion
+            ? await _metadataWasDeleted(payload.fileIds)
+            : await _metadataWasCommitted(payload.fileIds);
         if (committed) {
+          if (deletion) {
+            for (final path in payload.encryptedPaths) {
+              await _storage.deleteRelativePath(path);
+            }
+          }
           await markDatabaseCommitted(operation.id);
           await complete(operation.id);
           completed++;
@@ -216,5 +224,21 @@ class FileOperationJournal {
         .map((row) => row.read(count) ?? 0)
         .getSingle();
     return committed == fileIds.length;
+  }
+
+  /// A delete is committed once the document-file rows have disappeared. Its
+  /// encrypted paths are then safe to remove during startup recovery.
+  Future<bool> _metadataWasDeleted(List<String> fileIds) async {
+    // A metadata-only document deletion is already complete once its database
+    // transaction committed; there are no encrypted paths left to reconcile.
+    if (fileIds.isEmpty) return true;
+    final count = _db.documentFiles.id.count();
+    final query = _db.selectOnly(_db.documentFiles)
+      ..addColumns([count])
+      ..where(_db.documentFiles.id.isIn(fileIds));
+    final remaining = await query
+        .map((row) => row.read(count) ?? 0)
+        .getSingle();
+    return remaining == 0;
   }
 }

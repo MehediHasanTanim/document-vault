@@ -95,6 +95,19 @@ class Documents extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Lightweight lineage for document renewals. The document rows retain their
+/// metadata and files; this table only records replacement relationships.
+class DocumentVersions extends Table {
+  TextColumn get id => text()();
+  TextColumn get documentId =>
+      text().references(Documents, #id, onDelete: KeyAction.cascade)();
+  TextColumn get previousVersionId => text().nullable()();
+  BoolColumn get isCurrent => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class DocumentOwners extends Table {
   TextColumn get documentId =>
       text().references(Documents, #id, onDelete: KeyAction.cascade)();
@@ -232,6 +245,7 @@ class PendingOperations extends Table {
     DocumentCategories,
     PhysicalLocations,
     Documents,
+    DocumentVersions,
     DocumentOwners,
     DocumentFiles,
     DocumentPages,
@@ -248,7 +262,7 @@ class VaultDatabase extends _$VaultDatabase {
   VaultDatabase(super.e);
   VaultDatabase.defaults() : super(driftDatabase(name: 'document_vault'));
 
-  static const currentSchemaVersion = 2;
+  static const currentSchemaVersion = 3;
   @override
   int get schemaVersion => currentSchemaVersion;
 
@@ -272,6 +286,12 @@ class VaultDatabase extends _$VaultDatabase {
       if (from < 2 && to >= 2) {
         await m.addColumn(physicalLocations, physicalLocations.isArchived);
       }
+      if (from < 3 && to >= 3) {
+        await m.createTable(documentVersions);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_document_versions_document ON document_versions(document_id)',
+        );
+      }
     });
   }
 
@@ -294,5 +314,6 @@ class VaultDatabase extends _$VaultDatabase {
     'CREATE INDEX IF NOT EXISTS idx_reminders_status ON reminders(status)',
     'CREATE INDEX IF NOT EXISTS idx_document_owners_member ON document_owners(family_member_id)',
     'CREATE INDEX IF NOT EXISTS idx_document_tags_tag ON document_tags(tag_id)',
+    'CREATE INDEX IF NOT EXISTS idx_document_versions_document ON document_versions(document_id)',
   ];
 }
