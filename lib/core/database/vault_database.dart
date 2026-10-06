@@ -214,6 +214,11 @@ class BackupRecords extends Table {
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get sizeBytes => integer()();
   BoolColumn get verified => boolean()();
+
+  /// A coarse value such as `device_folder` or `system_provider`; never store
+  /// a provider path, URI, account, or filename in local backup history.
+  TextColumn get destinationType => text().nullable()();
+  IntColumn get vaultChangesSinceBackup => integer().nullable()();
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -262,7 +267,7 @@ class VaultDatabase extends _$VaultDatabase {
   VaultDatabase(super.e);
   VaultDatabase.defaults() : super(driftDatabase(name: 'document_vault'));
 
-  static const currentSchemaVersion = 3;
+  static const currentSchemaVersion = 4;
   @override
   int get schemaVersion => currentSchemaVersion;
 
@@ -291,6 +296,10 @@ class VaultDatabase extends _$VaultDatabase {
         await customStatement(
           'CREATE INDEX IF NOT EXISTS idx_document_versions_document ON document_versions(document_id)',
         );
+      }
+      if (from < 4 && to >= 4) {
+        await m.addColumn(backupRecords, backupRecords.destinationType);
+        await m.addColumn(backupRecords, backupRecords.vaultChangesSinceBackup);
       }
     });
   }

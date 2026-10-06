@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/concurrency/vault_operation_gate.dart';
 import '../../../../core/crypto/vault_data_protector.dart';
 import '../../../../core/database/repositories.dart';
 import '../../../../core/database/vault_database.dart';
@@ -26,6 +27,7 @@ class DocumentCreationService {
     DocumentTemplateCatalog? templates,
     DuplicateWarningHook? duplicateWarnings,
     this.recentCategories,
+    this.operationGate,
     Uuid? uuid,
     DateTime Function()? clock,
   }) : _templates = templates ?? const DocumentTemplateCatalog(),
@@ -40,10 +42,14 @@ class DocumentCreationService {
   final DocumentTemplateCatalog _templates;
   final DuplicateWarningHook _duplicateWarnings;
   final RecentCategoryService? recentCategories;
+  final VaultOperationGate? operationGate;
   final Uuid _uuid;
   final DateTime Function() _clock;
 
-  Future<DocumentSaveResult> save(DocumentDraft draft) async {
+  Future<DocumentSaveResult> save(DocumentDraft draft) =>
+      operationGate?.runWrite(() => _save(draft)) ?? _save(draft);
+
+  Future<DocumentSaveResult> _save(DocumentDraft draft) async {
     _validate(draft);
     final warnings = await _duplicateWarnings.check(draft);
     final documentId = _uuid.v4();

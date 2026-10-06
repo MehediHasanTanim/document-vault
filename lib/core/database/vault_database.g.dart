@@ -7170,6 +7170,28 @@ class $BackupRecordsTable extends BackupRecords
       'CHECK ("verified" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _destinationTypeMeta = const VerificationMeta(
+    'destinationType',
+  );
+  @override
+  late final GeneratedColumn<String> destinationType = GeneratedColumn<String>(
+    'destination_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _vaultChangesSinceBackupMeta =
+      const VerificationMeta('vaultChangesSinceBackup');
+  @override
+  late final GeneratedColumn<int> vaultChangesSinceBackup =
+      GeneratedColumn<int>(
+        'vault_changes_since_backup',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7177,6 +7199,8 @@ class $BackupRecordsTable extends BackupRecords
     createdAt,
     sizeBytes,
     verified,
+    destinationType,
+    vaultChangesSinceBackup,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7228,6 +7252,24 @@ class $BackupRecordsTable extends BackupRecords
     } else if (isInserting) {
       context.missing(_verifiedMeta);
     }
+    if (data.containsKey('destination_type')) {
+      context.handle(
+        _destinationTypeMeta,
+        destinationType.isAcceptableOrUnknown(
+          data['destination_type']!,
+          _destinationTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('vault_changes_since_backup')) {
+      context.handle(
+        _vaultChangesSinceBackupMeta,
+        vaultChangesSinceBackup.isAcceptableOrUnknown(
+          data['vault_changes_since_backup']!,
+          _vaultChangesSinceBackupMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -7257,6 +7299,14 @@ class $BackupRecordsTable extends BackupRecords
         DriftSqlType.bool,
         data['${effectivePrefix}verified'],
       )!,
+      destinationType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_type'],
+      ),
+      vaultChangesSinceBackup: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vault_changes_since_backup'],
+      ),
     );
   }
 
@@ -7272,12 +7322,19 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
   final DateTime createdAt;
   final int sizeBytes;
   final bool verified;
+
+  /// A coarse value such as `device_folder` or `system_provider`; never store
+  /// a provider path, URI, account, or filename in local backup history.
+  final String? destinationType;
+  final int? vaultChangesSinceBackup;
   const BackupRecord({
     required this.id,
     this.relativePath,
     required this.createdAt,
     required this.sizeBytes,
     required this.verified,
+    this.destinationType,
+    this.vaultChangesSinceBackup,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7289,6 +7346,14 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['size_bytes'] = Variable<int>(sizeBytes);
     map['verified'] = Variable<bool>(verified);
+    if (!nullToAbsent || destinationType != null) {
+      map['destination_type'] = Variable<String>(destinationType);
+    }
+    if (!nullToAbsent || vaultChangesSinceBackup != null) {
+      map['vault_changes_since_backup'] = Variable<int>(
+        vaultChangesSinceBackup,
+      );
+    }
     return map;
   }
 
@@ -7301,6 +7366,12 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
       createdAt: Value(createdAt),
       sizeBytes: Value(sizeBytes),
       verified: Value(verified),
+      destinationType: destinationType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationType),
+      vaultChangesSinceBackup: vaultChangesSinceBackup == null && nullToAbsent
+          ? const Value.absent()
+          : Value(vaultChangesSinceBackup),
     );
   }
 
@@ -7315,6 +7386,10 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
       verified: serializer.fromJson<bool>(json['verified']),
+      destinationType: serializer.fromJson<String?>(json['destinationType']),
+      vaultChangesSinceBackup: serializer.fromJson<int?>(
+        json['vaultChangesSinceBackup'],
+      ),
     );
   }
   @override
@@ -7326,6 +7401,10 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'sizeBytes': serializer.toJson<int>(sizeBytes),
       'verified': serializer.toJson<bool>(verified),
+      'destinationType': serializer.toJson<String?>(destinationType),
+      'vaultChangesSinceBackup': serializer.toJson<int?>(
+        vaultChangesSinceBackup,
+      ),
     };
   }
 
@@ -7335,12 +7414,20 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
     DateTime? createdAt,
     int? sizeBytes,
     bool? verified,
+    Value<String?> destinationType = const Value.absent(),
+    Value<int?> vaultChangesSinceBackup = const Value.absent(),
   }) => BackupRecord(
     id: id ?? this.id,
     relativePath: relativePath.present ? relativePath.value : this.relativePath,
     createdAt: createdAt ?? this.createdAt,
     sizeBytes: sizeBytes ?? this.sizeBytes,
     verified: verified ?? this.verified,
+    destinationType: destinationType.present
+        ? destinationType.value
+        : this.destinationType,
+    vaultChangesSinceBackup: vaultChangesSinceBackup.present
+        ? vaultChangesSinceBackup.value
+        : this.vaultChangesSinceBackup,
   );
   BackupRecord copyWithCompanion(BackupRecordsCompanion data) {
     return BackupRecord(
@@ -7351,6 +7438,12 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
       verified: data.verified.present ? data.verified.value : this.verified,
+      destinationType: data.destinationType.present
+          ? data.destinationType.value
+          : this.destinationType,
+      vaultChangesSinceBackup: data.vaultChangesSinceBackup.present
+          ? data.vaultChangesSinceBackup.value
+          : this.vaultChangesSinceBackup,
     );
   }
 
@@ -7361,14 +7454,23 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
           ..write('relativePath: $relativePath, ')
           ..write('createdAt: $createdAt, ')
           ..write('sizeBytes: $sizeBytes, ')
-          ..write('verified: $verified')
+          ..write('verified: $verified, ')
+          ..write('destinationType: $destinationType, ')
+          ..write('vaultChangesSinceBackup: $vaultChangesSinceBackup')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, relativePath, createdAt, sizeBytes, verified);
+  int get hashCode => Object.hash(
+    id,
+    relativePath,
+    createdAt,
+    sizeBytes,
+    verified,
+    destinationType,
+    vaultChangesSinceBackup,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -7377,7 +7479,9 @@ class BackupRecord extends DataClass implements Insertable<BackupRecord> {
           other.relativePath == this.relativePath &&
           other.createdAt == this.createdAt &&
           other.sizeBytes == this.sizeBytes &&
-          other.verified == this.verified);
+          other.verified == this.verified &&
+          other.destinationType == this.destinationType &&
+          other.vaultChangesSinceBackup == this.vaultChangesSinceBackup);
 }
 
 class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
@@ -7386,6 +7490,8 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
   final Value<DateTime> createdAt;
   final Value<int> sizeBytes;
   final Value<bool> verified;
+  final Value<String?> destinationType;
+  final Value<int?> vaultChangesSinceBackup;
   final Value<int> rowid;
   const BackupRecordsCompanion({
     this.id = const Value.absent(),
@@ -7393,6 +7499,8 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
     this.createdAt = const Value.absent(),
     this.sizeBytes = const Value.absent(),
     this.verified = const Value.absent(),
+    this.destinationType = const Value.absent(),
+    this.vaultChangesSinceBackup = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BackupRecordsCompanion.insert({
@@ -7401,6 +7509,8 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
     required DateTime createdAt,
     required int sizeBytes,
     required bool verified,
+    this.destinationType = const Value.absent(),
+    this.vaultChangesSinceBackup = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -7412,6 +7522,8 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
     Expression<DateTime>? createdAt,
     Expression<int>? sizeBytes,
     Expression<bool>? verified,
+    Expression<String>? destinationType,
+    Expression<int>? vaultChangesSinceBackup,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -7420,6 +7532,9 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
       if (createdAt != null) 'created_at': createdAt,
       if (sizeBytes != null) 'size_bytes': sizeBytes,
       if (verified != null) 'verified': verified,
+      if (destinationType != null) 'destination_type': destinationType,
+      if (vaultChangesSinceBackup != null)
+        'vault_changes_since_backup': vaultChangesSinceBackup,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -7430,6 +7545,8 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
     Value<DateTime>? createdAt,
     Value<int>? sizeBytes,
     Value<bool>? verified,
+    Value<String?>? destinationType,
+    Value<int?>? vaultChangesSinceBackup,
     Value<int>? rowid,
   }) {
     return BackupRecordsCompanion(
@@ -7438,6 +7555,9 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
       createdAt: createdAt ?? this.createdAt,
       sizeBytes: sizeBytes ?? this.sizeBytes,
       verified: verified ?? this.verified,
+      destinationType: destinationType ?? this.destinationType,
+      vaultChangesSinceBackup:
+          vaultChangesSinceBackup ?? this.vaultChangesSinceBackup,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -7460,6 +7580,14 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
     if (verified.present) {
       map['verified'] = Variable<bool>(verified.value);
     }
+    if (destinationType.present) {
+      map['destination_type'] = Variable<String>(destinationType.value);
+    }
+    if (vaultChangesSinceBackup.present) {
+      map['vault_changes_since_backup'] = Variable<int>(
+        vaultChangesSinceBackup.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -7474,6 +7602,8 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
           ..write('createdAt: $createdAt, ')
           ..write('sizeBytes: $sizeBytes, ')
           ..write('verified: $verified, ')
+          ..write('destinationType: $destinationType, ')
+          ..write('vaultChangesSinceBackup: $vaultChangesSinceBackup, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -14628,6 +14758,8 @@ typedef $$BackupRecordsTableCreateCompanionBuilder =
       required DateTime createdAt,
       required int sizeBytes,
       required bool verified,
+      Value<String?> destinationType,
+      Value<int?> vaultChangesSinceBackup,
       Value<int> rowid,
     });
 typedef $$BackupRecordsTableUpdateCompanionBuilder =
@@ -14637,6 +14769,8 @@ typedef $$BackupRecordsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<int> sizeBytes,
       Value<bool> verified,
+      Value<String?> destinationType,
+      Value<int?> vaultChangesSinceBackup,
       Value<int> rowid,
     });
 
@@ -14671,6 +14805,16 @@ class $$BackupRecordsTableFilterComposer
 
   ColumnFilters<bool> get verified => $composableBuilder(
     column: $table.verified,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationType => $composableBuilder(
+    column: $table.destinationType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get vaultChangesSinceBackup => $composableBuilder(
+    column: $table.vaultChangesSinceBackup,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -14708,6 +14852,16 @@ class $$BackupRecordsTableOrderingComposer
     column: $table.verified,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get destinationType => $composableBuilder(
+    column: $table.destinationType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get vaultChangesSinceBackup => $composableBuilder(
+    column: $table.vaultChangesSinceBackup,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BackupRecordsTableAnnotationComposer
@@ -14735,6 +14889,16 @@ class $$BackupRecordsTableAnnotationComposer
 
   GeneratedColumn<bool> get verified =>
       $composableBuilder(column: $table.verified, builder: (column) => column);
+
+  GeneratedColumn<String> get destinationType => $composableBuilder(
+    column: $table.destinationType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get vaultChangesSinceBackup => $composableBuilder(
+    column: $table.vaultChangesSinceBackup,
+    builder: (column) => column,
+  );
 }
 
 class $$BackupRecordsTableTableManager
@@ -14775,6 +14939,8 @@ class $$BackupRecordsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
                 Value<bool> verified = const Value.absent(),
+                Value<String?> destinationType = const Value.absent(),
+                Value<int?> vaultChangesSinceBackup = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BackupRecordsCompanion(
                 id: id,
@@ -14782,6 +14948,8 @@ class $$BackupRecordsTableTableManager
                 createdAt: createdAt,
                 sizeBytes: sizeBytes,
                 verified: verified,
+                destinationType: destinationType,
+                vaultChangesSinceBackup: vaultChangesSinceBackup,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -14791,6 +14959,8 @@ class $$BackupRecordsTableTableManager
                 required DateTime createdAt,
                 required int sizeBytes,
                 required bool verified,
+                Value<String?> destinationType = const Value.absent(),
+                Value<int?> vaultChangesSinceBackup = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BackupRecordsCompanion.insert(
                 id: id,
@@ -14798,6 +14968,8 @@ class $$BackupRecordsTableTableManager
                 createdAt: createdAt,
                 sizeBytes: sizeBytes,
                 verified: verified,
+                destinationType: destinationType,
+                vaultChangesSinceBackup: vaultChangesSinceBackup,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

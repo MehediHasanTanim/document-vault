@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
-    'v1 physical locations and v3 document versions migrate additively',
+    'v1 physical locations, versions, and backup history migrate additively',
     () async {
       final database = VaultDatabase(
         NativeDatabase.memory(
@@ -16,6 +16,15 @@ void main() {
           description_encrypted TEXT NULL,
           created_at INTEGER NOT NULL,
           updated_at INTEGER NOT NULL
+        );
+      ''');
+            sqlite.execute('''
+        CREATE TABLE backup_records (
+          id TEXT NOT NULL PRIMARY KEY,
+          relative_path TEXT NULL,
+          created_at INTEGER NOT NULL,
+          size_bytes INTEGER NOT NULL,
+          verified INTEGER NOT NULL
         );
       ''');
             sqlite.execute('PRAGMA user_version = 1;');
@@ -34,7 +43,14 @@ void main() {
           )
           .getSingleOrNull();
       expect(versionTable, isNotNull);
-      expect(database.schemaVersion, 3);
+      final backupColumns = await database
+          .customSelect("PRAGMA table_info('backup_records')")
+          .get();
+      expect(
+        backupColumns.map((row) => row.data['name']),
+        containsAll(['destination_type', 'vault_changes_since_backup']),
+      );
+      expect(database.schemaVersion, 4);
     },
   );
 }

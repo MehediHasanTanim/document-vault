@@ -31,3 +31,13 @@ final class PermissionFailure extends AppFailure {
 final class NotificationSchedulingFailure extends AppFailure {
   const NotificationSchedulingFailure(super.message, {super.cause});
 }
+
+/// Deliberately does not reveal whether a backup failed authentication,
+/// structure validation, or password verification.
+final class BackupFailure extends AppFailure {
+  const BackupFailure(super.message, {super.cause});
+}
+
+final class BackupCancelledFailure extends AppFailure {
+  const BackupCancelledFailure() : super('Backup was cancelled.');
+}

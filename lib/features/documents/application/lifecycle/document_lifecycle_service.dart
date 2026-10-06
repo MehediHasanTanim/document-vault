@@ -1,5 +1,6 @@
 import '../../../../core/database/repositories.dart';
 import '../../../../core/database/vault_database.dart';
+import '../../../../core/concurrency/vault_operation_gate.dart';
 import '../../../../core/errors/app_failure.dart';
 import '../../../../core/files/file_operation_journal.dart';
 import '../../../../core/files/file_reference.dart';
@@ -33,6 +34,7 @@ class DocumentLifecycleService {
     SecureFileStore files, {
     ProtectedThumbnailService? thumbnails,
     SecureSearchIndex? search,
+    VaultOperationGate? operationGate,
     DateTime Function()? clock,
   }) => DocumentLifecycleService._(
     documents,
@@ -42,6 +44,7 @@ class DocumentLifecycleService {
     files,
     thumbnails,
     search,
+    operationGate: operationGate,
     clock: clock,
   );
 
@@ -53,6 +56,7 @@ class DocumentLifecycleService {
     this._files,
     this._thumbnails,
     this._search, {
+    this._operationGate,
     DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now;
 
@@ -63,12 +67,20 @@ class DocumentLifecycleService {
   final SecureFileStore _files;
   final ProtectedThumbnailService? _thumbnails;
   final SecureSearchIndex? _search;
+  final VaultOperationGate? _operationGate;
   final DateTime Function() _clock;
 
-  Future<void> setFavorite(String documentId, bool favorite) => _documents
-      .setFavorite(documentId, favorite: favorite, updatedAt: _clock().toUtc());
+  Future<void> setFavorite(String documentId, bool favorite) => _write(
+    () => _documents.setFavorite(
+      documentId,
+      favorite: favorite,
+      updatedAt: _clock().toUtc(),
+    ),
+  );
 
-  Future<void> archive(String documentId) async {
+  Future<void> archive(String documentId) => _write(() => _archive(documentId));
+
+  Future<void> _archive(String documentId) async {
     final document = await _requireDocument(documentId);
     if (document.deletedAt != null) {
       throw const ValidationFailure(
@@ -82,18 +94,26 @@ class DocumentLifecycleService {
     );
   }
 
-  Future<void> restoreArchive(String documentId) => _documents.archive(
-    documentId,
-    archived: false,
-    updatedAt: _clock().toUtc(),
+  Future<void> restoreArchive(String documentId) => _write(
+    () => _documents.archive(
+      documentId,
+      archived: false,
+      updatedAt: _clock().toUtc(),
+    ),
   );
 
-  Future<void> moveToTrash(String documentId) async {
+  Future<void> moveToTrash(String documentId) =>
+      _write(() => _moveToTrash(documentId));
+
+  Future<void> _moveToTrash(String documentId) async {
     await _requireDocument(documentId);
     await _documents.moveToTrash(documentId, deletedAt: _clock().toUtc());
   }
 
-  Future<void> restoreFromTrash(String documentId) async {
+  Future<void> restoreFromTrash(String documentId) =>
+      _write(() => _restoreFromTrash(documentId));
+
+  Future<void> _restoreFromTrash(String documentId) async {
     final document = await _requireDocument(documentId);
     if (document.deletedAt == null) {
       throw const ValidationFailure('This document is not in Trash.');
@@ -101,7 +121,10 @@ class DocumentLifecycleService {
     await _documents.restore(documentId, updatedAt: _clock().toUtc());
   }
 
-  Future<void> deletePermanently(String documentId) async {
+  Future<void> deletePermanently(String documentId) =>
+      _write(() => _deletePermanently(documentId));
+
+  Future<void> _deletePermanently(String documentId) async {
     final document = await _requireDocument(documentId);
     if (document.deletedAt == null) {
       throw const ValidationFailure(
@@ -167,4 +190,7 @@ class DocumentLifecycleService {
     sizeBytes: file.sizeBytes,
     encryptionVersion: file.encryptionVersion,
   );
+
+  Future<T> _write<T>(Future<T> Function() action) =>
+      _operationGate?.runWrite(action) ?? action();
 }

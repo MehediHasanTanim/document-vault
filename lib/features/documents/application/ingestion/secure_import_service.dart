@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/concurrency/vault_operation_gate.dart';
 import '../../../../core/database/repositories.dart';
 import '../../../../core/database/vault_database.dart';
 import '../../../../core/errors/app_failure.dart';
@@ -40,6 +41,7 @@ class SecureImportService {
     this._journal,
     this._workspace,
     this._capacity, {
+    this.operationGate,
     Uuid? uuid,
     DateTime Function()? clock,
   }) : _uuid = uuid ?? const Uuid(),
@@ -51,12 +53,22 @@ class SecureImportService {
   final FileOperationJournal _journal;
   final PrivateImportWorkspace _workspace;
   final StorageCapacityProvider _capacity;
+  final VaultOperationGate? operationGate;
   final Uuid _uuid;
   final DateTime Function() _clock;
 
   Future<PrivateImportSession> openWorkspace() => _workspace.open();
 
   Future<SecureImportResult> importPages({
+    required String documentId,
+    required List<StagedImportFile> pages,
+  }) =>
+      operationGate?.runWrite(
+        () => _importPages(documentId: documentId, pages: pages),
+      ) ??
+      _importPages(documentId: documentId, pages: pages);
+
+  Future<SecureImportResult> _importPages({
     required String documentId,
     required List<StagedImportFile> pages,
   }) async {

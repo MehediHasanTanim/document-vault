@@ -104,6 +104,12 @@ abstract interface class ReminderRepository {
   Future<void> delete(String id);
 }
 
+abstract interface class BackupRepository {
+  Stream<List<BackupRecord>> watchAll();
+  Future<BackupRecord?> lastVerified();
+  Future<void> save(BackupRecordsCompanion record);
+}
+
 abstract interface class SettingsRepository {
   Future<String?> read(String key);
   Stream<String?> watch(String key);
@@ -568,6 +574,28 @@ class DriftReminderRepository implements ReminderRepository {
   @override
   Future<void> delete(String id) =>
       (_db.delete(_db.reminders)..where((r) => r.id.equals(id))).go();
+}
+
+class DriftBackupRepository implements BackupRepository {
+  DriftBackupRepository(this._db);
+  final VaultDatabase _db;
+
+  @override
+  Stream<List<BackupRecord>> watchAll() => (_db.select(
+    _db.backupRecords,
+  )..orderBy([(record) => OrderingTerm.desc(record.createdAt)])).watch();
+
+  @override
+  Future<BackupRecord?> lastVerified() =>
+      (_db.select(_db.backupRecords)
+            ..where((record) => record.verified.equals(true))
+            ..orderBy([(record) => OrderingTerm.desc(record.createdAt)])
+            ..limit(1))
+          .getSingleOrNull();
+
+  @override
+  Future<void> save(BackupRecordsCompanion record) =>
+      _db.into(_db.backupRecords).insertOnConflictUpdate(record);
 }
 
 class DriftSettingsRepository implements SettingsRepository {
