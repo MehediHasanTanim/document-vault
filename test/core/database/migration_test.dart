@@ -1,37 +1,18 @@
+import 'dart:io';
+
 import 'package:documentvault/core/database/vault_database.dart';
 import 'package:drift/drift.dart' show Variable;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqlite3/sqlite3.dart' as sqlite;
+
+import '../../support/database_test_harness.dart';
 
 void main() {
   test(
-    'v1 physical locations, versions, and backup history migrate additively',
+    'populated v1 fixture migrates forward and preserves existing rows',
     () async {
-      final database = VaultDatabase(
-        NativeDatabase.memory(
-          setup: (sqlite) {
-            sqlite.execute('''
-        CREATE TABLE physical_locations (
-          id TEXT NOT NULL PRIMARY KEY,
-          name_encrypted TEXT NOT NULL,
-          description_encrypted TEXT NULL,
-          created_at INTEGER NOT NULL,
-          updated_at INTEGER NOT NULL
-        );
-      ''');
-            sqlite.execute('''
-        CREATE TABLE backup_records (
-          id TEXT NOT NULL PRIMARY KEY,
-          relative_path TEXT NULL,
-          created_at INTEGER NOT NULL,
-          size_bytes INTEGER NOT NULL,
-          verified INTEGER NOT NULL
-        );
-      ''');
-            sqlite.execute('PRAGMA user_version = 1;');
-          },
-        ),
-      );
+      final database = openFixtureDatabase('test/fixtures/v1_schema.sql');
       addTearDown(database.close);
 
       final columns = await database
@@ -80,6 +61,19 @@ void main() {
         );
       }
       expect(database.schemaVersion, 6);
+      final location = await database
+          .customSelect(
+            "SELECT name_encrypted FROM physical_locations WHERE id = 'fixture-location-1'",
+          )
+          .getSingle();
+      expect(location.data['name_encrypted'], 'encrypted-location');
+      final backup = await database
+          .customSelect(
+            "SELECT size_bytes, destination_type, vault_changes_since_backup FROM backup_records WHERE id = 'fixture-backup-1'",
+          )
+          .getSingle();
+      expect(backup.data['size_bytes'], 512);
+      expect(backup.data['destination_type'], isNull);
     },
   );
 
@@ -123,6 +117,48 @@ void main() {
             .getSingleOrNull(),
         isNotNull,
       );
+    },
+  );
+
+  test(
+    'failed migration rolls back schema and user version for recovery',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'vault-migration-',
+      );
+      final databaseFile = File('${directory.path}/vault.sqlite');
+      addTearDown(() => directory.delete(recursive: true));
+
+      final raw = sqlite.sqlite3.open(databaseFile.path);
+      raw.execute('''
+      CREATE TABLE physical_locations (
+        id TEXT NOT NULL PRIMARY KEY,
+        name_encrypted TEXT NOT NULL,
+        description_encrypted TEXT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      );
+      PRAGMA user_version = 1;
+    ''');
+      raw.close();
+
+      final database = VaultDatabase(NativeDatabase(databaseFile));
+      await expectLater(
+        database.customSelect("PRAGMA table_info('physical_locations')").get(),
+        throwsA(isA<Object>()),
+      );
+      await database.close();
+
+      final afterFailure = sqlite.sqlite3.open(databaseFile.path);
+      addTearDown(afterFailure.close);
+      expect(
+        afterFailure.select('PRAGMA user_version').single['user_version'],
+        1,
+      );
+      final columns = afterFailure
+          .select("PRAGMA table_info('physical_locations')")
+          .map((row) => row['name']);
+      expect(columns, isNot(contains('is_archived')));
     },
   );
 }

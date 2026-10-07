@@ -46,3 +46,21 @@ security-reviewer sign-off; a `No impact` still requires a short rationale.
   versioned format or schema changes.
 - [ ] A security reviewer has approved any `Yes` answer above before merge.
 
+## Database workstream review
+
+Complete this section for every database schema, table, column, index,
+constraint, migration, or persisted-model change.
+
+- [ ] `VaultDatabase.currentSchemaVersion` is incremented for this schema
+  change, or this PR does not change the production schema.
+- [ ] An explicit, forward-only branch was added to `VaultDatabase._upgrade`.
+- [ ] A migration test opens a populated immutable fixture at the previous
+  released version and verifies both old → new structure and preserved data.
+- [ ] The migration's rollback/recovery behavior is tested: the transaction
+  leaves the old database intact on failure, or the PR documents the verified
+  safety snapshot/restore strategy required for a risky rewrite.
+- [ ] `docs/database/migration-policy.md` and
+  `docs/database/backup-compatibility.md` are updated when compatibility,
+  supported versions, or recovery behavior changes.
+- [ ] Backup/restore tests cover the schema boundary. Newer unsupported
+  schemas must be rejected before activation.
