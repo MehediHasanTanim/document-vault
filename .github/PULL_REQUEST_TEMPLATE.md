@@ -93,3 +93,11 @@ Complete this section for every user-facing screen or component change.
   happened and the available next action without exposing sensitive data.
 - [ ] English and বাংলা were manually checked for reading order, overflow,
   Bengali shaping, and large text on the affected platform.
+
+## Documentation review
+
+- [ ] Relevant `/docs` architecture, ADR, security, database, backup, testing,
+  release, or troubleshooting material is updated, or this change requires no
+  documentation update.
+- [ ] Links point to authoritative documents; no secret, private vault data,
+  or contradictory duplicate specification was added.
