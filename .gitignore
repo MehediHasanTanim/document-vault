@@ -44,5 +44,12 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# The audited OCR wrapper is vendored for its Android/iOS native bindings.
+# Its demo, images, and upstream tests are not application source or assets.
+/third_party/flutter_tesseract_ocr/example/
+/third_party/flutter_tesseract_ocr/images/
+/third_party/flutter_tesseract_ocr/test/
+/third_party/flutter_tesseract_ocr/example.gif
+
 # Widget Preview related
 .widget_preview/

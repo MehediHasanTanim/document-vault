@@ -15,6 +15,7 @@ class DocumentSearchRecord {
     required this.tags,
     required this.notes,
     required this.issuingAuthority,
+    this.ocrText,
     required this.expiryDate,
     required this.isFavorite,
     required this.isArchived,
@@ -31,6 +32,7 @@ class DocumentSearchRecord {
   final List<String> tags;
   final String? notes;
   final String? issuingAuthority;
+  final String? ocrText;
   final DateTime? expiryDate;
   final bool isFavorite;
   final bool isArchived;
@@ -81,6 +83,7 @@ class SecureSearchIndex {
           ...record.tags,
           record.notes,
           record.issuingAuthority,
+          record.ocrText,
         ].whereType<String>().join(' '),
       ),
     );

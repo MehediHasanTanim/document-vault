@@ -54,6 +54,15 @@ abstract interface class DocumentRepository {
   });
   Future<List<DocumentFile>> filesForDocument(String documentId);
 
+  /// Persists user-accepted local OCR as encrypted metadata. OCR can never
+  /// overwrite user-entered document fields.
+  Future<void> saveAcceptedOcrText({
+    required String documentId,
+    required String encryptedLabel,
+    required String encryptedText,
+    required DateTime updatedAt,
+  });
+
   /// Deletes database records and returns file metadata for journalled storage
   /// cleanup. Callers must not delete encrypted files before this transaction.
   Future<List<DocumentFile>> deletePermanently(String id);
@@ -383,6 +392,57 @@ class DriftDocumentRepository implements DocumentRepository {
   Future<List<DocumentFile>> filesForDocument(String documentId) => (_db.select(
     _db.documentFiles,
   )..where((file) => file.documentId.equals(documentId))).get();
+
+  @override
+  Future<void> saveAcceptedOcrText({
+    required String documentId,
+    required String encryptedLabel,
+    required String encryptedText,
+    required DateTime updatedAt,
+  }) => _db.transaction(() async {
+    final document = await getById(documentId);
+    if (document == null) {
+      throw StateError('Document must exist before saving OCR metadata.');
+    }
+    final existing =
+        await (_db.select(_db.documentFieldValues)..where(
+              (field) =>
+                  field.documentId.equals(documentId) &
+                  field.fieldKey.equals('ocr_text'),
+            ))
+            .getSingleOrNull();
+    if (existing == null) {
+      await _db
+          .into(_db.documentFieldValues)
+          .insert(
+            DocumentFieldValuesCompanion.insert(
+              id: 'ocr-$documentId',
+              documentId: documentId,
+              fieldKey: 'ocr_text',
+              labelEncrypted: Value(encryptedLabel),
+              valueEncrypted: encryptedText,
+              valueType: const Value('ocr'),
+              sortOrder: const Value(10000),
+              createdAt: updatedAt,
+              updatedAt: updatedAt,
+            ),
+          );
+    } else {
+      await (_db.update(
+        _db.documentFieldValues,
+      )..where((field) => field.id.equals(existing.id))).write(
+        DocumentFieldValuesCompanion(
+          labelEncrypted: Value(encryptedLabel),
+          valueEncrypted: Value(encryptedText),
+          valueType: const Value('ocr'),
+          updatedAt: Value(updatedAt),
+        ),
+      );
+    }
+    await (_db.update(_db.documents)
+          ..where((item) => item.id.equals(documentId)))
+        .write(DocumentsCompanion(updatedAt: Value(updatedAt)));
+  });
 
   @override
   Future<List<DocumentFile>> deletePermanently(String id) =>

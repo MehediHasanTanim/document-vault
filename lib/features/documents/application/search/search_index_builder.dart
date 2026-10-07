@@ -42,6 +42,12 @@ class SearchIndexBuilder {
     final owners = _group(snapshot.owners, (value) => value.documentId);
     final tagLinks = _group(snapshot.tagLinks, (value) => value.documentId);
     final files = _group(snapshot.files, (value) => value.documentId);
+    final ocrFields = _group(
+      snapshot.fields.where(
+        (field) => field.fieldKey == 'ocr_text' && field.valueType == 'ocr',
+      ),
+      (value) => value.documentId,
+    );
     final memberNames = <String, String>{};
     for (final member in snapshot.members) {
       memberNames[member.id] = await _decrypt(
@@ -101,6 +107,10 @@ class SearchIndexBuilder {
           issuingAuthority: await _decryptOptional(
             document.issuingAuthorityEncrypted,
             'document:${document.id}:authority',
+          ),
+          ocrText: await _decryptOptional(
+            ocrFields[document.id]?.firstOrNull?.valueEncrypted,
+            'document:${document.id}:ocr-text',
           ),
           expiryDate: document.expiryDate,
           isFavorite: document.isFavorite,

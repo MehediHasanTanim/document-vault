@@ -32,6 +32,12 @@ final class NotificationSchedulingFailure extends AppFailure {
   const NotificationSchedulingFailure(super.message, {super.cause});
 }
 
+/// Local OCR failed or is unavailable. Its message is safe for presentation
+/// and must never contain recognized text, a file path, or engine diagnostics.
+final class OcrFailure extends AppFailure {
+  const OcrFailure(super.message, {super.cause});
+}
+
 /// Deliberately does not reveal whether a backup failed authentication,
 /// structure validation, or password verification.
 final class BackupFailure extends AppFailure {
