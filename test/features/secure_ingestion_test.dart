@@ -90,6 +90,7 @@ void main() {
         pages: staged,
       );
       await session.dispose();
+      await session.dispose();
 
       expect(result.fileIds, hasLength(1));
       final stored = await database.select(database.documentFiles).getSingle();

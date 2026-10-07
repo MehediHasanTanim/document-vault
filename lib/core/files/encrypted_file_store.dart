@@ -185,14 +185,24 @@ class EncryptedFileStore implements SecureFileStore {
     final workspace = await Directory((await temporaryDirectory).path)
         .createTemp('view-');
     final temporaryFile = File('${workspace.path}/${_uuid.v4()}.bin');
+    IOSink? sink;
     try {
-      final sink = temporaryFile.openWrite(mode: FileMode.writeOnly);
+      sink = temporaryFile.openWrite(mode: FileMode.writeOnly);
       await for (final chunk in await readDecrypted(ref)) {
         sink.add(chunk);
       }
+      await sink.flush();
       await sink.close();
+      sink = null;
       return await action(temporaryFile);
     } finally {
+      // A corrupt/truncated stream can throw before the normal close above.
+      // Closing first avoids an open plaintext handle surviving cleanup.
+      try {
+        await sink?.close();
+      } on Object {
+        // Workspace deletion below remains the stronger cleanup guarantee.
+      }
       if (await workspace.exists()) await workspace.delete(recursive: true);
     }
   }
@@ -275,6 +285,9 @@ class EncryptedFileStore implements SecureFileStore {
 class EncryptedStorageCleanupManager {
   EncryptedStorageCleanupManager(this._store);
   final EncryptedFileStore _store;
+
+  /// Used by startup maintenance only; this never exposes document plaintext.
+  Future<Directory> get temporaryDirectory => _store.temporaryDirectory;
 
   Future<void> cleanTemporaryWorkspace() async {
     final temp = await _store.temporaryDirectory;

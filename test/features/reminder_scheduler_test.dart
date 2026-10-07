@@ -94,6 +94,28 @@ void main() {
     expect(notifications.scheduled, hasLength(1));
   });
 
+  test('retains reminder rows when an OS schedule attempt fails and retries on reconciliation', () async {
+    final repository = _ReminderRepository();
+    final notifications = _Notifications(scheduleError: StateError('OS quota'));
+    final scheduler = ReminderScheduler(
+      repository,
+      notifications,
+      _Ids(),
+      clock: () => now,
+    );
+    await expectLater(
+      scheduler.configure(
+        document: _document(),
+        setup: const ReminderSetup(rules: [ReminderRule.daysBefore(30)]),
+      ),
+      throwsStateError,
+    );
+    expect(await repository.listAll(), hasLength(1));
+    notifications.scheduleError = null;
+    await scheduler.reconcile([_document()]);
+    expect(notifications.scheduled, hasLength(1));
+  });
+
   test('enforces scheduling limits, snoozes, completes and reconciles after app restart', () async {
     final repository = _ReminderRepository();
     final notifications = _Notifications(pending: 64);
@@ -196,9 +218,11 @@ class _Notifications implements LocalNotificationGateway {
   _Notifications({
     this.permissionValue = LocalNotificationPermission.granted,
     this.pending = 0,
+    this.scheduleError,
   });
   LocalNotificationPermission permissionValue;
   int pending;
+  Object? scheduleError;
   final scheduled = <int>[];
   final cancelled = <int>[];
   final contents = <PrivateNotificationContent>[];
@@ -220,6 +244,7 @@ class _Notifications implements LocalNotificationGateway {
     required DateTime at,
     required PrivateNotificationContent content,
   }) async {
+    if (scheduleError != null) throw scheduleError!;
     scheduled.add(notificationId);
     contents.add(content);
   }

@@ -12,6 +12,7 @@ class SecureViewerSession {
   SecureViewerSession._(this.file, this._workspace);
   final File file;
   final Directory _workspace;
+  Future<void>? _closeFuture;
 
   static Future<SecureViewerSession> open(
     EncryptedFileStore store,
@@ -21,14 +22,22 @@ class SecureViewerSession {
     final workspace = await Directory((await store.temporaryDirectory).path)
         .createTemp('viewer-');
     final file = File('${workspace.path}/${(uuid ?? const Uuid()).v4()}.bin');
+    IOSink? sink;
     try {
-      final sink = file.openWrite(mode: FileMode.writeOnly);
+      sink = file.openWrite(mode: FileMode.writeOnly);
       await for (final chunk in await store.readDecrypted(reference)) {
         sink.add(chunk);
       }
+      await sink.flush();
       await sink.close();
+      sink = null;
       return SecureViewerSession._(file, workspace);
     } on Object catch (error) {
+      try {
+        await sink?.close();
+      } on Object {
+        // The workspace deletion below is still attempted.
+      }
       if (await workspace.exists()) await workspace.delete(recursive: true);
       if (error is AppFailure) rethrow;
       throw StorageFailure(
@@ -38,7 +47,10 @@ class SecureViewerSession {
     }
   }
 
-  Future<void> close() async {
+  /// Safe when a dismissal races an automatic vault lock.
+  Future<void> close() => _closeFuture ??= _close();
+
+  Future<void> _close() async {
     if (await _workspace.exists()) await _workspace.delete(recursive: true);
   }
 }

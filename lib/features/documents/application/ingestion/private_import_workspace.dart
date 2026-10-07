@@ -27,15 +27,18 @@ class PrivateImportSession {
   PrivateImportSession(this._directory, this._uuid);
   final Directory _directory;
   final Uuid _uuid;
+  Future<void>? _disposeFuture;
 
   Future<StagedImportFile> copyAndValidate(
     SelectedImportFile selected,
     ImportFileValidator validator,
   ) async {
     final destination = File('${_directory.path}/${_uuid.v4()}.source');
+    IOSink? sink;
     try {
-      final sink = destination.openWrite(mode: FileMode.writeOnly);
+      sink = destination.openWrite(mode: FileMode.writeOnly);
       await selected.file.openRead().pipe(sink);
+      sink = null; // [pipe] closes the destination sink on normal completion.
       final validation = await validator.validate(
         destination,
         declaredMimeType: selected.declaredMimeType,
@@ -48,6 +51,11 @@ class PrivateImportSession {
         rotation: selected.rotation,
       );
     } on Object catch (error) {
+      try {
+        await sink?.close();
+      } on Object {
+        // Delete the incomplete private staging file below either way.
+      }
       if (await destination.exists()) await destination.delete();
       if (error is AppFailure) rethrow;
       throw StorageFailure(
@@ -57,7 +65,10 @@ class PrivateImportSession {
     }
   }
 
-  Future<void> dispose() async {
+  /// Safe when normal completion and lifecycle cleanup overlap.
+  Future<void> dispose() => _disposeFuture ??= _dispose();
+
+  Future<void> _dispose() async {
     if (await _directory.exists()) await _directory.delete(recursive: true);
   }
 }

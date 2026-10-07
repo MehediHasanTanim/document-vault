@@ -58,6 +58,26 @@ void main() {
     }, throwsA(isA<StorageFailure>()));
   });
 
+  test('closes and removes a temporary plaintext workspace after stream integrity failure', () async {
+    final reference = await store.writeEncrypted(
+      documentId: 'document-1',
+      mimeType: 'image/jpeg',
+      bytes: Stream.value([1, 2, 3, 4]),
+    );
+    final encrypted = File(
+      '${(await store.documentsDirectory).path}/${reference.encryptedRelativePath}',
+    );
+    final bytes = await encrypted.readAsBytes();
+    bytes[20] ^= 0x01;
+    await encrypted.writeAsBytes(bytes, flush: true);
+
+    await expectLater(
+      store.withDecryptedTemporaryFile<void>(reference, (_) async {}),
+      throwsA(isA<StorageFailure>()),
+    );
+    expect(await (await store.temporaryDirectory).list().isEmpty, isTrue);
+  });
+
   test('cleanup removes only unreferenced encrypted files and all viewer workspace files', () async {
     final retained = await store.writeEncrypted(
       documentId: 'document-1',

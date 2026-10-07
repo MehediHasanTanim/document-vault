@@ -131,6 +131,7 @@ void main() {
       expect(await session.file.exists(), isTrue);
       final temporaryPath = session.file.parent.path;
       await session.close();
+      await session.close();
       expect(await Directory(temporaryPath).exists(), isFalse);
     },
   );
