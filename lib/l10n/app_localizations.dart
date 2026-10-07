@@ -146,6 +146,276 @@ abstract class AppLocalizations {
   /// **'Unlock Document Vault'**
   String get unlockVault;
 
+  /// No description provided for @preparingVault.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your vault'**
+  String get preparingVault;
+
+  /// No description provided for @scanNewDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan new document'**
+  String get scanNewDocument;
+
+  /// No description provided for @noDocumentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No documents yet'**
+  String get noDocumentsYet;
+
+  /// No description provided for @noDocumentsYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan or import a document to build your private vault.'**
+  String get noDocumentsYetMessage;
+
+  /// No description provided for @readyToAddDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to add a document'**
+  String get readyToAddDocument;
+
+  /// No description provided for @readyToAddDocumentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Scan, Import photos, or Import PDF from the add-document flow.'**
+  String get readyToAddDocumentMessage;
+
+  /// No description provided for @noUpcomingReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming reminders'**
+  String get noUpcomingReminders;
+
+  /// No description provided for @noUpcomingRemindersMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry reminders will appear here and never show document numbers.'**
+  String get noUpcomingRemindersMessage;
+
+  /// No description provided for @family.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get family;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// No description provided for @archive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archive;
+
+  /// No description provided for @trash.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash'**
+  String get trash;
+
+  /// No description provided for @backupAndRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & Restore'**
+  String get backupAndRestore;
+
+  /// No description provided for @storage.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage'**
+  String get storage;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @helpAndAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & About'**
+  String get helpAndAbout;
+
+  /// No description provided for @familyEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add family members to organise documents by person.'**
+  String get familyEmptyMessage;
+
+  /// No description provided for @categoriesEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'System categories will organise your documents.'**
+  String get categoriesEmptyMessage;
+
+  /// No description provided for @tagsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create tags to group related documents.'**
+  String get tagsEmptyMessage;
+
+  /// No description provided for @archiveEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived documents'**
+  String get archiveEmptyMessage;
+
+  /// No description provided for @trashEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash is empty'**
+  String get trashEmptyMessage;
+
+  /// No description provided for @moreEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an option from More after your vault is unlocked.'**
+  String get moreEmptyMessage;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your important documents safe and organized'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Works offline'**
+  String get onboardingWelcomeOffline;
+
+  /// No description provided for @onboardingWelcomeDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored on this device'**
+  String get onboardingWelcomeDevice;
+
+  /// No description provided for @onboardingWelcomeBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry reminders and encrypted backup'**
+  String get onboardingWelcomeBackup;
+
+  /// No description provided for @changeLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change language'**
+  String get changeLanguage;
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose language'**
+  String get chooseLanguage;
+
+  /// No description provided for @languageBangla.
+  ///
+  /// In en, this message translates to:
+  /// **'বাংলা'**
+  String get languageBangla;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @privacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your documents stay with you'**
+  String get privacyTitle;
+
+  /// No description provided for @privacyDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored on your device'**
+  String get privacyDevice;
+
+  /// No description provided for @privacyNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'No app account required'**
+  String get privacyNoAccount;
+
+  /// No description provided for @privacyBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep an encrypted backup'**
+  String get privacyBackup;
+
+  /// No description provided for @privacySharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Be careful when sharing'**
+  String get privacySharing;
+
+  /// No description provided for @understandContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand — continue'**
+  String get understandContinue;
+
+  /// No description provided for @createVaultPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Create vault PIN'**
+  String get createVaultPin;
+
+  /// No description provided for @pinSetupInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a 6-digit PIN to unlock your vault.'**
+  String get pinSetupInstruction;
+
+  /// No description provided for @pinSetupWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not use an easy PIN such as 123456.'**
+  String get pinSetupWarning;
+
+  /// No description provided for @usePin.
+  ///
+  /// In en, this message translates to:
+  /// **'Use PIN'**
+  String get usePin;
+
+  /// No description provided for @forgotPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot PIN?'**
+  String get forgotPin;
+
+  /// No description provided for @unlockVaultDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock your private document vault'**
+  String get unlockVaultDescription;
+
+  /// No description provided for @expiringSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring soon'**
+  String get expiringSoon;
+
   /// No description provided for @categoryIdentity.
   ///
   /// In en, this message translates to:

@@ -11,6 +11,7 @@ import '../../features/home/presentation/home_screen.dart';
 import '../../features/home/presentation/more_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screens.dart';
 import '../../core/presentation/vault_feedback_states.dart';
+import '../../l10n/localization_extension.dart';
 
 enum VaultAccessState { onboarding, locked, unlocked }
 
@@ -122,6 +123,7 @@ class VaultShell extends StatelessWidget {
   final VoidCallback? onLock;
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final child = switch (tab) {
       VaultTab.home => HomeScreen(
         onLock: onLock,
@@ -131,20 +133,20 @@ class VaultShell extends StatelessWidget {
         onAddDocument: () => context.go('/scan'),
         onOpenBackup: () => context.push('/more/backup_restore'),
       ),
-      VaultTab.documents => const MvpTabState(
+      VaultTab.documents => MvpTabState(
         icon: Icons.description_outlined,
-        title: 'No documents yet / এখনো কোনো ডকুমেন্ট নেই',
-        message: 'Scan or import a document to build your private vault. / আপনার ব্যক্তিগত ভল্টে নথি স্ক্যান বা ইমপোর্ট করুন।',
+        title: l10n.noDocumentsYet,
+        message: l10n.noDocumentsYetMessage,
       ),
-      VaultTab.scan => const MvpTabState(
+      VaultTab.scan => MvpTabState(
         icon: Icons.document_scanner_outlined,
-        title: 'Ready to add a document / নথি যোগ করতে প্রস্তুত',
-        message: 'Choose Scan, Import photos, or Import PDF from the add-document flow. / স্ক্যান, ছবি বা PDF ইমপোর্ট বেছে নিন।',
+        title: l10n.readyToAddDocument,
+        message: l10n.readyToAddDocumentMessage,
       ),
-      VaultTab.reminders => const MvpTabState(
+      VaultTab.reminders => MvpTabState(
         icon: Icons.notifications_none_rounded,
-        title: 'No upcoming reminders / কোনো আসন্ন রিমাইন্ডার নেই',
-        message: 'Expiry reminders will appear here and never show document numbers. / মেয়াদের রিমাইন্ডার এখানে দেখাবে; নথির নম্বর দেখাবে না।',
+        title: l10n.noUpcomingReminders,
+        message: l10n.noUpcomingRemindersMessage,
       ),
       VaultTab.more => MoreScreen(
         onOpen: (destination) => context.push('/more/${destination.name}'),
@@ -154,7 +156,7 @@ class VaultShell extends StatelessWidget {
       body: child,
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.go('/scan'),
-        tooltip: 'Scan new document',
+        tooltip: l10n.scanNewDocument,
         child: const Icon(Icons.document_scanner_outlined),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -163,31 +165,31 @@ class VaultShell extends StatelessWidget {
         onDestinationSelected: (index) => context.go(
           const ['/home', '/documents', '/scan', '/reminders', '/more'][index],
         ),
-        destinations: const [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label: 'Home / হোম',
+            label: l10n.home,
           ),
           NavigationDestination(
             icon: Icon(Icons.description_outlined),
             selectedIcon: Icon(Icons.description),
-            label: 'Documents / ডকুমেন্ট',
+            label: l10n.documents,
           ),
           NavigationDestination(
             icon: Icon(Icons.document_scanner_outlined),
             selectedIcon: Icon(Icons.document_scanner),
-            label: 'Scan / স্ক্যান',
+            label: l10n.scan,
           ),
           NavigationDestination(
             icon: Icon(Icons.notifications_none),
             selectedIcon: Icon(Icons.notifications),
-            label: 'Reminders / রিমাইন্ডার',
+            label: l10n.reminders,
           ),
           NavigationDestination(
             icon: Icon(Icons.more_horiz),
             selectedIcon: Icon(Icons.more_horiz),
-            label: 'More / আরও',
+            label: l10n.more,
           ),
         ],
       ),
@@ -215,25 +217,24 @@ class MoreDestinationScreen extends StatelessWidget {
   final String destination;
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(_label(destination))),
+    appBar: AppBar(title: Text(_label(context, destination))),
     body: MvpTabState(
       icon: _icon(destination),
-      title: _label(destination),
-      message: _emptyCopy(destination),
+      title: _label(context, destination),
+      message: _emptyCopy(context, destination),
     ),
   );
-  String _label(String value) => switch (value) {
-    'family' => 'Family / পরিবার',
-    'categories' => 'Categories / বিভাগ',
-    'tags' => 'Tags / ট্যাগ',
-    'archive' => 'Archive / আর্কাইভ',
-    'trash' => 'Trash / ট্র্যাশ',
-    'backupRestore' ||
-    'backup_restore' => 'Backup & Restore / ব্যাকআপ ও পুনরুদ্ধার',
-    'storage' => 'Storage / স্টোরেজ',
-    'settings' => 'Settings / সেটিংস',
-    'help' => 'Help & About / সহায়তা ও পরিচিতি',
-    _ => 'More / আরও',
+  String _label(BuildContext context, String value) => switch (value) {
+    'family' => context.l10n.family,
+    'categories' => context.l10n.categories,
+    'tags' => context.l10n.tags,
+    'archive' => context.l10n.archive,
+    'trash' => context.l10n.trash,
+    'backupRestore' || 'backup_restore' => context.l10n.backupAndRestore,
+    'storage' => context.l10n.storage,
+    'settings' => context.l10n.settings,
+    'help' => context.l10n.helpAndAbout,
+    _ => context.l10n.more,
   };
   IconData _icon(String value) => switch (value) {
     'family' => Icons.groups_outlined,
@@ -244,12 +245,12 @@ class MoreDestinationScreen extends StatelessWidget {
     'storage' => Icons.storage_outlined,
     _ => Icons.more_horiz,
   };
-  String _emptyCopy(String value) => switch (value) {
-    'family' => 'Add family members to organise documents by person. / ব্যক্তির নামে নথি গুছাতে সদস্য যোগ করুন।',
-    'categories' => 'System categories will organise your documents. / সিস্টেম বিভাগ দিয়ে নথি গুছিয়ে নিন।',
-    'tags' => 'Create tags to group related documents. / সম্পর্কিত নথি গুছাতে ট্যাগ তৈরি করুন।',
-    'archive' => 'No archived documents / কোনো আর্কাইভ করা নথি নেই',
-    'trash' => 'Trash is empty / ট্র্যাশ খালি',
-    _ => 'Choose an option from More after your vault is unlocked. / ভল্ট খোলার পর আরও থেকে একটি অপশন বেছে নিন।',
+  String _emptyCopy(BuildContext context, String value) => switch (value) {
+    'family' => context.l10n.familyEmptyMessage,
+    'categories' => context.l10n.categoriesEmptyMessage,
+    'tags' => context.l10n.tagsEmptyMessage,
+    'archive' => context.l10n.archiveEmptyMessage,
+    'trash' => context.l10n.trashEmptyMessage,
+    _ => context.l10n.moreEmptyMessage,
   };
 }

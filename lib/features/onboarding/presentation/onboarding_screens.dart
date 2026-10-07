@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/localization/locale_controller.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../l10n/localization_extension.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -18,12 +19,12 @@ class SplashScreen extends StatelessWidget {
             const Icon(Icons.folder_outlined, size: 82, color: AppColors.blue),
             const SizedBox(height: 18),
             Text(
-              'Document Vault BD',
+              context.l10n.appName,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 22),
-            const CircularProgressIndicator(
-              semanticsLabel: 'Preparing your vault',
+            CircularProgressIndicator(
+              semanticsLabel: context.l10n.preparingVault,
             ),
           ],
         ),
@@ -36,17 +37,16 @@ class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
   @override
   Widget build(BuildContext context) => OnboardingPage(
-    title: 'Keep your important documents safe and organized',
-    bangla: 'গুরুত্বপূর্ণ কাগজপত্র নিরাপদে গুছিয়ে রাখুন',
+    title: context.l10n.onboardingWelcomeTitle,
     icon: Icons.folder_outlined,
-    body: const [
-      'Works offline',
-      'Stored on this device',
-      'Expiry reminders and encrypted backup',
+    body: [
+      context.l10n.onboardingWelcomeOffline,
+      context.l10n.onboardingWelcomeDevice,
+      context.l10n.onboardingWelcomeBackup,
     ],
-    action: 'Get Started',
+    action: context.l10n.getStarted,
     onAction: () => context.go('/language'),
-    secondary: 'Change Language',
+    secondary: context.l10n.changeLanguage,
     onSecondary: () => context.go('/language'),
   );
 }
@@ -55,11 +55,10 @@ class LanguageScreen extends ConsumerWidget {
   const LanguageScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => OnboardingPage(
-    title: 'Choose Language',
-    bangla: 'ভাষা নির্বাচন করুন',
+    title: context.l10n.chooseLanguage,
     icon: Icons.language_rounded,
-    body: const ['বাংলা', 'English'],
-    action: 'Continue',
+    body: [context.l10n.languageBangla, context.l10n.languageEnglish],
+    action: context.l10n.continueLabel,
     onAction: () {
       ref.read(localeControllerProvider.notifier).setLocale(const Locale('bn'));
       context.go('/privacy');
@@ -71,16 +70,15 @@ class PrivacyScreen extends StatelessWidget {
   const PrivacyScreen({super.key});
   @override
   Widget build(BuildContext context) => OnboardingPage(
-    title: 'Your documents stay with you',
-    bangla: 'আপনার নথি আপনার ডিভাইসেই থাকে',
+    title: context.l10n.privacyTitle,
     icon: Icons.verified_user_outlined,
-    body: const [
-      'Stored on your device',
-      'No app account required',
-      'Keep an encrypted backup',
-      'Be careful when sharing',
+    body: [
+      context.l10n.privacyDevice,
+      context.l10n.privacyNoAccount,
+      context.l10n.privacyBackup,
+      context.l10n.privacySharing,
     ],
-    action: 'I Understand — Continue',
+    action: context.l10n.understandContinue,
     onAction: () => context.go('/setup/pin'),
   );
 }
@@ -89,14 +87,10 @@ class PinSetupScreen extends ConsumerWidget {
   const PinSetupScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => OnboardingPage(
-    title: 'Create Vault PIN',
-    bangla: 'ভল্ট পিন তৈরি করুন',
+    title: context.l10n.createVaultPin,
     icon: Icons.lock_outline,
-    body: const [
-      'Use a 6-digit PIN to unlock your vault.',
-      'Do not use an easy PIN such as 123456.',
-    ],
-    action: 'Continue',
+    body: [context.l10n.pinSetupInstruction, context.l10n.pinSetupWarning],
+    action: context.l10n.continueLabel,
     onAction: () {
       ref.read(vaultAccessProvider.notifier).completeSetup();
       context.go('/unlock');
@@ -107,7 +101,6 @@ class PinSetupScreen extends ConsumerWidget {
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({
     required this.title,
-    required this.bangla,
     required this.icon,
     required this.body,
     required this.action,
@@ -117,7 +110,6 @@ class OnboardingPage extends StatelessWidget {
     super.key,
   });
   final String title;
-  final String bangla;
   final IconData icon;
   final List<String> body;
   final String action;
@@ -139,12 +131,6 @@ class OnboardingPage extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              bangla,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 24),
             ...body.map(

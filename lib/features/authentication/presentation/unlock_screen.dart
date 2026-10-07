@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../l10n/localization_extension.dart';
 
 class UnlockScreen extends ConsumerWidget {
   const UnlockScreen({super.key});
@@ -20,14 +21,14 @@ class UnlockScreen extends ConsumerWidget {
             const Icon(Icons.folder_outlined, size: 86, color: Colors.white),
             const SizedBox(height: 24),
             Text(
-              'Unlock Document Vault',
+              context.l10n.unlockVault,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge
                   ?.copyWith(color: Colors.white),
             ),
             const SizedBox(height: 8),
             Text(
-              'আপনার ডকুমেন্ট ভল্ট খুলুন',
+              context.l10n.unlockVaultDescription,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge
                   ?.copyWith(color: Colors.white70),
@@ -38,12 +39,12 @@ class UnlockScreen extends ConsumerWidget {
                 ref.read(vaultAccessProvider.notifier).unlock();
                 context.go('/home');
               },
-              child: const Text('Use PIN'),
+              child: Text(context.l10n.usePin),
             ),
             TextButton(
               onPressed: () {},
-              child: const Text(
-                'Forgot PIN?',
+              child: Text(
+                context.l10n.forgotPin,
                 style: TextStyle(color: Colors.white),
               ),
             ),

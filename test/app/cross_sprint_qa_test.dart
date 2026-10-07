@@ -28,7 +28,7 @@ void main() {
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(app.locale, const Locale('bn'));
     expect(app.themeMode, ThemeMode.dark);
-    expect(find.text('Document Vault BD'), findsOneWidget);
+    expect(find.text('ডকুমেন্ট ভল্ট বিডি'), findsOneWidget);
   });
 
   testWidgets('app smoke renders English in light mode', (tester) async {

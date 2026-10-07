@@ -64,3 +64,17 @@ constraint, migration, or persisted-model change.
   supported versions, or recovery behavior changes.
 - [ ] Backup/restore tests cover the schema boundary. Newer unsupported
   schemas must be rejected before activation.
+
+## Localization workstream review
+
+Complete this section for every user-facing UI change.
+
+- [ ] Every visible string uses a generated localization key; no new hardcoded
+  UI copy, paired English/Bangla literal, or locale-dependent formatting was
+  added to a widget.
+- [ ] The key has natural English and বাংলা values in `app_en.arb` and
+  `app_bn.arb`, including placeholders and plural/select variants where used.
+- [ ] Terminology follows `docs/localization/Localization_Workstream.md`.
+- [ ] English and বাংলা were checked for overflow, Bengali shaping,
+  mixed-language values, date/numeral formatting, semantics labels, and text
+  scaling on the affected screen.

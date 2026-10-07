@@ -34,6 +34,148 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unlockVault => 'Unlock Document Vault';
 
   @override
+  String get preparingVault => 'Preparing your vault';
+
+  @override
+  String get scanNewDocument => 'Scan new document';
+
+  @override
+  String get noDocumentsYet => 'No documents yet';
+
+  @override
+  String get noDocumentsYetMessage =>
+      'Scan or import a document to build your private vault.';
+
+  @override
+  String get readyToAddDocument => 'Ready to add a document';
+
+  @override
+  String get readyToAddDocumentMessage =>
+      'Choose Scan, Import photos, or Import PDF from the add-document flow.';
+
+  @override
+  String get noUpcomingReminders => 'No upcoming reminders';
+
+  @override
+  String get noUpcomingRemindersMessage =>
+      'Expiry reminders will appear here and never show document numbers.';
+
+  @override
+  String get family => 'Family';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get archive => 'Archive';
+
+  @override
+  String get trash => 'Trash';
+
+  @override
+  String get backupAndRestore => 'Backup & Restore';
+
+  @override
+  String get storage => 'Storage';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get helpAndAbout => 'Help & About';
+
+  @override
+  String get familyEmptyMessage =>
+      'Add family members to organise documents by person.';
+
+  @override
+  String get categoriesEmptyMessage =>
+      'System categories will organise your documents.';
+
+  @override
+  String get tagsEmptyMessage => 'Create tags to group related documents.';
+
+  @override
+  String get archiveEmptyMessage => 'No archived documents';
+
+  @override
+  String get trashEmptyMessage => 'Trash is empty';
+
+  @override
+  String get moreEmptyMessage =>
+      'Choose an option from More after your vault is unlocked.';
+
+  @override
+  String get onboardingWelcomeTitle =>
+      'Keep your important documents safe and organized';
+
+  @override
+  String get onboardingWelcomeOffline => 'Works offline';
+
+  @override
+  String get onboardingWelcomeDevice => 'Stored on this device';
+
+  @override
+  String get onboardingWelcomeBackup => 'Expiry reminders and encrypted backup';
+
+  @override
+  String get changeLanguage => 'Change language';
+
+  @override
+  String get chooseLanguage => 'Choose language';
+
+  @override
+  String get languageBangla => 'বাংলা';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get privacyTitle => 'Your documents stay with you';
+
+  @override
+  String get privacyDevice => 'Stored on your device';
+
+  @override
+  String get privacyNoAccount => 'No app account required';
+
+  @override
+  String get privacyBackup => 'Keep an encrypted backup';
+
+  @override
+  String get privacySharing => 'Be careful when sharing';
+
+  @override
+  String get understandContinue => 'I understand — continue';
+
+  @override
+  String get createVaultPin => 'Create vault PIN';
+
+  @override
+  String get pinSetupInstruction => 'Use a 6-digit PIN to unlock your vault.';
+
+  @override
+  String get pinSetupWarning => 'Do not use an easy PIN such as 123456.';
+
+  @override
+  String get usePin => 'Use PIN';
+
+  @override
+  String get forgotPin => 'Forgot PIN?';
+
+  @override
+  String get unlockVaultDescription => 'Unlock your private document vault';
+
+  @override
+  String get expiringSoon => 'Expiring soon';
+
+  @override
   String get categoryIdentity => 'Identity';
 
   @override
