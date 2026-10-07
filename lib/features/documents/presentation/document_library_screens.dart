@@ -248,6 +248,7 @@ class DocumentDetailsScreen extends StatelessWidget {
     required this.details,
     required this.thumbnails,
     this.onOpenPreview,
+    this.onShareExport,
     this.onEditReminder,
     this.onSetFavorite,
     this.onArchive,
@@ -260,6 +261,7 @@ class DocumentDetailsScreen extends StatelessWidget {
   final DocumentDetailsData details;
   final ProtectedThumbnailService thumbnails;
   final VoidCallback? onOpenPreview;
+  final VoidCallback? onShareExport;
   final VoidCallback? onEditReminder;
   final Future<void> Function(bool favorite)? onSetFavorite;
   final Future<void> Function()? onArchive;
@@ -296,6 +298,11 @@ class DocumentDetailsScreen extends StatelessWidget {
                   child: Text('Delete permanently / স্থায়ীভাবে মুছুন'),
                 ),
             ] else ...[
+              if (onShareExport != null)
+                const PopupMenuItem(
+                  value: _DocumentLifecycleAction.shareExport,
+                  child: Text('Share/Export / শেয়ার বা রপ্তানি'),
+                ),
               if (details.card.isArchived && onRestoreArchive != null)
                 const PopupMenuItem(
                   value: _DocumentLifecycleAction.restoreArchive,
@@ -385,6 +392,9 @@ class DocumentDetailsScreen extends StatelessWidget {
     _DocumentLifecycleAction action,
   ) async {
     switch (action) {
+      case _DocumentLifecycleAction.shareExport:
+        onShareExport?.call();
+        return;
       case _DocumentLifecycleAction.archive:
         await onArchive?.call();
         return;
@@ -477,6 +487,7 @@ class DocumentDetailsScreen extends StatelessWidget {
 }
 
 enum _DocumentLifecycleAction {
+  shareExport,
   archive,
   restoreArchive,
   moveToTrash,

@@ -5,6 +5,7 @@ import UIKit
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var privacyView: UIView?
   private var backupExportDelegate: BackupExportDelegate?
+  private var secureShareCompletion: FlutterResult?
   private var privacyCoverEnabled = true
 
   override func application(
@@ -41,6 +42,37 @@ import UIKit
         )
         picker.delegate = exporter
         presenter.present(picker, animated: true)
+      }
+      let shareChannel = FlutterMethodChannel(
+        name: "documentvault/secure_share",
+        binaryMessenger: controller.binaryMessenger
+      )
+      shareChannel.setMethodCallHandler { [weak self, weak controller] call, result in
+        guard call.method == "share" else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+        guard self?.secureShareCompletion == nil,
+              let arguments = call.arguments as? [String: Any],
+              let sourcePaths = arguments["sourcePaths"] as? [String],
+              let presenter = controller,
+              !sourcePaths.isEmpty,
+              sourcePaths.allSatisfy({ FileManager.default.fileExists(atPath: $0) }) else {
+          result(FlutterError(code: "invalid_source", message: "Secure export is unavailable.", details: nil))
+          return
+        }
+        let activity = UIActivityViewController(
+          activityItems: sourcePaths.map { URL(fileURLWithPath: $0) },
+          applicationActivities: nil
+        )
+        self?.secureShareCompletion = result
+        activity.completionWithItemsHandler = { [weak self] _, completed, _, _ in
+          guard let callback = self?.secureShareCompletion else { return }
+          self?.secureShareCompletion = nil
+          // iOS deliberately withholds recipient identity; only completion is returned.
+          callback(completed)
+        }
+        presenter.present(activity, animated: true)
       }
       let privacyChannel = FlutterMethodChannel(
         name: "documentvault/privacy_display",

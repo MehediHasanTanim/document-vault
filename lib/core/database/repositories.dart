@@ -119,6 +119,11 @@ abstract interface class BackupRepository {
   Future<void> save(BackupRecordsCompanion record);
 }
 
+abstract interface class ShareAuditRepository {
+  Future<void> record(ShareAuditEventsCompanion event);
+  Future<List<ShareAuditEvent>> listForDocument(String documentId);
+}
+
 abstract interface class SettingsRepository {
   Future<String?> read(String key);
   Stream<String?> watch(String key);
@@ -656,6 +661,22 @@ class DriftBackupRepository implements BackupRepository {
   @override
   Future<void> save(BackupRecordsCompanion record) =>
       _db.into(_db.backupRecords).insertOnConflictUpdate(record);
+}
+
+class DriftShareAuditRepository implements ShareAuditRepository {
+  DriftShareAuditRepository(this._db);
+  final VaultDatabase _db;
+
+  @override
+  Future<void> record(ShareAuditEventsCompanion event) =>
+      _db.into(_db.shareAuditEvents).insert(event);
+
+  @override
+  Future<List<ShareAuditEvent>> listForDocument(String documentId) =>
+      (_db.select(_db.shareAuditEvents)
+            ..where((event) => event.documentId.equals(documentId))
+            ..orderBy([(event) => OrderingTerm.desc(event.createdAt)]))
+          .get();
 }
 
 class DriftSettingsRepository implements SettingsRepository {

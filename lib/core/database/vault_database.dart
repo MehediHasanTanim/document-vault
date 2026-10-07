@@ -223,6 +223,23 @@ class BackupRecords extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Contains only non-sensitive evidence that a protected export was handed to
+/// the OS share flow. It deliberately omits document titles, numbers, paths,
+/// recipient apps, recipients, watermark text, and redaction geometry.
+class ShareAuditEvents extends Table {
+  TextColumn get id => text()();
+  TextColumn get documentId =>
+      text().references(Documents, #id, onDelete: KeyAction.cascade)();
+  TextColumn get eventType => text()();
+  IntColumn get pageCount => integer()();
+  TextColumn get exportFormat => text()();
+  BoolColumn get hadWatermark => boolean()();
+  BoolColumn get hadRedactions => boolean()();
+  DateTimeColumn get createdAt => dateTime()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class AppSettings extends Table {
   TextColumn get key => text()();
   TextColumn get valueEncrypted => text()();
@@ -259,6 +276,7 @@ class PendingOperations extends Table {
     DocumentTags,
     Reminders,
     BackupRecords,
+    ShareAuditEvents,
     AppSettings,
     PendingOperations,
   ],
@@ -267,7 +285,7 @@ class VaultDatabase extends _$VaultDatabase {
   VaultDatabase(super.e);
   VaultDatabase.defaults() : super(driftDatabase(name: 'document_vault'));
 
-  static const currentSchemaVersion = 4;
+  static const currentSchemaVersion = 5;
   @override
   int get schemaVersion => currentSchemaVersion;
 
@@ -301,6 +319,12 @@ class VaultDatabase extends _$VaultDatabase {
         await m.addColumn(backupRecords, backupRecords.destinationType);
         await m.addColumn(backupRecords, backupRecords.vaultChangesSinceBackup);
       }
+      if (from < 5 && to >= 5) {
+        await m.createTable(shareAuditEvents);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_share_audit_document_created ON share_audit_events(document_id, created_at)',
+        );
+      }
     });
   }
 
@@ -324,5 +348,6 @@ class VaultDatabase extends _$VaultDatabase {
     'CREATE INDEX IF NOT EXISTS idx_document_owners_member ON document_owners(family_member_id)',
     'CREATE INDEX IF NOT EXISTS idx_document_tags_tag ON document_tags(tag_id)',
     'CREATE INDEX IF NOT EXISTS idx_document_versions_document ON document_versions(document_id)',
+    'CREATE INDEX IF NOT EXISTS idx_share_audit_document_created ON share_audit_events(document_id, created_at)',
   ];
 }

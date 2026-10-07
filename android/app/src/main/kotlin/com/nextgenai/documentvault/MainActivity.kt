@@ -3,6 +3,7 @@ package com.nextgenai.documentvault
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -11,6 +12,7 @@ import java.io.File
 class MainActivity : FlutterActivity() {
     private var backupResult: MethodChannel.Result? = null
     private var backupSourcePath: String? = null
+    private var shareResult: MethodChannel.Result? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +48,44 @@ class MainActivity : FlutterActivity() {
                     REQUEST_SAVE_BACKUP,
                 )
             }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "documentvault/secure_share")
+            .setMethodCallHandler { call, result ->
+                if (call.method != "share") {
+                    result.notImplemented()
+                    return@setMethodCallHandler
+                }
+                if (shareResult != null) {
+                    result.error("busy", "A secure share is already open.", null)
+                    return@setMethodCallHandler
+                }
+                val paths = call.argument<List<String>>("sourcePaths")
+                val mimeType = call.argument<String>("mimeType")
+                if (paths.isNullOrEmpty() || mimeType.isNullOrBlank() || paths.any { !File(it).isFile }) {
+                    result.error("invalid_source", "Secure export is unavailable.", null)
+                    return@setMethodCallHandler
+                }
+                try {
+                    val uris = ArrayList(paths.map { path ->
+                        FileProvider.getUriForFile(this, "$packageName.secure_share", File(path))
+                    })
+                    val shareIntent = if (uris.size == 1) {
+                        Intent(Intent.ACTION_SEND)
+                            .setType(mimeType)
+                            .putExtra(Intent.EXTRA_STREAM, uris.single())
+                    } else {
+                        Intent(Intent.ACTION_SEND_MULTIPLE)
+                            .setType(mimeType)
+                            .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                    }.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    shareResult = result
+                    startActivityForResult(
+                        Intent.createChooser(shareIntent, "Share document"),
+                        REQUEST_SECURE_SHARE,
+                    )
+                } catch (_: Exception) {
+                    result.error("share_failed", "Could not open secure sharing.", null)
+                }
+            }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "documentvault/privacy_display")
             .setMethodCallHandler { call, result ->
                 if (call.method != "apply") {
@@ -66,32 +106,43 @@ class MainActivity : FlutterActivity() {
     @Deprecated("Deprecated in Android API")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != REQUEST_SAVE_BACKUP) return
-        val result = backupResult ?: return
-        val sourcePath = backupSourcePath
-        backupResult = null
-        backupSourcePath = null
-        val uri = data?.data
-        if (resultCode != RESULT_OK || uri == null || sourcePath == null) {
-            result.success(false)
+        if (requestCode == REQUEST_SAVE_BACKUP) {
+            val result = backupResult ?: return
+            val sourcePath = backupSourcePath
+            backupResult = null
+            backupSourcePath = null
+            val uri = data?.data
+            if (resultCode != RESULT_OK || uri == null || sourcePath == null) {
+                result.success(false)
+                return
+            }
+            Thread {
+                try {
+                    File(sourcePath).inputStream().use { input ->
+                        contentResolver.openOutputStream(uri, "w")!!.use { output ->
+                            input.copyTo(output, DEFAULT_BUFFER_SIZE)
+                            output.flush()
+                        }
+                    }
+                    runOnUiThread { result.success(true) }
+                } catch (_: Exception) {
+                    runOnUiThread { result.error("save_failed", "Could not save backup.", null) }
+                }
+            }.start()
             return
         }
-        Thread {
-            try {
-                File(sourcePath).inputStream().use { input ->
-                    contentResolver.openOutputStream(uri, "w")!!.use { output ->
-                        input.copyTo(output, DEFAULT_BUFFER_SIZE)
-                        output.flush()
-                    }
-                }
-                runOnUiThread { result.success(true) }
-            } catch (_: Exception) {
-                runOnUiThread { result.error("save_failed", "Could not save backup.", null) }
-            }
-        }.start()
+        if (requestCode == REQUEST_SECURE_SHARE) {
+            val result = shareResult ?: return
+            shareResult = null
+            // Android does not expose recipient identity. This merely records
+            // that the user completed the chooser return path, never a recipient.
+            result.success(resultCode == RESULT_OK)
+            return
+        }
     }
 
     companion object {
         private const val REQUEST_SAVE_BACKUP = 8101
+        private const val REQUEST_SECURE_SHARE = 8102
     }
 }

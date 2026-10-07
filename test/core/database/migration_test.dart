@@ -50,7 +50,13 @@ void main() {
         backupColumns.map((row) => row.data['name']),
         containsAll(['destination_type', 'vault_changes_since_backup']),
       );
-      expect(database.schemaVersion, 4);
+      final auditTable = await database
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'share_audit_events'",
+          )
+          .getSingleOrNull();
+      expect(auditTable, isNotNull);
+      expect(database.schemaVersion, 5);
     },
   );
 }

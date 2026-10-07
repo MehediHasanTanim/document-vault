@@ -126,7 +126,9 @@ void main() {
     () async {
       final source = await _createSourceVault(root);
       final raw = sqlite.sqlite3.open(source.databaseFile.path);
-      raw.execute('PRAGMA user_version = 5');
+      raw.execute(
+        'PRAGMA user_version = ${VaultDatabase.currentSchemaVersion + 1}',
+      );
       raw.close();
       final newer = await _createBackup(
         root,

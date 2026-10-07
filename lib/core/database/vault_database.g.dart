@@ -7610,6 +7610,544 @@ class BackupRecordsCompanion extends UpdateCompanion<BackupRecord> {
   }
 }
 
+class $ShareAuditEventsTable extends ShareAuditEvents
+    with TableInfo<$ShareAuditEventsTable, ShareAuditEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ShareAuditEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'document_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES documents (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _eventTypeMeta = const VerificationMeta(
+    'eventType',
+  );
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+    'event_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pageCountMeta = const VerificationMeta(
+    'pageCount',
+  );
+  @override
+  late final GeneratedColumn<int> pageCount = GeneratedColumn<int>(
+    'page_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exportFormatMeta = const VerificationMeta(
+    'exportFormat',
+  );
+  @override
+  late final GeneratedColumn<String> exportFormat = GeneratedColumn<String>(
+    'export_format',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hadWatermarkMeta = const VerificationMeta(
+    'hadWatermark',
+  );
+  @override
+  late final GeneratedColumn<bool> hadWatermark = GeneratedColumn<bool>(
+    'had_watermark',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("had_watermark" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _hadRedactionsMeta = const VerificationMeta(
+    'hadRedactions',
+  );
+  @override
+  late final GeneratedColumn<bool> hadRedactions = GeneratedColumn<bool>(
+    'had_redactions',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("had_redactions" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    documentId,
+    eventType,
+    pageCount,
+    exportFormat,
+    hadWatermark,
+    hadRedactions,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'share_audit_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ShareAuditEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('document_id')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['document_id']!, _documentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_documentIdMeta);
+    }
+    if (data.containsKey('event_type')) {
+      context.handle(
+        _eventTypeMeta,
+        eventType.isAcceptableOrUnknown(data['event_type']!, _eventTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventTypeMeta);
+    }
+    if (data.containsKey('page_count')) {
+      context.handle(
+        _pageCountMeta,
+        pageCount.isAcceptableOrUnknown(data['page_count']!, _pageCountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pageCountMeta);
+    }
+    if (data.containsKey('export_format')) {
+      context.handle(
+        _exportFormatMeta,
+        exportFormat.isAcceptableOrUnknown(
+          data['export_format']!,
+          _exportFormatMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_exportFormatMeta);
+    }
+    if (data.containsKey('had_watermark')) {
+      context.handle(
+        _hadWatermarkMeta,
+        hadWatermark.isAcceptableOrUnknown(
+          data['had_watermark']!,
+          _hadWatermarkMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_hadWatermarkMeta);
+    }
+    if (data.containsKey('had_redactions')) {
+      context.handle(
+        _hadRedactionsMeta,
+        hadRedactions.isAcceptableOrUnknown(
+          data['had_redactions']!,
+          _hadRedactionsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_hadRedactionsMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ShareAuditEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ShareAuditEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_id'],
+      )!,
+      eventType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_type'],
+      )!,
+      pageCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}page_count'],
+      )!,
+      exportFormat: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}export_format'],
+      )!,
+      hadWatermark: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}had_watermark'],
+      )!,
+      hadRedactions: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}had_redactions'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ShareAuditEventsTable createAlias(String alias) {
+    return $ShareAuditEventsTable(attachedDatabase, alias);
+  }
+}
+
+class ShareAuditEvent extends DataClass implements Insertable<ShareAuditEvent> {
+  final String id;
+  final String documentId;
+  final String eventType;
+  final int pageCount;
+  final String exportFormat;
+  final bool hadWatermark;
+  final bool hadRedactions;
+  final DateTime createdAt;
+  const ShareAuditEvent({
+    required this.id,
+    required this.documentId,
+    required this.eventType,
+    required this.pageCount,
+    required this.exportFormat,
+    required this.hadWatermark,
+    required this.hadRedactions,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['document_id'] = Variable<String>(documentId);
+    map['event_type'] = Variable<String>(eventType);
+    map['page_count'] = Variable<int>(pageCount);
+    map['export_format'] = Variable<String>(exportFormat);
+    map['had_watermark'] = Variable<bool>(hadWatermark);
+    map['had_redactions'] = Variable<bool>(hadRedactions);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ShareAuditEventsCompanion toCompanion(bool nullToAbsent) {
+    return ShareAuditEventsCompanion(
+      id: Value(id),
+      documentId: Value(documentId),
+      eventType: Value(eventType),
+      pageCount: Value(pageCount),
+      exportFormat: Value(exportFormat),
+      hadWatermark: Value(hadWatermark),
+      hadRedactions: Value(hadRedactions),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ShareAuditEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ShareAuditEvent(
+      id: serializer.fromJson<String>(json['id']),
+      documentId: serializer.fromJson<String>(json['documentId']),
+      eventType: serializer.fromJson<String>(json['eventType']),
+      pageCount: serializer.fromJson<int>(json['pageCount']),
+      exportFormat: serializer.fromJson<String>(json['exportFormat']),
+      hadWatermark: serializer.fromJson<bool>(json['hadWatermark']),
+      hadRedactions: serializer.fromJson<bool>(json['hadRedactions']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'documentId': serializer.toJson<String>(documentId),
+      'eventType': serializer.toJson<String>(eventType),
+      'pageCount': serializer.toJson<int>(pageCount),
+      'exportFormat': serializer.toJson<String>(exportFormat),
+      'hadWatermark': serializer.toJson<bool>(hadWatermark),
+      'hadRedactions': serializer.toJson<bool>(hadRedactions),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ShareAuditEvent copyWith({
+    String? id,
+    String? documentId,
+    String? eventType,
+    int? pageCount,
+    String? exportFormat,
+    bool? hadWatermark,
+    bool? hadRedactions,
+    DateTime? createdAt,
+  }) => ShareAuditEvent(
+    id: id ?? this.id,
+    documentId: documentId ?? this.documentId,
+    eventType: eventType ?? this.eventType,
+    pageCount: pageCount ?? this.pageCount,
+    exportFormat: exportFormat ?? this.exportFormat,
+    hadWatermark: hadWatermark ?? this.hadWatermark,
+    hadRedactions: hadRedactions ?? this.hadRedactions,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ShareAuditEvent copyWithCompanion(ShareAuditEventsCompanion data) {
+    return ShareAuditEvent(
+      id: data.id.present ? data.id.value : this.id,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
+      pageCount: data.pageCount.present ? data.pageCount.value : this.pageCount,
+      exportFormat: data.exportFormat.present
+          ? data.exportFormat.value
+          : this.exportFormat,
+      hadWatermark: data.hadWatermark.present
+          ? data.hadWatermark.value
+          : this.hadWatermark,
+      hadRedactions: data.hadRedactions.present
+          ? data.hadRedactions.value
+          : this.hadRedactions,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ShareAuditEvent(')
+          ..write('id: $id, ')
+          ..write('documentId: $documentId, ')
+          ..write('eventType: $eventType, ')
+          ..write('pageCount: $pageCount, ')
+          ..write('exportFormat: $exportFormat, ')
+          ..write('hadWatermark: $hadWatermark, ')
+          ..write('hadRedactions: $hadRedactions, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    documentId,
+    eventType,
+    pageCount,
+    exportFormat,
+    hadWatermark,
+    hadRedactions,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ShareAuditEvent &&
+          other.id == this.id &&
+          other.documentId == this.documentId &&
+          other.eventType == this.eventType &&
+          other.pageCount == this.pageCount &&
+          other.exportFormat == this.exportFormat &&
+          other.hadWatermark == this.hadWatermark &&
+          other.hadRedactions == this.hadRedactions &&
+          other.createdAt == this.createdAt);
+}
+
+class ShareAuditEventsCompanion extends UpdateCompanion<ShareAuditEvent> {
+  final Value<String> id;
+  final Value<String> documentId;
+  final Value<String> eventType;
+  final Value<int> pageCount;
+  final Value<String> exportFormat;
+  final Value<bool> hadWatermark;
+  final Value<bool> hadRedactions;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ShareAuditEventsCompanion({
+    this.id = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.eventType = const Value.absent(),
+    this.pageCount = const Value.absent(),
+    this.exportFormat = const Value.absent(),
+    this.hadWatermark = const Value.absent(),
+    this.hadRedactions = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ShareAuditEventsCompanion.insert({
+    required String id,
+    required String documentId,
+    required String eventType,
+    required int pageCount,
+    required String exportFormat,
+    required bool hadWatermark,
+    required bool hadRedactions,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       documentId = Value(documentId),
+       eventType = Value(eventType),
+       pageCount = Value(pageCount),
+       exportFormat = Value(exportFormat),
+       hadWatermark = Value(hadWatermark),
+       hadRedactions = Value(hadRedactions),
+       createdAt = Value(createdAt);
+  static Insertable<ShareAuditEvent> custom({
+    Expression<String>? id,
+    Expression<String>? documentId,
+    Expression<String>? eventType,
+    Expression<int>? pageCount,
+    Expression<String>? exportFormat,
+    Expression<bool>? hadWatermark,
+    Expression<bool>? hadRedactions,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (documentId != null) 'document_id': documentId,
+      if (eventType != null) 'event_type': eventType,
+      if (pageCount != null) 'page_count': pageCount,
+      if (exportFormat != null) 'export_format': exportFormat,
+      if (hadWatermark != null) 'had_watermark': hadWatermark,
+      if (hadRedactions != null) 'had_redactions': hadRedactions,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ShareAuditEventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? documentId,
+    Value<String>? eventType,
+    Value<int>? pageCount,
+    Value<String>? exportFormat,
+    Value<bool>? hadWatermark,
+    Value<bool>? hadRedactions,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ShareAuditEventsCompanion(
+      id: id ?? this.id,
+      documentId: documentId ?? this.documentId,
+      eventType: eventType ?? this.eventType,
+      pageCount: pageCount ?? this.pageCount,
+      exportFormat: exportFormat ?? this.exportFormat,
+      hadWatermark: hadWatermark ?? this.hadWatermark,
+      hadRedactions: hadRedactions ?? this.hadRedactions,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (documentId.present) {
+      map['document_id'] = Variable<String>(documentId.value);
+    }
+    if (eventType.present) {
+      map['event_type'] = Variable<String>(eventType.value);
+    }
+    if (pageCount.present) {
+      map['page_count'] = Variable<int>(pageCount.value);
+    }
+    if (exportFormat.present) {
+      map['export_format'] = Variable<String>(exportFormat.value);
+    }
+    if (hadWatermark.present) {
+      map['had_watermark'] = Variable<bool>(hadWatermark.value);
+    }
+    if (hadRedactions.present) {
+      map['had_redactions'] = Variable<bool>(hadRedactions.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ShareAuditEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('documentId: $documentId, ')
+          ..write('eventType: $eventType, ')
+          ..write('pageCount: $pageCount, ')
+          ..write('exportFormat: $exportFormat, ')
+          ..write('hadWatermark: $hadWatermark, ')
+          ..write('hadRedactions: $hadRedactions, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AppSettingsTable extends AppSettings
     with TableInfo<$AppSettingsTable, AppSetting> {
   @override
@@ -8380,6 +8918,9 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
   late final $DocumentTagsTable documentTags = $DocumentTagsTable(this);
   late final $RemindersTable reminders = $RemindersTable(this);
   late final $BackupRecordsTable backupRecords = $BackupRecordsTable(this);
+  late final $ShareAuditEventsTable shareAuditEvents = $ShareAuditEventsTable(
+    this,
+  );
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   late final $PendingOperationsTable pendingOperations =
       $PendingOperationsTable(this);
@@ -8402,6 +8943,7 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
     documentTags,
     reminders,
     backupRecords,
+    shareAuditEvents,
     appSettings,
     pendingOperations,
   ];
@@ -8490,6 +9032,13 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('reminders', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('share_audit_events', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -10347,6 +10896,27 @@ final class $$DocumentsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$ShareAuditEventsTable, List<ShareAuditEvent>>
+  _shareAuditEventsRefsTable(_$VaultDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.shareAuditEvents,
+        aliasName: 'documents__id__share_audit_events__document_id',
+      );
+
+  $$ShareAuditEventsTableProcessedTableManager get shareAuditEventsRefs {
+    final manager = $$ShareAuditEventsTableTableManager(
+      $_db,
+      $_db.shareAuditEvents,
+    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _shareAuditEventsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$DocumentsTableFilterComposer
@@ -10673,6 +11243,31 @@ class $$DocumentsTableFilterComposer
           }) => $$RemindersTableFilterComposer(
             $db: $db,
             $table: $db.reminders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> shareAuditEventsRefs(
+    Expression<bool> Function($$ShareAuditEventsTableFilterComposer f) f,
+  ) {
+    final $$ShareAuditEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.shareAuditEvents,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ShareAuditEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.shareAuditEvents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -11165,6 +11760,31 @@ class $$DocumentsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> shareAuditEventsRefs<T extends Object>(
+    Expression<T> Function($$ShareAuditEventsTableAnnotationComposer a) f,
+  ) {
+    final $$ShareAuditEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.shareAuditEvents,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ShareAuditEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.shareAuditEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$DocumentsTableTableManager
@@ -11191,6 +11811,7 @@ class $$DocumentsTableTableManager
             bool documentFieldValuesRefs,
             bool documentTagsRefs,
             bool remindersRefs,
+            bool shareAuditEventsRefs,
           })
         > {
   $$DocumentsTableTableManager(_$VaultDatabase db, $DocumentsTable table)
@@ -11312,6 +11933,7 @@ class $$DocumentsTableTableManager
                 documentFieldValuesRefs = false,
                 documentTagsRefs = false,
                 remindersRefs = false,
+                shareAuditEventsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -11323,6 +11945,7 @@ class $$DocumentsTableTableManager
                     if (documentFieldValuesRefs) db.documentFieldValues,
                     if (documentTagsRefs) db.documentTags,
                     if (remindersRefs) db.reminders,
+                    if (shareAuditEventsRefs) db.shareAuditEvents,
                   ],
                   addJoins:
                       <
@@ -11525,6 +12148,27 @@ class $$DocumentsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (shareAuditEventsRefs)
+                        await $_getPrefetchedData<
+                          Document,
+                          $DocumentsTable,
+                          ShareAuditEvent
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DocumentsTableReferences
+                              ._shareAuditEventsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DocumentsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).shareAuditEventsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.documentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -11556,6 +12200,7 @@ typedef $$DocumentsTableProcessedTableManager =
         bool documentFieldValuesRefs,
         bool documentTagsRefs,
         bool remindersRefs,
+        bool shareAuditEventsRefs,
       })
     >;
 typedef $$DocumentVersionsTableCreateCompanionBuilder =
@@ -15006,6 +15651,395 @@ typedef $$BackupRecordsTableProcessedTableManager =
       BackupRecord,
       PrefetchHooks Function()
     >;
+typedef $$ShareAuditEventsTableCreateCompanionBuilder =
+    ShareAuditEventsCompanion Function({
+      required String id,
+      required String documentId,
+      required String eventType,
+      required int pageCount,
+      required String exportFormat,
+      required bool hadWatermark,
+      required bool hadRedactions,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$ShareAuditEventsTableUpdateCompanionBuilder =
+    ShareAuditEventsCompanion Function({
+      Value<String> id,
+      Value<String> documentId,
+      Value<String> eventType,
+      Value<int> pageCount,
+      Value<String> exportFormat,
+      Value<bool> hadWatermark,
+      Value<bool> hadRedactions,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$ShareAuditEventsTableReferences
+    extends
+        BaseReferences<
+          _$VaultDatabase,
+          $ShareAuditEventsTable,
+          ShareAuditEvent
+        > {
+  $$ShareAuditEventsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $DocumentsTable _documentIdTable(_$VaultDatabase db) => db.documents
+      .createAlias('share_audit_events__document_id__documents__id');
+
+  $$DocumentsTableProcessedTableManager get documentId {
+    final $_column = $_itemColumn<String>('document_id')!;
+
+    final manager = $$DocumentsTableTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ShareAuditEventsTableFilterComposer
+    extends Composer<_$VaultDatabase, $ShareAuditEventsTable> {
+  $$ShareAuditEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pageCount => $composableBuilder(
+    column: $table.pageCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exportFormat => $composableBuilder(
+    column: $table.exportFormat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hadWatermark => $composableBuilder(
+    column: $table.hadWatermark,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hadRedactions => $composableBuilder(
+    column: $table.hadRedactions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DocumentsTableFilterComposer get documentId {
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ShareAuditEventsTableOrderingComposer
+    extends Composer<_$VaultDatabase, $ShareAuditEventsTable> {
+  $$ShareAuditEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pageCount => $composableBuilder(
+    column: $table.pageCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exportFormat => $composableBuilder(
+    column: $table.exportFormat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hadWatermark => $composableBuilder(
+    column: $table.hadWatermark,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hadRedactions => $composableBuilder(
+    column: $table.hadRedactions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DocumentsTableOrderingComposer get documentId {
+    final $$DocumentsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ShareAuditEventsTableAnnotationComposer
+    extends Composer<_$VaultDatabase, $ShareAuditEventsTable> {
+  $$ShareAuditEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
+
+  GeneratedColumn<int> get pageCount =>
+      $composableBuilder(column: $table.pageCount, builder: (column) => column);
+
+  GeneratedColumn<String> get exportFormat => $composableBuilder(
+    column: $table.exportFormat,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hadWatermark => $composableBuilder(
+    column: $table.hadWatermark,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hadRedactions => $composableBuilder(
+    column: $table.hadRedactions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$DocumentsTableAnnotationComposer get documentId {
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ShareAuditEventsTableTableManager
+    extends
+        RootTableManager<
+          _$VaultDatabase,
+          $ShareAuditEventsTable,
+          ShareAuditEvent,
+          $$ShareAuditEventsTableFilterComposer,
+          $$ShareAuditEventsTableOrderingComposer,
+          $$ShareAuditEventsTableAnnotationComposer,
+          $$ShareAuditEventsTableCreateCompanionBuilder,
+          $$ShareAuditEventsTableUpdateCompanionBuilder,
+          (ShareAuditEvent, $$ShareAuditEventsTableReferences),
+          ShareAuditEvent,
+          PrefetchHooks Function({bool documentId})
+        > {
+  $$ShareAuditEventsTableTableManager(
+    _$VaultDatabase db,
+    $ShareAuditEventsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ShareAuditEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ShareAuditEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ShareAuditEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> documentId = const Value.absent(),
+                Value<String> eventType = const Value.absent(),
+                Value<int> pageCount = const Value.absent(),
+                Value<String> exportFormat = const Value.absent(),
+                Value<bool> hadWatermark = const Value.absent(),
+                Value<bool> hadRedactions = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ShareAuditEventsCompanion(
+                id: id,
+                documentId: documentId,
+                eventType: eventType,
+                pageCount: pageCount,
+                exportFormat: exportFormat,
+                hadWatermark: hadWatermark,
+                hadRedactions: hadRedactions,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String documentId,
+                required String eventType,
+                required int pageCount,
+                required String exportFormat,
+                required bool hadWatermark,
+                required bool hadRedactions,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ShareAuditEventsCompanion.insert(
+                id: id,
+                documentId: documentId,
+                eventType: eventType,
+                pageCount: pageCount,
+                exportFormat: exportFormat,
+                hadWatermark: hadWatermark,
+                hadRedactions: hadRedactions,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ShareAuditEventsTable, ShareAuditEvent>(table),
+                  $$ShareAuditEventsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({documentId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (documentId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.documentId,
+                        referencedTable: $$ShareAuditEventsTableReferences
+                            ._documentIdTable(db),
+                        referencedColumn: $$ShareAuditEventsTableReferences
+                            ._documentIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ShareAuditEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$VaultDatabase,
+      $ShareAuditEventsTable,
+      ShareAuditEvent,
+      $$ShareAuditEventsTableFilterComposer,
+      $$ShareAuditEventsTableOrderingComposer,
+      $$ShareAuditEventsTableAnnotationComposer,
+      $$ShareAuditEventsTableCreateCompanionBuilder,
+      $$ShareAuditEventsTableUpdateCompanionBuilder,
+      (ShareAuditEvent, $$ShareAuditEventsTableReferences),
+      ShareAuditEvent,
+      PrefetchHooks Function({bool documentId})
+    >;
 typedef $$AppSettingsTableCreateCompanionBuilder =
     AppSettingsCompanion Function({
       required String key,
@@ -15474,6 +16508,8 @@ class $VaultDatabaseManager {
       $$RemindersTableTableManager(_db, _db.reminders);
   $$BackupRecordsTableTableManager get backupRecords =>
       $$BackupRecordsTableTableManager(_db, _db.backupRecords);
+  $$ShareAuditEventsTableTableManager get shareAuditEvents =>
+      $$ShareAuditEventsTableTableManager(_db, _db.shareAuditEvents);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
   $$PendingOperationsTableTableManager get pendingOperations =>
