@@ -5,8 +5,10 @@ import '../application/creation/document_creation_service.dart';
 import '../application/creation/document_selection.dart';
 import '../application/creation/document_templates.dart';
 import '../application/ingestion/import_models.dart';
+import '../application/smart_metadata/smart_metadata_models.dart';
 import '../../reminders/application/reminder_models.dart';
 import '../../reminders/presentation/reminder_screens.dart';
+import 'smart_metadata_suggestions_panel.dart';
 
 class DocumentTagChoice {
   const DocumentTagChoice({required this.id, required this.label});
@@ -32,6 +34,7 @@ class DocumentMetadataFormScreen extends StatefulWidget {
     required this.locations,
     required this.pages,
     this.recentCategoryIds = const [],
+    this.smartSuggestions,
     this.onCreateTag,
     this.onSaved,
     this.onSaveReminder,
@@ -45,6 +48,7 @@ class DocumentMetadataFormScreen extends StatefulWidget {
   final List<PhysicalLocationChoice> locations;
   final List<StagedImportFile> pages;
   final List<String> recentCategoryIds;
+  final SmartMetadataSuggestions? smartSuggestions;
   final Future<DocumentTagChoice?> Function(String name)? onCreateTag;
   final ValueChanged<DocumentSaveResult>? onSaved;
   final Future<void> Function(DocumentSaveResult result, ReminderSetup setup)?
@@ -111,6 +115,78 @@ class _DocumentMetadataFormScreenState
     _fields.clear();
   }
 
+  Future<void> _useCategorySuggestion(CategorySearchEntry value) async {
+    if (_category != null &&
+        _category!.id != value.id &&
+        !await _confirmReplace('category / বিভাগ')) {
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _category = value;
+      _resetFields();
+    });
+  }
+
+  Future<void> _useTextSuggestion(
+    TextEditingController controller,
+    String value,
+    String field,
+  ) async {
+    if (controller.text.trim().isNotEmpty &&
+        controller.text != value &&
+        !await _confirmReplace(field)) {
+      return;
+    }
+    if (mounted) setState(() => controller.text = value);
+  }
+
+  Future<void> _useDateSuggestion(
+    DateTime value, {
+    required bool isExpiry,
+  }) async {
+    final existing = isExpiry ? _expiryDate : _issueDate;
+    final field = isExpiry
+        ? 'expiry date / মেয়াদ শেষের তারিখ'
+        : 'issue date / ইস্যুর তারিখ';
+    if (existing != null &&
+        existing != value &&
+        !await _confirmReplace(field)) {
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      if (isExpiry) {
+        _expiryDate = value;
+        _reminderSetup = null;
+      } else {
+        _issueDate = value;
+      }
+    });
+  }
+
+  Future<bool> _confirmReplace(String field) async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Replace entered value? / দেওয়া তথ্য বদলাবেন?'),
+          content: Text(
+            'A value already exists for $field. Use the suggestion instead? / $field-এর জন্য আগে থেকেই তথ্য আছে। পরামর্শটি ব্যবহার করবেন?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Keep current / বর্তমানটি রাখুন'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Replace / বদলান'),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+
   void _onSaveStateChanged() {
     if (!mounted) return;
     final state = widget.controller.state;
@@ -135,6 +211,24 @@ class _DocumentMetadataFormScreenState
           child: ListView(
             padding: const EdgeInsets.all(20),
             children: [
+              if (widget.smartSuggestions case final suggestions?) ...[
+                SmartMetadataSuggestionsPanel(
+                  suggestions: suggestions,
+                  onUseCategory: _useCategorySuggestion,
+                  onUseTitle: (value) =>
+                      _useTextSuggestion(_title, value, 'title / শিরোনাম'),
+                  onUseDocumentNumber: (value) => _useTextSuggestion(
+                    _number,
+                    value,
+                    'document number / ডকুমেন্ট নম্বর',
+                  ),
+                  onUseIssueDate: (value) =>
+                      _useDateSuggestion(value, isExpiry: false),
+                  onUseExpiryDate: (value) =>
+                      _useDateSuggestion(value, isExpiry: true),
+                ),
+                const SizedBox(height: 24),
+              ],
               _sectionTitle('Owner / মালিক'),
               _ownerSection(),
               const SizedBox(height: 24),

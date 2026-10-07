@@ -72,9 +72,19 @@ class DocumentDraft {
   final List<StagedImportFile> pages;
 }
 
+enum DuplicateWarningKind { exactFile, metadata, perceptualImagePrototype }
+
 class DuplicateWarning {
-  const DuplicateWarning({required this.message});
+  const DuplicateWarning({
+    required this.message,
+    this.kind = DuplicateWarningKind.metadata,
+    this.documentIds = const [],
+    this.confidence,
+  });
   final String message;
+  final DuplicateWarningKind kind;
+  final List<String> documentIds;
+  final double? confidence;
 }
 
 /// A non-blocking seam for Sprint 18's encrypted duplicate matching. It keeps
