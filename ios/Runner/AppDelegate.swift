@@ -1,11 +1,13 @@
 import Flutter
 import UIKit
+import AuthenticationServices
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate, ASWebAuthenticationPresentationContextProviding {
   private var privacyView: UIView?
   private var backupExportDelegate: BackupExportDelegate?
   private var secureShareCompletion: FlutterResult?
+  private var oauthSession: ASWebAuthenticationSession?
   private var privacyCoverEnabled = true
 
   override func application(
@@ -74,6 +76,36 @@ import UIKit
         }
         presenter.present(activity, animated: true)
       }
+      let oauthChannel = FlutterMethodChannel(
+        name: "documentvault/cloud_oauth",
+        binaryMessenger: controller.binaryMessenger
+      )
+      oauthChannel.setMethodCallHandler { [weak self] call, result in
+        guard call.method == "authorize",
+              self?.oauthSession == nil,
+              let arguments = call.arguments as? [String: Any],
+              let rawUrl = arguments["authorizationUrl"] as? String,
+              let url = URL(string: rawUrl), url.scheme == "https",
+              let redirectScheme = arguments["redirectScheme"] as? String,
+              redirectScheme == "documentvault" else {
+          result(FlutterError(code: "invalid_request", message: "Cloud sign-in is unavailable.", details: nil))
+          return
+        }
+        let session = ASWebAuthenticationSession(url: url, callbackURLScheme: redirectScheme) { [weak self] callbackUrl, error in
+          self?.oauthSession = nil
+          guard error == nil, let callbackUrl = callbackUrl else {
+            result(FlutterError(code: "cancelled", message: "Cloud sign-in was cancelled.", details: nil))
+            return
+          }
+          result(callbackUrl.absoluteString)
+        }
+        session.presentationContextProvider = self
+        self?.oauthSession = session
+        if !session.start() {
+          self?.oauthSession = nil
+          result(FlutterError(code: "unavailable", message: "Cloud sign-in is unavailable.", details: nil))
+        }
+      }
       let privacyChannel = FlutterMethodChannel(
         name: "documentvault/privacy_display",
         binaryMessenger: controller.binaryMessenger
@@ -110,6 +142,10 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+  }
+
+  func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+    window ?? ASPresentationAnchor()
   }
 }
 

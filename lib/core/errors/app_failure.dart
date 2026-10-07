@@ -47,3 +47,14 @@ final class BackupFailure extends AppFailure {
 final class BackupCancelledFailure extends AppFailure {
   const BackupCancelledFailure() : super('Backup was cancelled.');
 }
+
+/// Safe cloud-backup failure. It intentionally excludes HTTP diagnostics,
+/// provider account data, object names, paths, and token values.
+final class CloudBackupFailure extends AppFailure {
+  const CloudBackupFailure(
+    super.message, {
+    super.cause,
+    this.retryable = false,
+  });
+  final bool retryable;
+}

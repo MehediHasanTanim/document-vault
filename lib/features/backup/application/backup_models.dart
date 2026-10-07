@@ -255,7 +255,7 @@ class RestoreProgress {
   final RestoreProgressStage stage;
 }
 
-enum BackupDestinationType { deviceFolder, systemProvider }
+enum BackupDestinationType { deviceFolder, systemProvider, cloudProvider }
 
 class BackupSaveResult {
   const BackupSaveResult({required this.destinationType});

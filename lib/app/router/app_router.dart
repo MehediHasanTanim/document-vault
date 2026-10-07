@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/authentication/presentation/unlock_screen.dart';
+import '../../features/backup/presentation/cloud_backup_feature.dart';
+import '../../features/backup/presentation/cloud_backup_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/home/presentation/more_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screens.dart';
@@ -57,6 +59,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/more',
         builder: (_, _) => const VaultShell(tab: VaultTab.more),
+      ),
+      GoRoute(
+        path: '/more/cloud-backup',
+        builder: (_, _) {
+          final feature = ref.watch(cloudBackupFeatureProvider);
+          return CloudBackupScreen(
+            providers: feature.providers,
+            onCreateEncryptedBackup: feature.createEncryptedBackup,
+            onRestoreVersion: feature.restoreVersion,
+          );
+        },
       ),
       GoRoute(
         path: '/more/:destination',

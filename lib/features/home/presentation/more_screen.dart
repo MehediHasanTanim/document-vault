@@ -7,6 +7,7 @@ enum MoreDestination {
   archive,
   trash,
   backupRestore,
+  cloudBackup,
   storage,
   settings,
   help,
@@ -56,6 +57,11 @@ class MoreScreen extends StatelessWidget {
               Icons.backup_outlined,
               'Backup & Restore / ব্যাকআপ ও পুনরুদ্ধার',
               MoreDestination.backupRestore,
+            ),
+            _item(
+              Icons.cloud_outlined,
+              'Cloud backup / ক্লাউড ব্যাকআপ',
+              MoreDestination.cloudBackup,
             ),
             _item(
               Icons.storage_outlined,
