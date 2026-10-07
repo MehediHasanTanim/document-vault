@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/authentication/presentation/unlock_screen.dart';
 import '../../features/backup/presentation/cloud_backup_feature.dart';
 import '../../features/backup/presentation/cloud_backup_screen.dart';
+import '../../features/documents/presentation/emergency_pack_feature.dart';
+import '../../features/documents/presentation/emergency_pack_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/home/presentation/more_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screens.dart';
@@ -68,6 +70,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             providers: feature.providers,
             onCreateEncryptedBackup: feature.createEncryptedBackup,
             onRestoreVersion: feature.restoreVersion,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/more/emergency-pack',
+        builder: (_, _) {
+          final feature = ref.watch(emergencyPackFeatureProvider);
+          return EmergencyPackScreen(
+            documents: feature.documents,
+            initialSelection: feature.initialSelection,
+            onSaveSelection: feature.saveSelection,
+            onExport: feature.export,
           );
         },
       ),
