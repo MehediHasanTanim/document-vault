@@ -152,46 +152,58 @@ class VaultShell extends StatelessWidget {
         onOpen: (destination) => context.push('/more/${destination.name}'),
       ),
     };
-    return Scaffold(
-      body: child,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/scan'),
-        tooltip: l10n.scanNewDocument,
-        child: const Icon(Icons.document_scanner_outlined),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: tab.index,
-        onDestinationSelected: (index) => context.go(
-          const ['/home', '/documents', '/scan', '/reminders', '/more'][index],
+    return FocusTraversalGroup(
+      child: Scaffold(
+        body: child,
+        floatingActionButton: Semantics(
+          button: true,
+          label: l10n.scanNewDocument,
+          child: FloatingActionButton(
+            onPressed: () => context.go('/scan'),
+            tooltip: l10n.scanNewDocument,
+            child: const Icon(Icons.document_scanner_outlined),
+          ),
         ),
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: l10n.home,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: tab.index,
+          onDestinationSelected: (index) => context.go(
+            const [
+              '/home',
+              '/documents',
+              '/scan',
+              '/reminders',
+              '/more',
+            ][index],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.description_outlined),
-            selectedIcon: Icon(Icons.description),
-            label: l10n.documents,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.document_scanner_outlined),
-            selectedIcon: Icon(Icons.document_scanner),
-            label: l10n.scan,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.notifications_none),
-            selectedIcon: Icon(Icons.notifications),
-            label: l10n.reminders,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            selectedIcon: Icon(Icons.more_horiz),
-            label: l10n.more,
-          ),
-        ],
+          destinations: [
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: l10n.home,
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.description_outlined),
+              selectedIcon: Icon(Icons.description),
+              label: l10n.documents,
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.document_scanner_outlined),
+              selectedIcon: Icon(Icons.document_scanner),
+              label: l10n.scan,
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.notifications_none),
+              selectedIcon: Icon(Icons.notifications),
+              label: l10n.reminders,
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.more_horiz),
+              selectedIcon: Icon(Icons.more_horiz),
+              label: l10n.more,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -8,12 +8,14 @@ class VaultEmptyState extends StatelessWidget {
     required this.title,
     required this.message,
     this.action,
+    this.announce = false,
     super.key,
   });
   final IconData icon;
   final String title;
   final String message;
   final Widget? action;
+  final bool announce;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -21,6 +23,7 @@ class VaultEmptyState extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Semantics(
         container: true,
+        liveRegion: announce,
         label: '$title. $message',
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -108,6 +111,7 @@ class VaultNamedEmptyState extends StatelessWidget {
       title: copy.$2,
       message: copy.$3,
       action: action,
+      announce: true,
     );
   }
 }

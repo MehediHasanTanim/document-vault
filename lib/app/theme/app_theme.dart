@@ -20,6 +20,11 @@ abstract final class AppSpacing {
   static const page = EdgeInsets.symmetric(horizontal: 20, vertical: 16);
 }
 
+abstract final class AppAccessibility {
+  /// Android's 48 dp minimum also gives iOS controls a generous hit area.
+  static const minimumTouchTarget = Size(48, 48);
+}
+
 abstract final class AppRadii {
   static const small = Radius.circular(12);
   static const medium = Radius.circular(16);
@@ -45,6 +50,8 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+      visualDensity: VisualDensity.standard,
       colorScheme: scheme.copyWith(primary: AppColors.blue),
       scaffoldBackgroundColor: isDark
           ? const Color(0xFF0D1526)
@@ -107,6 +114,18 @@ abstract final class AppTheme {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(AppRadii.small),
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: AppAccessibility.minimumTouchTarget,
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: AppAccessibility.minimumTouchTarget,
+          tapTargetSize: MaterialTapTargetSize.padded,
         ),
       ),
       chipTheme: ChipThemeData(

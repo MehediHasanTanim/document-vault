@@ -78,3 +78,18 @@ Complete this section for every user-facing UI change.
 - [ ] English and বাংলা were checked for overflow, Bengali shaping,
   mixed-language values, date/numeral formatting, semantics labels, and text
   scaling on the affected screen.
+
+## Accessibility workstream review
+
+Complete this section for every user-facing screen or component change.
+
+- [ ] Interactive controls have a meaningful semantic label, logical focus
+  order, and at least a 48 dp Android / 44 pt iOS touch target.
+- [ ] The affected screen works with system text scaling, TalkBack/VoiceOver,
+  keyboard/focus traversal where supported, and reduced motion where used.
+- [ ] Text, icons, and surfaces have sufficient contrast in light and dark
+  themes; status is conveyed with text/icon/semantics, not colour alone.
+- [ ] Validation, loading, empty, destructive, and error states explain what
+  happened and the available next action without exposing sensitive data.
+- [ ] English and বাংলা were manually checked for reading order, overflow,
+  Bengali shaping, and large text on the affected platform.
