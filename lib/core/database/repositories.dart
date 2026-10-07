@@ -41,6 +41,11 @@ abstract interface class DocumentRepository {
     required DateTime updatedAt,
   });
   Future<void> moveToTrash(String id, {required DateTime deletedAt});
+  Future<void> setStatus(
+    String id, {
+    required String status,
+    required DateTime updatedAt,
+  });
   Future<void> restore(String id, {required DateTime updatedAt});
   Future<void> assignPhysicalLocation(
     String id, {
@@ -70,6 +75,8 @@ abstract interface class DocumentRepository {
 
 abstract interface class DocumentVersionRepository {
   Future<List<DocumentVersion>> listForDocument(String documentId);
+  Future<List<DocumentVersion>> listHistoryFrom(String versionId);
+  Future<List<DocumentVersion>> listLineage(String versionId);
 
   Future<void> createReplacement({
     required String oldDocumentId,
@@ -77,6 +84,23 @@ abstract interface class DocumentVersionRepository {
     required String oldVersionId,
     required String replacementVersionId,
     required DateTime createdAt,
+  });
+}
+
+abstract interface class EmergencyCollectionRepository {
+  Future<List<EmergencyCollectionItem>> listItems();
+  Future<void> replaceSelection({
+    required List<String> documentIds,
+    required DateTime updatedAt,
+  });
+}
+
+abstract interface class DocumentLinkRepository {
+  Future<List<DocumentLink>> listForDocument(String documentId);
+  Future<void> link(DocumentLinksCompanion link);
+  Future<void> unlink({
+    required String sourceDocumentId,
+    required String targetDocumentId,
   });
 }
 
@@ -357,6 +381,15 @@ class DriftDocumentRepository implements DocumentRepository {
       );
 
   @override
+  Future<void> setStatus(
+    String id, {
+    required String status,
+    required DateTime updatedAt,
+  }) => (_db.update(_db.documents)..where((d) => d.id.equals(id))).write(
+    DocumentsCompanion(status: Value(status), updatedAt: Value(updatedAt)),
+  );
+
+  @override
   Future<void> restore(String id, {required DateTime updatedAt}) =>
       (_db.update(_db.documents)..where((d) => d.id.equals(id))).write(
         DocumentsCompanion(
@@ -472,6 +505,53 @@ class DriftDocumentVersionRepository implements DocumentVersionRepository {
           .get();
 
   @override
+  Future<List<DocumentVersion>> listHistoryFrom(String versionId) async {
+    final versions = await _db.select(_db.documentVersions).get();
+    final byId = {for (final version in versions) version.id: version};
+    final result = <DocumentVersion>[];
+    final visited = <String>{};
+    var next = versionId;
+    while (visited.add(next)) {
+      final version = byId[next];
+      if (version == null) break;
+      result.add(version);
+      final previous = version.previousVersionId;
+      if (previous == null) break;
+      next = previous;
+    }
+    return result;
+  }
+
+  @override
+  Future<List<DocumentVersion>> listLineage(String versionId) async {
+    final versions = await _db.select(_db.documentVersions).get();
+    final byId = {for (final version in versions) version.id: version};
+    final children = <String, List<String>>{};
+    for (final version in versions) {
+      final previous = version.previousVersionId;
+      if (previous != null) (children[previous] ??= []).add(version.id);
+    }
+    final pending = <String>[versionId];
+    final visited = <String>{};
+    final result = <DocumentVersion>[];
+    while (pending.isNotEmpty) {
+      final id = pending.removeLast();
+      if (!visited.add(id)) continue;
+      final version = byId[id];
+      if (version == null) continue;
+      result.add(version);
+      final previous = version.previousVersionId;
+      if (previous != null) pending.add(previous);
+      pending.addAll(children[id] ?? const []);
+    }
+    result.sort((left, right) {
+      final number = right.versionNumber.compareTo(left.versionNumber);
+      return number != 0 ? number : right.createdAt.compareTo(left.createdAt);
+    });
+    return result;
+  }
+
+  @override
   Future<void> createReplacement({
     required String oldDocumentId,
     required String replacementDocumentId,
@@ -500,18 +580,30 @@ class DriftDocumentVersionRepository implements DocumentVersionRepository {
             DocumentVersionsCompanion.insert(
               id: oldVersionId,
               documentId: oldDocumentId,
+              versionNumber: const Value(1),
               isCurrent: const Value(false),
               createdAt: createdAt,
+              supersededAt: Value(createdAt),
             ),
           );
     } else {
-      await (_db.update(_db.documentVersions)
-            ..where((version) => version.id.equals(oldVersionId)))
-          .write(const DocumentVersionsCompanion(isCurrent: Value(false)));
+      await (_db.update(
+        _db.documentVersions,
+      )..where((version) => version.id.equals(oldVersionId))).write(
+        DocumentVersionsCompanion(
+          isCurrent: const Value(false),
+          supersededAt: Value(createdAt),
+        ),
+      );
     }
-    await (_db.update(_db.documentVersions)
-          ..where((version) => version.documentId.equals(oldDocumentId)))
-        .write(const DocumentVersionsCompanion(isCurrent: Value(false)));
+    await (_db.update(
+      _db.documentVersions,
+    )..where((version) => version.documentId.equals(oldDocumentId))).write(
+      DocumentVersionsCompanion(
+        isCurrent: const Value(false),
+        supersededAt: Value(createdAt),
+      ),
+    );
     await _db
         .into(_db.documentVersions)
         .insert(
@@ -519,6 +611,7 @@ class DriftDocumentVersionRepository implements DocumentVersionRepository {
             id: replacementVersionId,
             documentId: replacementDocumentId,
             previousVersionId: Value(oldVersionId),
+            versionNumber: Value((oldVersion?.versionNumber ?? 1) + 1),
             createdAt: createdAt,
           ),
         );
@@ -541,6 +634,74 @@ class DriftDocumentVersionRepository implements DocumentVersionRepository {
       ),
     );
   });
+}
+
+class DriftEmergencyCollectionRepository
+    implements EmergencyCollectionRepository {
+  DriftEmergencyCollectionRepository(this._db);
+  final VaultDatabase _db;
+
+  @override
+  Future<List<EmergencyCollectionItem>> listItems() =>
+      (_db.select(_db.emergencyCollectionItems)..orderBy([
+            (item) => OrderingTerm.asc(item.sortOrder),
+            (item) => OrderingTerm.asc(item.addedAt),
+          ]))
+          .get();
+
+  @override
+  Future<void> replaceSelection({
+    required List<String> documentIds,
+    required DateTime updatedAt,
+  }) => _db.transaction(() async {
+    await _db.delete(_db.emergencyCollectionItems).go();
+    if (documentIds.isEmpty) return;
+    await _db.batch(
+      (batch) => batch.insertAll(
+        _db.emergencyCollectionItems,
+        List.generate(
+          documentIds.length,
+          (index) => EmergencyCollectionItemsCompanion.insert(
+            documentId: documentIds[index],
+            sortOrder: index,
+            addedAt: updatedAt,
+          ),
+        ),
+      ),
+    );
+  });
+}
+
+class DriftDocumentLinkRepository implements DocumentLinkRepository {
+  DriftDocumentLinkRepository(this._db);
+  final VaultDatabase _db;
+
+  @override
+  Future<List<DocumentLink>> listForDocument(String documentId) =>
+      (_db.select(_db.documentLinks)
+            ..where(
+              (link) =>
+                  link.sourceDocumentId.equals(documentId) |
+                  link.targetDocumentId.equals(documentId),
+            )
+            ..orderBy([(link) => OrderingTerm.desc(link.createdAt)]))
+          .get();
+
+  @override
+  Future<void> link(DocumentLinksCompanion link) =>
+      _db.into(_db.documentLinks).insertOnConflictUpdate(link);
+
+  @override
+  Future<void> unlink({
+    required String sourceDocumentId,
+    required String targetDocumentId,
+  }) =>
+      (_db.delete(_db.documentLinks)..where(
+            (link) =>
+                link.sourceDocumentId.equals(sourceDocumentId) &
+                link.targetDocumentId.equals(targetDocumentId),
+          ))
+          .go();
 }
 
 class DriftTagRepository implements TagRepository {

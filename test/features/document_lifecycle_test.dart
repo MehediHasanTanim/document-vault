@@ -213,6 +213,7 @@ void main() {
       await createDocument(id: 'new');
       final versions = DriftDocumentVersionRepository(database);
       final service = DocumentVersionService(
+        documents,
         versions,
         _SequenceUuid(['old-version', 'new-version']),
         clock: () => now,

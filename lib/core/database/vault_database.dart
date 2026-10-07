@@ -102,10 +102,40 @@ class DocumentVersions extends Table {
   TextColumn get documentId =>
       text().references(Documents, #id, onDelete: KeyAction.cascade)();
   TextColumn get previousVersionId => text().nullable()();
+  IntColumn get versionNumber => integer().withDefault(const Constant(1))();
+  TextColumn get versionLabelEncrypted => text().nullable()();
   BoolColumn get isCurrent => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get supersededAt => dateTime().nullable()();
   @override
   Set<Column> get primaryKey => {id};
+}
+
+/// The single, opt-in emergency collection. Documents are never automatically
+/// included: every row represents an explicit user choice.
+class EmergencyCollectionItems extends Table {
+  TextColumn get documentId =>
+      text().references(Documents, #id, onDelete: KeyAction.cascade)();
+  IntColumn get sortOrder => integer()();
+  DateTimeColumn get addedAt => dateTime()();
+  @override
+  Set<Column> get primaryKey => {documentId};
+}
+
+/// Symmetric document relationships. The repository stores the lower document
+/// ID first, preventing duplicate A→B and B→A links without persisting a
+/// relationship label that could reveal sensitive content.
+class DocumentLinks extends Table {
+  @ReferenceName('documentLinkSource')
+  TextColumn get sourceDocumentId =>
+      text().references(Documents, #id, onDelete: KeyAction.cascade)();
+  @ReferenceName('documentLinkTarget')
+  TextColumn get targetDocumentId =>
+      text().references(Documents, #id, onDelete: KeyAction.cascade)();
+  TextColumn get relationshipType => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  @override
+  Set<Column> get primaryKey => {sourceDocumentId, targetDocumentId};
 }
 
 class DocumentOwners extends Table {
@@ -268,6 +298,8 @@ class PendingOperations extends Table {
     PhysicalLocations,
     Documents,
     DocumentVersions,
+    EmergencyCollectionItems,
+    DocumentLinks,
     DocumentOwners,
     DocumentFiles,
     DocumentPages,
@@ -285,7 +317,7 @@ class VaultDatabase extends _$VaultDatabase {
   VaultDatabase(super.e);
   VaultDatabase.defaults() : super(driftDatabase(name: 'document_vault'));
 
-  static const currentSchemaVersion = 5;
+  static const currentSchemaVersion = 6;
   @override
   int get schemaVersion => currentSchemaVersion;
 
@@ -325,6 +357,27 @@ class VaultDatabase extends _$VaultDatabase {
           'CREATE INDEX IF NOT EXISTS idx_share_audit_document_created ON share_audit_events(document_id, created_at)',
         );
       }
+      if (from < 6 && to >= 6) {
+        // Databases older than v3 receive the current table definition in the
+        // v3 create-table step above. Existing v3-v5 databases need additive
+        // columns instead.
+        if (from >= 3) {
+          await m.addColumn(documentVersions, documentVersions.versionNumber);
+          await m.addColumn(
+            documentVersions,
+            documentVersions.versionLabelEncrypted,
+          );
+          await m.addColumn(documentVersions, documentVersions.supersededAt);
+        }
+        await m.createTable(emergencyCollectionItems);
+        await m.createTable(documentLinks);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_emergency_collection_order ON emergency_collection_items(sort_order)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_document_links_target ON document_links(target_document_id)',
+        );
+      }
     });
   }
 
@@ -348,6 +401,8 @@ class VaultDatabase extends _$VaultDatabase {
     'CREATE INDEX IF NOT EXISTS idx_document_owners_member ON document_owners(family_member_id)',
     'CREATE INDEX IF NOT EXISTS idx_document_tags_tag ON document_tags(tag_id)',
     'CREATE INDEX IF NOT EXISTS idx_document_versions_document ON document_versions(document_id)',
+    'CREATE INDEX IF NOT EXISTS idx_emergency_collection_order ON emergency_collection_items(sort_order)',
+    'CREATE INDEX IF NOT EXISTS idx_document_links_target ON document_links(target_document_id)',
     'CREATE INDEX IF NOT EXISTS idx_share_audit_document_created ON share_audit_events(document_id, created_at)',
   ];
 }

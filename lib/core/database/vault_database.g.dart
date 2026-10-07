@@ -3385,6 +3385,29 @@ class $DocumentVersionsTable extends DocumentVersions
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _versionNumberMeta = const VerificationMeta(
+    'versionNumber',
+  );
+  @override
+  late final GeneratedColumn<int> versionNumber = GeneratedColumn<int>(
+    'version_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _versionLabelEncryptedMeta =
+      const VerificationMeta('versionLabelEncrypted');
+  @override
+  late final GeneratedColumn<String> versionLabelEncrypted =
+      GeneratedColumn<String>(
+        'version_label_encrypted',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _isCurrentMeta = const VerificationMeta(
     'isCurrent',
   );
@@ -3411,13 +3434,27 @@ class $DocumentVersionsTable extends DocumentVersions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _supersededAtMeta = const VerificationMeta(
+    'supersededAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> supersededAt = GeneratedColumn<DateTime>(
+    'superseded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     documentId,
     previousVersionId,
+    versionNumber,
+    versionLabelEncrypted,
     isCurrent,
     createdAt,
+    supersededAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3453,6 +3490,24 @@ class $DocumentVersionsTable extends DocumentVersions
         ),
       );
     }
+    if (data.containsKey('version_number')) {
+      context.handle(
+        _versionNumberMeta,
+        versionNumber.isAcceptableOrUnknown(
+          data['version_number']!,
+          _versionNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('version_label_encrypted')) {
+      context.handle(
+        _versionLabelEncryptedMeta,
+        versionLabelEncrypted.isAcceptableOrUnknown(
+          data['version_label_encrypted']!,
+          _versionLabelEncryptedMeta,
+        ),
+      );
+    }
     if (data.containsKey('is_current')) {
       context.handle(
         _isCurrentMeta,
@@ -3466,6 +3521,15 @@ class $DocumentVersionsTable extends DocumentVersions
       );
     } else if (isInserting) {
       context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('superseded_at')) {
+      context.handle(
+        _supersededAtMeta,
+        supersededAt.isAcceptableOrUnknown(
+          data['superseded_at']!,
+          _supersededAtMeta,
+        ),
+      );
     }
     return context;
   }
@@ -3488,6 +3552,14 @@ class $DocumentVersionsTable extends DocumentVersions
         DriftSqlType.string,
         data['${effectivePrefix}previous_version_id'],
       ),
+      versionNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version_number'],
+      )!,
+      versionLabelEncrypted: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}version_label_encrypted'],
+      ),
       isCurrent: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_current'],
@@ -3496,6 +3568,10 @@ class $DocumentVersionsTable extends DocumentVersions
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      supersededAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}superseded_at'],
+      ),
     );
   }
 
@@ -3509,14 +3585,20 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
   final String id;
   final String documentId;
   final String? previousVersionId;
+  final int versionNumber;
+  final String? versionLabelEncrypted;
   final bool isCurrent;
   final DateTime createdAt;
+  final DateTime? supersededAt;
   const DocumentVersion({
     required this.id,
     required this.documentId,
     this.previousVersionId,
+    required this.versionNumber,
+    this.versionLabelEncrypted,
     required this.isCurrent,
     required this.createdAt,
+    this.supersededAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3526,8 +3608,15 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
     if (!nullToAbsent || previousVersionId != null) {
       map['previous_version_id'] = Variable<String>(previousVersionId);
     }
+    map['version_number'] = Variable<int>(versionNumber);
+    if (!nullToAbsent || versionLabelEncrypted != null) {
+      map['version_label_encrypted'] = Variable<String>(versionLabelEncrypted);
+    }
     map['is_current'] = Variable<bool>(isCurrent);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || supersededAt != null) {
+      map['superseded_at'] = Variable<DateTime>(supersededAt);
+    }
     return map;
   }
 
@@ -3538,8 +3627,15 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
       previousVersionId: previousVersionId == null && nullToAbsent
           ? const Value.absent()
           : Value(previousVersionId),
+      versionNumber: Value(versionNumber),
+      versionLabelEncrypted: versionLabelEncrypted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(versionLabelEncrypted),
       isCurrent: Value(isCurrent),
       createdAt: Value(createdAt),
+      supersededAt: supersededAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(supersededAt),
     );
   }
 
@@ -3554,8 +3650,13 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
       previousVersionId: serializer.fromJson<String?>(
         json['previousVersionId'],
       ),
+      versionNumber: serializer.fromJson<int>(json['versionNumber']),
+      versionLabelEncrypted: serializer.fromJson<String?>(
+        json['versionLabelEncrypted'],
+      ),
       isCurrent: serializer.fromJson<bool>(json['isCurrent']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      supersededAt: serializer.fromJson<DateTime?>(json['supersededAt']),
     );
   }
   @override
@@ -3565,8 +3666,13 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
       'id': serializer.toJson<String>(id),
       'documentId': serializer.toJson<String>(documentId),
       'previousVersionId': serializer.toJson<String?>(previousVersionId),
+      'versionNumber': serializer.toJson<int>(versionNumber),
+      'versionLabelEncrypted': serializer.toJson<String?>(
+        versionLabelEncrypted,
+      ),
       'isCurrent': serializer.toJson<bool>(isCurrent),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'supersededAt': serializer.toJson<DateTime?>(supersededAt),
     };
   }
 
@@ -3574,16 +3680,24 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
     String? id,
     String? documentId,
     Value<String?> previousVersionId = const Value.absent(),
+    int? versionNumber,
+    Value<String?> versionLabelEncrypted = const Value.absent(),
     bool? isCurrent,
     DateTime? createdAt,
+    Value<DateTime?> supersededAt = const Value.absent(),
   }) => DocumentVersion(
     id: id ?? this.id,
     documentId: documentId ?? this.documentId,
     previousVersionId: previousVersionId.present
         ? previousVersionId.value
         : this.previousVersionId,
+    versionNumber: versionNumber ?? this.versionNumber,
+    versionLabelEncrypted: versionLabelEncrypted.present
+        ? versionLabelEncrypted.value
+        : this.versionLabelEncrypted,
     isCurrent: isCurrent ?? this.isCurrent,
     createdAt: createdAt ?? this.createdAt,
+    supersededAt: supersededAt.present ? supersededAt.value : this.supersededAt,
   );
   DocumentVersion copyWithCompanion(DocumentVersionsCompanion data) {
     return DocumentVersion(
@@ -3594,8 +3708,17 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
       previousVersionId: data.previousVersionId.present
           ? data.previousVersionId.value
           : this.previousVersionId,
+      versionNumber: data.versionNumber.present
+          ? data.versionNumber.value
+          : this.versionNumber,
+      versionLabelEncrypted: data.versionLabelEncrypted.present
+          ? data.versionLabelEncrypted.value
+          : this.versionLabelEncrypted,
       isCurrent: data.isCurrent.present ? data.isCurrent.value : this.isCurrent,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      supersededAt: data.supersededAt.present
+          ? data.supersededAt.value
+          : this.supersededAt,
     );
   }
 
@@ -3605,15 +3728,26 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
           ..write('previousVersionId: $previousVersionId, ')
+          ..write('versionNumber: $versionNumber, ')
+          ..write('versionLabelEncrypted: $versionLabelEncrypted, ')
           ..write('isCurrent: $isCurrent, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('supersededAt: $supersededAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, documentId, previousVersionId, isCurrent, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    documentId,
+    previousVersionId,
+    versionNumber,
+    versionLabelEncrypted,
+    isCurrent,
+    createdAt,
+    supersededAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3621,31 +3755,43 @@ class DocumentVersion extends DataClass implements Insertable<DocumentVersion> {
           other.id == this.id &&
           other.documentId == this.documentId &&
           other.previousVersionId == this.previousVersionId &&
+          other.versionNumber == this.versionNumber &&
+          other.versionLabelEncrypted == this.versionLabelEncrypted &&
           other.isCurrent == this.isCurrent &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.supersededAt == this.supersededAt);
 }
 
 class DocumentVersionsCompanion extends UpdateCompanion<DocumentVersion> {
   final Value<String> id;
   final Value<String> documentId;
   final Value<String?> previousVersionId;
+  final Value<int> versionNumber;
+  final Value<String?> versionLabelEncrypted;
   final Value<bool> isCurrent;
   final Value<DateTime> createdAt;
+  final Value<DateTime?> supersededAt;
   final Value<int> rowid;
   const DocumentVersionsCompanion({
     this.id = const Value.absent(),
     this.documentId = const Value.absent(),
     this.previousVersionId = const Value.absent(),
+    this.versionNumber = const Value.absent(),
+    this.versionLabelEncrypted = const Value.absent(),
     this.isCurrent = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.supersededAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DocumentVersionsCompanion.insert({
     required String id,
     required String documentId,
     this.previousVersionId = const Value.absent(),
+    this.versionNumber = const Value.absent(),
+    this.versionLabelEncrypted = const Value.absent(),
     this.isCurrent = const Value.absent(),
     required DateTime createdAt,
+    this.supersededAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        documentId = Value(documentId),
@@ -3654,16 +3800,23 @@ class DocumentVersionsCompanion extends UpdateCompanion<DocumentVersion> {
     Expression<String>? id,
     Expression<String>? documentId,
     Expression<String>? previousVersionId,
+    Expression<int>? versionNumber,
+    Expression<String>? versionLabelEncrypted,
     Expression<bool>? isCurrent,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? supersededAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (documentId != null) 'document_id': documentId,
       if (previousVersionId != null) 'previous_version_id': previousVersionId,
+      if (versionNumber != null) 'version_number': versionNumber,
+      if (versionLabelEncrypted != null)
+        'version_label_encrypted': versionLabelEncrypted,
       if (isCurrent != null) 'is_current': isCurrent,
       if (createdAt != null) 'created_at': createdAt,
+      if (supersededAt != null) 'superseded_at': supersededAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3672,16 +3825,23 @@ class DocumentVersionsCompanion extends UpdateCompanion<DocumentVersion> {
     Value<String>? id,
     Value<String>? documentId,
     Value<String?>? previousVersionId,
+    Value<int>? versionNumber,
+    Value<String?>? versionLabelEncrypted,
     Value<bool>? isCurrent,
     Value<DateTime>? createdAt,
+    Value<DateTime?>? supersededAt,
     Value<int>? rowid,
   }) {
     return DocumentVersionsCompanion(
       id: id ?? this.id,
       documentId: documentId ?? this.documentId,
       previousVersionId: previousVersionId ?? this.previousVersionId,
+      versionNumber: versionNumber ?? this.versionNumber,
+      versionLabelEncrypted:
+          versionLabelEncrypted ?? this.versionLabelEncrypted,
       isCurrent: isCurrent ?? this.isCurrent,
       createdAt: createdAt ?? this.createdAt,
+      supersededAt: supersededAt ?? this.supersededAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3698,11 +3858,22 @@ class DocumentVersionsCompanion extends UpdateCompanion<DocumentVersion> {
     if (previousVersionId.present) {
       map['previous_version_id'] = Variable<String>(previousVersionId.value);
     }
+    if (versionNumber.present) {
+      map['version_number'] = Variable<int>(versionNumber.value);
+    }
+    if (versionLabelEncrypted.present) {
+      map['version_label_encrypted'] = Variable<String>(
+        versionLabelEncrypted.value,
+      );
+    }
     if (isCurrent.present) {
       map['is_current'] = Variable<bool>(isCurrent.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (supersededAt.present) {
+      map['superseded_at'] = Variable<DateTime>(supersededAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3716,7 +3887,637 @@ class DocumentVersionsCompanion extends UpdateCompanion<DocumentVersion> {
           ..write('id: $id, ')
           ..write('documentId: $documentId, ')
           ..write('previousVersionId: $previousVersionId, ')
+          ..write('versionNumber: $versionNumber, ')
+          ..write('versionLabelEncrypted: $versionLabelEncrypted, ')
           ..write('isCurrent: $isCurrent, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('supersededAt: $supersededAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EmergencyCollectionItemsTable extends EmergencyCollectionItems
+    with TableInfo<$EmergencyCollectionItemsTable, EmergencyCollectionItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EmergencyCollectionItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'document_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES documents (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addedAtMeta = const VerificationMeta(
+    'addedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> addedAt = GeneratedColumn<DateTime>(
+    'added_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [documentId, sortOrder, addedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'emergency_collection_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EmergencyCollectionItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('document_id')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['document_id']!, _documentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_documentIdMeta);
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sortOrderMeta);
+    }
+    if (data.containsKey('added_at')) {
+      context.handle(
+        _addedAtMeta,
+        addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_addedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {documentId};
+  @override
+  EmergencyCollectionItem map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EmergencyCollectionItem(
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_id'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      addedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}added_at'],
+      )!,
+    );
+  }
+
+  @override
+  $EmergencyCollectionItemsTable createAlias(String alias) {
+    return $EmergencyCollectionItemsTable(attachedDatabase, alias);
+  }
+}
+
+class EmergencyCollectionItem extends DataClass
+    implements Insertable<EmergencyCollectionItem> {
+  final String documentId;
+  final int sortOrder;
+  final DateTime addedAt;
+  const EmergencyCollectionItem({
+    required this.documentId,
+    required this.sortOrder,
+    required this.addedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['document_id'] = Variable<String>(documentId);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['added_at'] = Variable<DateTime>(addedAt);
+    return map;
+  }
+
+  EmergencyCollectionItemsCompanion toCompanion(bool nullToAbsent) {
+    return EmergencyCollectionItemsCompanion(
+      documentId: Value(documentId),
+      sortOrder: Value(sortOrder),
+      addedAt: Value(addedAt),
+    );
+  }
+
+  factory EmergencyCollectionItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EmergencyCollectionItem(
+      documentId: serializer.fromJson<String>(json['documentId']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      addedAt: serializer.fromJson<DateTime>(json['addedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'documentId': serializer.toJson<String>(documentId),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'addedAt': serializer.toJson<DateTime>(addedAt),
+    };
+  }
+
+  EmergencyCollectionItem copyWith({
+    String? documentId,
+    int? sortOrder,
+    DateTime? addedAt,
+  }) => EmergencyCollectionItem(
+    documentId: documentId ?? this.documentId,
+    sortOrder: sortOrder ?? this.sortOrder,
+    addedAt: addedAt ?? this.addedAt,
+  );
+  EmergencyCollectionItem copyWithCompanion(
+    EmergencyCollectionItemsCompanion data,
+  ) {
+    return EmergencyCollectionItem(
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EmergencyCollectionItem(')
+          ..write('documentId: $documentId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('addedAt: $addedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(documentId, sortOrder, addedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EmergencyCollectionItem &&
+          other.documentId == this.documentId &&
+          other.sortOrder == this.sortOrder &&
+          other.addedAt == this.addedAt);
+}
+
+class EmergencyCollectionItemsCompanion
+    extends UpdateCompanion<EmergencyCollectionItem> {
+  final Value<String> documentId;
+  final Value<int> sortOrder;
+  final Value<DateTime> addedAt;
+  final Value<int> rowid;
+  const EmergencyCollectionItemsCompanion({
+    this.documentId = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.addedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EmergencyCollectionItemsCompanion.insert({
+    required String documentId,
+    required int sortOrder,
+    required DateTime addedAt,
+    this.rowid = const Value.absent(),
+  }) : documentId = Value(documentId),
+       sortOrder = Value(sortOrder),
+       addedAt = Value(addedAt);
+  static Insertable<EmergencyCollectionItem> custom({
+    Expression<String>? documentId,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? addedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (documentId != null) 'document_id': documentId,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (addedAt != null) 'added_at': addedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EmergencyCollectionItemsCompanion copyWith({
+    Value<String>? documentId,
+    Value<int>? sortOrder,
+    Value<DateTime>? addedAt,
+    Value<int>? rowid,
+  }) {
+    return EmergencyCollectionItemsCompanion(
+      documentId: documentId ?? this.documentId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      addedAt: addedAt ?? this.addedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (documentId.present) {
+      map['document_id'] = Variable<String>(documentId.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (addedAt.present) {
+      map['added_at'] = Variable<DateTime>(addedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EmergencyCollectionItemsCompanion(')
+          ..write('documentId: $documentId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('addedAt: $addedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DocumentLinksTable extends DocumentLinks
+    with TableInfo<$DocumentLinksTable, DocumentLink> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DocumentLinksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _sourceDocumentIdMeta = const VerificationMeta(
+    'sourceDocumentId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceDocumentId = GeneratedColumn<String>(
+    'source_document_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES documents (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _targetDocumentIdMeta = const VerificationMeta(
+    'targetDocumentId',
+  );
+  @override
+  late final GeneratedColumn<String> targetDocumentId = GeneratedColumn<String>(
+    'target_document_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES documents (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _relationshipTypeMeta = const VerificationMeta(
+    'relationshipType',
+  );
+  @override
+  late final GeneratedColumn<String> relationshipType = GeneratedColumn<String>(
+    'relationship_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    sourceDocumentId,
+    targetDocumentId,
+    relationshipType,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'document_links';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DocumentLink> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('source_document_id')) {
+      context.handle(
+        _sourceDocumentIdMeta,
+        sourceDocumentId.isAcceptableOrUnknown(
+          data['source_document_id']!,
+          _sourceDocumentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceDocumentIdMeta);
+    }
+    if (data.containsKey('target_document_id')) {
+      context.handle(
+        _targetDocumentIdMeta,
+        targetDocumentId.isAcceptableOrUnknown(
+          data['target_document_id']!,
+          _targetDocumentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_targetDocumentIdMeta);
+    }
+    if (data.containsKey('relationship_type')) {
+      context.handle(
+        _relationshipTypeMeta,
+        relationshipType.isAcceptableOrUnknown(
+          data['relationship_type']!,
+          _relationshipTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_relationshipTypeMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {sourceDocumentId, targetDocumentId};
+  @override
+  DocumentLink map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DocumentLink(
+      sourceDocumentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_document_id'],
+      )!,
+      targetDocumentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_document_id'],
+      )!,
+      relationshipType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relationship_type'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $DocumentLinksTable createAlias(String alias) {
+    return $DocumentLinksTable(attachedDatabase, alias);
+  }
+}
+
+class DocumentLink extends DataClass implements Insertable<DocumentLink> {
+  final String sourceDocumentId;
+  final String targetDocumentId;
+  final String relationshipType;
+  final DateTime createdAt;
+  const DocumentLink({
+    required this.sourceDocumentId,
+    required this.targetDocumentId,
+    required this.relationshipType,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['source_document_id'] = Variable<String>(sourceDocumentId);
+    map['target_document_id'] = Variable<String>(targetDocumentId);
+    map['relationship_type'] = Variable<String>(relationshipType);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  DocumentLinksCompanion toCompanion(bool nullToAbsent) {
+    return DocumentLinksCompanion(
+      sourceDocumentId: Value(sourceDocumentId),
+      targetDocumentId: Value(targetDocumentId),
+      relationshipType: Value(relationshipType),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory DocumentLink.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DocumentLink(
+      sourceDocumentId: serializer.fromJson<String>(json['sourceDocumentId']),
+      targetDocumentId: serializer.fromJson<String>(json['targetDocumentId']),
+      relationshipType: serializer.fromJson<String>(json['relationshipType']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'sourceDocumentId': serializer.toJson<String>(sourceDocumentId),
+      'targetDocumentId': serializer.toJson<String>(targetDocumentId),
+      'relationshipType': serializer.toJson<String>(relationshipType),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  DocumentLink copyWith({
+    String? sourceDocumentId,
+    String? targetDocumentId,
+    String? relationshipType,
+    DateTime? createdAt,
+  }) => DocumentLink(
+    sourceDocumentId: sourceDocumentId ?? this.sourceDocumentId,
+    targetDocumentId: targetDocumentId ?? this.targetDocumentId,
+    relationshipType: relationshipType ?? this.relationshipType,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  DocumentLink copyWithCompanion(DocumentLinksCompanion data) {
+    return DocumentLink(
+      sourceDocumentId: data.sourceDocumentId.present
+          ? data.sourceDocumentId.value
+          : this.sourceDocumentId,
+      targetDocumentId: data.targetDocumentId.present
+          ? data.targetDocumentId.value
+          : this.targetDocumentId,
+      relationshipType: data.relationshipType.present
+          ? data.relationshipType.value
+          : this.relationshipType,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentLink(')
+          ..write('sourceDocumentId: $sourceDocumentId, ')
+          ..write('targetDocumentId: $targetDocumentId, ')
+          ..write('relationshipType: $relationshipType, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    sourceDocumentId,
+    targetDocumentId,
+    relationshipType,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DocumentLink &&
+          other.sourceDocumentId == this.sourceDocumentId &&
+          other.targetDocumentId == this.targetDocumentId &&
+          other.relationshipType == this.relationshipType &&
+          other.createdAt == this.createdAt);
+}
+
+class DocumentLinksCompanion extends UpdateCompanion<DocumentLink> {
+  final Value<String> sourceDocumentId;
+  final Value<String> targetDocumentId;
+  final Value<String> relationshipType;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const DocumentLinksCompanion({
+    this.sourceDocumentId = const Value.absent(),
+    this.targetDocumentId = const Value.absent(),
+    this.relationshipType = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DocumentLinksCompanion.insert({
+    required String sourceDocumentId,
+    required String targetDocumentId,
+    required String relationshipType,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : sourceDocumentId = Value(sourceDocumentId),
+       targetDocumentId = Value(targetDocumentId),
+       relationshipType = Value(relationshipType),
+       createdAt = Value(createdAt);
+  static Insertable<DocumentLink> custom({
+    Expression<String>? sourceDocumentId,
+    Expression<String>? targetDocumentId,
+    Expression<String>? relationshipType,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (sourceDocumentId != null) 'source_document_id': sourceDocumentId,
+      if (targetDocumentId != null) 'target_document_id': targetDocumentId,
+      if (relationshipType != null) 'relationship_type': relationshipType,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DocumentLinksCompanion copyWith({
+    Value<String>? sourceDocumentId,
+    Value<String>? targetDocumentId,
+    Value<String>? relationshipType,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return DocumentLinksCompanion(
+      sourceDocumentId: sourceDocumentId ?? this.sourceDocumentId,
+      targetDocumentId: targetDocumentId ?? this.targetDocumentId,
+      relationshipType: relationshipType ?? this.relationshipType,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (sourceDocumentId.present) {
+      map['source_document_id'] = Variable<String>(sourceDocumentId.value);
+    }
+    if (targetDocumentId.present) {
+      map['target_document_id'] = Variable<String>(targetDocumentId.value);
+    }
+    if (relationshipType.present) {
+      map['relationship_type'] = Variable<String>(relationshipType.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentLinksCompanion(')
+          ..write('sourceDocumentId: $sourceDocumentId, ')
+          ..write('targetDocumentId: $targetDocumentId, ')
+          ..write('relationshipType: $relationshipType, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -8909,6 +9710,9 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
   late final $DocumentVersionsTable documentVersions = $DocumentVersionsTable(
     this,
   );
+  late final $EmergencyCollectionItemsTable emergencyCollectionItems =
+      $EmergencyCollectionItemsTable(this);
+  late final $DocumentLinksTable documentLinks = $DocumentLinksTable(this);
   late final $DocumentOwnersTable documentOwners = $DocumentOwnersTable(this);
   late final $DocumentFilesTable documentFiles = $DocumentFilesTable(this);
   late final $DocumentPagesTable documentPages = $DocumentPagesTable(this);
@@ -8935,6 +9739,8 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
     physicalLocations,
     documents,
     documentVersions,
+    emergencyCollectionItems,
+    documentLinks,
     documentOwners,
     documentFiles,
     documentPages,
@@ -8976,6 +9782,29 @@ abstract class _$VaultDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('document_versions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('emergency_collection_items', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_links', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'documents',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('document_links', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -10783,6 +11612,67 @@ final class $$DocumentsTableReferences
     );
   }
 
+  static MultiTypedResultKey<
+    $EmergencyCollectionItemsTable,
+    List<EmergencyCollectionItem>
+  >
+  _emergencyCollectionItemsRefsTable(_$VaultDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.emergencyCollectionItems,
+        aliasName: 'documents__id__emergency_collection_items__document_id',
+      );
+
+  $$EmergencyCollectionItemsTableProcessedTableManager
+  get emergencyCollectionItemsRefs {
+    final manager = $$EmergencyCollectionItemsTableTableManager(
+      $_db,
+      $_db.emergencyCollectionItems,
+    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _emergencyCollectionItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$DocumentLinksTable, List<DocumentLink>>
+  _documentLinkSourceTable(_$VaultDatabase db) => MultiTypedResultKey.fromTable(
+    db.documentLinks,
+    aliasName: 'documents__id__document_links__source_document_id',
+  );
+
+  $$DocumentLinksTableProcessedTableManager get documentLinkSource {
+    final manager = $$DocumentLinksTableTableManager($_db, $_db.documentLinks)
+        .filter(
+          (f) => f.sourceDocumentId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(_documentLinkSourceTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$DocumentLinksTable, List<DocumentLink>>
+  _documentLinkTargetTable(_$VaultDatabase db) => MultiTypedResultKey.fromTable(
+    db.documentLinks,
+    aliasName: 'documents__id__document_links__target_document_id',
+  );
+
+  $$DocumentLinksTableProcessedTableManager get documentLinkTarget {
+    final manager = $$DocumentLinksTableTableManager($_db, $_db.documentLinks)
+        .filter(
+          (f) => f.targetDocumentId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(_documentLinkTargetTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$DocumentOwnersTable, List<DocumentOwner>>
   _documentOwnersRefsTable(_$VaultDatabase db) => MultiTypedResultKey.fromTable(
     db.documentOwners,
@@ -11093,6 +11983,83 @@ class $$DocumentsTableFilterComposer
           }) => $$DocumentVersionsTableFilterComposer(
             $db: $db,
             $table: $db.documentVersions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> emergencyCollectionItemsRefs(
+    Expression<bool> Function($$EmergencyCollectionItemsTableFilterComposer f)
+    f,
+  ) {
+    final $$EmergencyCollectionItemsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.emergencyCollectionItems,
+          getReferencedColumn: (t) => t.documentId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$EmergencyCollectionItemsTableFilterComposer(
+                $db: $db,
+                $table: $db.emergencyCollectionItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> documentLinkSource(
+    Expression<bool> Function($$DocumentLinksTableFilterComposer f) f,
+  ) {
+    final $$DocumentLinksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLinks,
+      getReferencedColumn: (t) => t.sourceDocumentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentLinksTableFilterComposer(
+            $db: $db,
+            $table: $db.documentLinks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> documentLinkTarget(
+    Expression<bool> Function($$DocumentLinksTableFilterComposer f) f,
+  ) {
+    final $$DocumentLinksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLinks,
+      getReferencedColumn: (t) => t.targetDocumentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentLinksTableFilterComposer(
+            $db: $db,
+            $table: $db.documentLinks,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -11610,6 +12577,83 @@ class $$DocumentsTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> emergencyCollectionItemsRefs<T extends Object>(
+    Expression<T> Function($$EmergencyCollectionItemsTableAnnotationComposer a)
+    f,
+  ) {
+    final $$EmergencyCollectionItemsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.emergencyCollectionItems,
+          getReferencedColumn: (t) => t.documentId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$EmergencyCollectionItemsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.emergencyCollectionItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> documentLinkSource<T extends Object>(
+    Expression<T> Function($$DocumentLinksTableAnnotationComposer a) f,
+  ) {
+    final $$DocumentLinksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLinks,
+      getReferencedColumn: (t) => t.sourceDocumentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentLinksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documentLinks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> documentLinkTarget<T extends Object>(
+    Expression<T> Function($$DocumentLinksTableAnnotationComposer a) f,
+  ) {
+    final $$DocumentLinksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLinks,
+      getReferencedColumn: (t) => t.targetDocumentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentLinksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documentLinks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> documentOwnersRefs<T extends Object>(
     Expression<T> Function($$DocumentOwnersTableAnnotationComposer a) f,
   ) {
@@ -11805,6 +12849,9 @@ class $$DocumentsTableTableManager
             bool primaryOwnerId,
             bool physicalLocationId,
             bool documentVersionsRefs,
+            bool emergencyCollectionItemsRefs,
+            bool documentLinkSource,
+            bool documentLinkTarget,
             bool documentOwnersRefs,
             bool documentFilesRefs,
             bool documentPagesRefs,
@@ -11927,6 +12974,9 @@ class $$DocumentsTableTableManager
                 primaryOwnerId = false,
                 physicalLocationId = false,
                 documentVersionsRefs = false,
+                emergencyCollectionItemsRefs = false,
+                documentLinkSource = false,
+                documentLinkTarget = false,
                 documentOwnersRefs = false,
                 documentFilesRefs = false,
                 documentPagesRefs = false,
@@ -11939,6 +12989,10 @@ class $$DocumentsTableTableManager
                   db: db,
                   explicitlyWatchedTables: [
                     if (documentVersionsRefs) db.documentVersions,
+                    if (emergencyCollectionItemsRefs)
+                      db.emergencyCollectionItems,
+                    if (documentLinkSource) db.documentLinks,
+                    if (documentLinkTarget) db.documentLinks,
                     if (documentOwnersRefs) db.documentOwners,
                     if (documentFilesRefs) db.documentFiles,
                     if (documentPagesRefs) db.documentPages,
@@ -12019,6 +13073,69 @@ class $$DocumentsTableTableManager
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.documentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (emergencyCollectionItemsRefs)
+                        await $_getPrefetchedData<
+                          Document,
+                          $DocumentsTable,
+                          EmergencyCollectionItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DocumentsTableReferences
+                              ._emergencyCollectionItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DocumentsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).emergencyCollectionItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.documentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (documentLinkSource)
+                        await $_getPrefetchedData<
+                          Document,
+                          $DocumentsTable,
+                          DocumentLink
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DocumentsTableReferences
+                              ._documentLinkSourceTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DocumentsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).documentLinkSource,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sourceDocumentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (documentLinkTarget)
+                        await $_getPrefetchedData<
+                          Document,
+                          $DocumentsTable,
+                          DocumentLink
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DocumentsTableReferences
+                              ._documentLinkTargetTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DocumentsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).documentLinkTarget,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.targetDocumentId == item.id,
                               ),
                           typedResults: items,
                         ),
@@ -12194,6 +13311,9 @@ typedef $$DocumentsTableProcessedTableManager =
         bool primaryOwnerId,
         bool physicalLocationId,
         bool documentVersionsRefs,
+        bool emergencyCollectionItemsRefs,
+        bool documentLinkSource,
+        bool documentLinkTarget,
         bool documentOwnersRefs,
         bool documentFilesRefs,
         bool documentPagesRefs,
@@ -12208,8 +13328,11 @@ typedef $$DocumentVersionsTableCreateCompanionBuilder =
       required String id,
       required String documentId,
       Value<String?> previousVersionId,
+      Value<int> versionNumber,
+      Value<String?> versionLabelEncrypted,
       Value<bool> isCurrent,
       required DateTime createdAt,
+      Value<DateTime?> supersededAt,
       Value<int> rowid,
     });
 typedef $$DocumentVersionsTableUpdateCompanionBuilder =
@@ -12217,8 +13340,11 @@ typedef $$DocumentVersionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> documentId,
       Value<String?> previousVersionId,
+      Value<int> versionNumber,
+      Value<String?> versionLabelEncrypted,
       Value<bool> isCurrent,
       Value<DateTime> createdAt,
+      Value<DateTime?> supersededAt,
       Value<int> rowid,
     });
 
@@ -12272,6 +13398,16 @@ class $$DocumentVersionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get versionLabelEncrypted => $composableBuilder(
+    column: $table.versionLabelEncrypted,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get isCurrent => $composableBuilder(
     column: $table.isCurrent,
     builder: (column) => ColumnFilters(column),
@@ -12279,6 +13415,11 @@ class $$DocumentVersionsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get supersededAt => $composableBuilder(
+    column: $table.supersededAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12325,6 +13466,16 @@ class $$DocumentVersionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get versionLabelEncrypted => $composableBuilder(
+    column: $table.versionLabelEncrypted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isCurrent => $composableBuilder(
     column: $table.isCurrent,
     builder: (column) => ColumnOrderings(column),
@@ -12332,6 +13483,11 @@ class $$DocumentVersionsTableOrderingComposer
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get supersededAt => $composableBuilder(
+    column: $table.supersededAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12376,11 +13532,26 @@ class $$DocumentVersionsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get versionLabelEncrypted => $composableBuilder(
+    column: $table.versionLabelEncrypted,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get isCurrent =>
       $composableBuilder(column: $table.isCurrent, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get supersededAt => $composableBuilder(
+    column: $table.supersededAt,
+    builder: (column) => column,
+  );
 
   $$DocumentsTableAnnotationComposer get documentId {
     final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
@@ -12439,15 +13610,21 @@ class $$DocumentVersionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> documentId = const Value.absent(),
                 Value<String?> previousVersionId = const Value.absent(),
+                Value<int> versionNumber = const Value.absent(),
+                Value<String?> versionLabelEncrypted = const Value.absent(),
                 Value<bool> isCurrent = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> supersededAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentVersionsCompanion(
                 id: id,
                 documentId: documentId,
                 previousVersionId: previousVersionId,
+                versionNumber: versionNumber,
+                versionLabelEncrypted: versionLabelEncrypted,
                 isCurrent: isCurrent,
                 createdAt: createdAt,
+                supersededAt: supersededAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12455,15 +13632,21 @@ class $$DocumentVersionsTableTableManager
                 required String id,
                 required String documentId,
                 Value<String?> previousVersionId = const Value.absent(),
+                Value<int> versionNumber = const Value.absent(),
+                Value<String?> versionLabelEncrypted = const Value.absent(),
                 Value<bool> isCurrent = const Value.absent(),
                 required DateTime createdAt,
+                Value<DateTime?> supersededAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentVersionsCompanion.insert(
                 id: id,
                 documentId: documentId,
                 previousVersionId: previousVersionId,
+                versionNumber: versionNumber,
+                versionLabelEncrypted: versionLabelEncrypted,
                 isCurrent: isCurrent,
                 createdAt: createdAt,
+                supersededAt: supersededAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -12530,6 +13713,699 @@ typedef $$DocumentVersionsTableProcessedTableManager =
       (DocumentVersion, $$DocumentVersionsTableReferences),
       DocumentVersion,
       PrefetchHooks Function({bool documentId})
+    >;
+typedef $$EmergencyCollectionItemsTableCreateCompanionBuilder =
+    EmergencyCollectionItemsCompanion Function({
+      required String documentId,
+      required int sortOrder,
+      required DateTime addedAt,
+      Value<int> rowid,
+    });
+typedef $$EmergencyCollectionItemsTableUpdateCompanionBuilder =
+    EmergencyCollectionItemsCompanion Function({
+      Value<String> documentId,
+      Value<int> sortOrder,
+      Value<DateTime> addedAt,
+      Value<int> rowid,
+    });
+
+final class $$EmergencyCollectionItemsTableReferences
+    extends
+        BaseReferences<
+          _$VaultDatabase,
+          $EmergencyCollectionItemsTable,
+          EmergencyCollectionItem
+        > {
+  $$EmergencyCollectionItemsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $DocumentsTable _documentIdTable(_$VaultDatabase db) => db.documents
+      .createAlias('emergency_collection_items__document_id__documents__id');
+
+  $$DocumentsTableProcessedTableManager get documentId {
+    final $_column = $_itemColumn<String>('document_id')!;
+
+    final manager = $$DocumentsTableTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$EmergencyCollectionItemsTableFilterComposer
+    extends Composer<_$VaultDatabase, $EmergencyCollectionItemsTable> {
+  $$EmergencyCollectionItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DocumentsTableFilterComposer get documentId {
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EmergencyCollectionItemsTableOrderingComposer
+    extends Composer<_$VaultDatabase, $EmergencyCollectionItemsTable> {
+  $$EmergencyCollectionItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DocumentsTableOrderingComposer get documentId {
+    final $$DocumentsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EmergencyCollectionItemsTableAnnotationComposer
+    extends Composer<_$VaultDatabase, $EmergencyCollectionItemsTable> {
+  $$EmergencyCollectionItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get addedAt =>
+      $composableBuilder(column: $table.addedAt, builder: (column) => column);
+
+  $$DocumentsTableAnnotationComposer get documentId {
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EmergencyCollectionItemsTableTableManager
+    extends
+        RootTableManager<
+          _$VaultDatabase,
+          $EmergencyCollectionItemsTable,
+          EmergencyCollectionItem,
+          $$EmergencyCollectionItemsTableFilterComposer,
+          $$EmergencyCollectionItemsTableOrderingComposer,
+          $$EmergencyCollectionItemsTableAnnotationComposer,
+          $$EmergencyCollectionItemsTableCreateCompanionBuilder,
+          $$EmergencyCollectionItemsTableUpdateCompanionBuilder,
+          (EmergencyCollectionItem, $$EmergencyCollectionItemsTableReferences),
+          EmergencyCollectionItem,
+          PrefetchHooks Function({bool documentId})
+        > {
+  $$EmergencyCollectionItemsTableTableManager(
+    _$VaultDatabase db,
+    $EmergencyCollectionItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EmergencyCollectionItemsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$EmergencyCollectionItemsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$EmergencyCollectionItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> documentId = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> addedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EmergencyCollectionItemsCompanion(
+                documentId: documentId,
+                sortOrder: sortOrder,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String documentId,
+                required int sortOrder,
+                required DateTime addedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => EmergencyCollectionItemsCompanion.insert(
+                documentId: documentId,
+                sortOrder: sortOrder,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $EmergencyCollectionItemsTable,
+                    EmergencyCollectionItem
+                  >(table),
+                  $$EmergencyCollectionItemsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({documentId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (documentId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.documentId,
+                        referencedTable:
+                            $$EmergencyCollectionItemsTableReferences
+                                ._documentIdTable(db),
+                        referencedColumn:
+                            $$EmergencyCollectionItemsTableReferences
+                                ._documentIdTable(db)
+                                .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EmergencyCollectionItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$VaultDatabase,
+      $EmergencyCollectionItemsTable,
+      EmergencyCollectionItem,
+      $$EmergencyCollectionItemsTableFilterComposer,
+      $$EmergencyCollectionItemsTableOrderingComposer,
+      $$EmergencyCollectionItemsTableAnnotationComposer,
+      $$EmergencyCollectionItemsTableCreateCompanionBuilder,
+      $$EmergencyCollectionItemsTableUpdateCompanionBuilder,
+      (EmergencyCollectionItem, $$EmergencyCollectionItemsTableReferences),
+      EmergencyCollectionItem,
+      PrefetchHooks Function({bool documentId})
+    >;
+typedef $$DocumentLinksTableCreateCompanionBuilder =
+    DocumentLinksCompanion Function({
+      required String sourceDocumentId,
+      required String targetDocumentId,
+      required String relationshipType,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$DocumentLinksTableUpdateCompanionBuilder =
+    DocumentLinksCompanion Function({
+      Value<String> sourceDocumentId,
+      Value<String> targetDocumentId,
+      Value<String> relationshipType,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$DocumentLinksTableReferences
+    extends BaseReferences<_$VaultDatabase, $DocumentLinksTable, DocumentLink> {
+  $$DocumentLinksTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $DocumentsTable _sourceDocumentIdTable(_$VaultDatabase db) => db
+      .documents
+      .createAlias('document_links__source_document_id__documents__id');
+
+  $$DocumentsTableProcessedTableManager get sourceDocumentId {
+    final $_column = $_itemColumn<String>('source_document_id')!;
+
+    final manager = $$DocumentsTableTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sourceDocumentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $DocumentsTable _targetDocumentIdTable(_$VaultDatabase db) => db
+      .documents
+      .createAlias('document_links__target_document_id__documents__id');
+
+  $$DocumentsTableProcessedTableManager get targetDocumentId {
+    final $_column = $_itemColumn<String>('target_document_id')!;
+
+    final manager = $$DocumentsTableTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_targetDocumentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$DocumentLinksTableFilterComposer
+    extends Composer<_$VaultDatabase, $DocumentLinksTable> {
+  $$DocumentLinksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get relationshipType => $composableBuilder(
+    column: $table.relationshipType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DocumentsTableFilterComposer get sourceDocumentId {
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceDocumentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$DocumentsTableFilterComposer get targetDocumentId {
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.targetDocumentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DocumentLinksTableOrderingComposer
+    extends Composer<_$VaultDatabase, $DocumentLinksTable> {
+  $$DocumentLinksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get relationshipType => $composableBuilder(
+    column: $table.relationshipType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DocumentsTableOrderingComposer get sourceDocumentId {
+    final $$DocumentsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceDocumentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$DocumentsTableOrderingComposer get targetDocumentId {
+    final $$DocumentsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.targetDocumentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DocumentLinksTableAnnotationComposer
+    extends Composer<_$VaultDatabase, $DocumentLinksTable> {
+  $$DocumentLinksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get relationshipType => $composableBuilder(
+    column: $table.relationshipType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$DocumentsTableAnnotationComposer get sourceDocumentId {
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceDocumentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$DocumentsTableAnnotationComposer get targetDocumentId {
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.targetDocumentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DocumentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DocumentLinksTableTableManager
+    extends
+        RootTableManager<
+          _$VaultDatabase,
+          $DocumentLinksTable,
+          DocumentLink,
+          $$DocumentLinksTableFilterComposer,
+          $$DocumentLinksTableOrderingComposer,
+          $$DocumentLinksTableAnnotationComposer,
+          $$DocumentLinksTableCreateCompanionBuilder,
+          $$DocumentLinksTableUpdateCompanionBuilder,
+          (DocumentLink, $$DocumentLinksTableReferences),
+          DocumentLink,
+          PrefetchHooks Function({bool sourceDocumentId, bool targetDocumentId})
+        > {
+  $$DocumentLinksTableTableManager(
+    _$VaultDatabase db,
+    $DocumentLinksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DocumentLinksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DocumentLinksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DocumentLinksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> sourceDocumentId = const Value.absent(),
+                Value<String> targetDocumentId = const Value.absent(),
+                Value<String> relationshipType = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DocumentLinksCompanion(
+                sourceDocumentId: sourceDocumentId,
+                targetDocumentId: targetDocumentId,
+                relationshipType: relationshipType,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String sourceDocumentId,
+                required String targetDocumentId,
+                required String relationshipType,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => DocumentLinksCompanion.insert(
+                sourceDocumentId: sourceDocumentId,
+                targetDocumentId: targetDocumentId,
+                relationshipType: relationshipType,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DocumentLinksTable, DocumentLink>(table),
+                  $$DocumentLinksTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({sourceDocumentId = false, targetDocumentId = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (sourceDocumentId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.sourceDocumentId,
+                            referencedTable: $$DocumentLinksTableReferences
+                                ._sourceDocumentIdTable(db),
+                            referencedColumn: $$DocumentLinksTableReferences
+                                ._sourceDocumentIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+                        if (targetDocumentId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.targetDocumentId,
+                            referencedTable: $$DocumentLinksTableReferences
+                                ._targetDocumentIdTable(db),
+                            referencedColumn: $$DocumentLinksTableReferences
+                                ._targetDocumentIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$DocumentLinksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$VaultDatabase,
+      $DocumentLinksTable,
+      DocumentLink,
+      $$DocumentLinksTableFilterComposer,
+      $$DocumentLinksTableOrderingComposer,
+      $$DocumentLinksTableAnnotationComposer,
+      $$DocumentLinksTableCreateCompanionBuilder,
+      $$DocumentLinksTableUpdateCompanionBuilder,
+      (DocumentLink, $$DocumentLinksTableReferences),
+      DocumentLink,
+      PrefetchHooks Function({bool sourceDocumentId, bool targetDocumentId})
     >;
 typedef $$DocumentOwnersTableCreateCompanionBuilder =
     DocumentOwnersCompanion Function({
@@ -16493,6 +18369,13 @@ class $VaultDatabaseManager {
       $$DocumentsTableTableManager(_db, _db.documents);
   $$DocumentVersionsTableTableManager get documentVersions =>
       $$DocumentVersionsTableTableManager(_db, _db.documentVersions);
+  $$EmergencyCollectionItemsTableTableManager get emergencyCollectionItems =>
+      $$EmergencyCollectionItemsTableTableManager(
+        _db,
+        _db.emergencyCollectionItems,
+      );
+  $$DocumentLinksTableTableManager get documentLinks =>
+      $$DocumentLinksTableTableManager(_db, _db.documentLinks);
   $$DocumentOwnersTableTableManager get documentOwners =>
       $$DocumentOwnersTableTableManager(_db, _db.documentOwners);
   $$DocumentFilesTableTableManager get documentFiles =>

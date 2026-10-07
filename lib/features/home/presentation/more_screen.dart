@@ -59,14 +59,14 @@ class MoreScreen extends StatelessWidget {
               MoreDestination.backupRestore,
             ),
             _item(
-              Icons.cloud_outlined,
-              'Cloud backup / ক্লাউড ব্যাকআপ',
-              MoreDestination.cloudBackup,
-            ),
-            _item(
               Icons.storage_outlined,
               'Storage / স্টোরেজ',
               MoreDestination.storage,
+            ),
+            _item(
+              Icons.cloud_outlined,
+              'Cloud backup / ক্লাউড ব্যাকআপ',
+              MoreDestination.cloudBackup,
             ),
           ],
         ),
