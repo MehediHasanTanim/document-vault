@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import 'localization/locale_controller.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
+import 'theme/theme_controller.dart';
 
 class DocumentVaultApp extends ConsumerWidget {
   const DocumentVaultApp({super.key});
@@ -16,7 +17,7 @@ class DocumentVaultApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: ref.watch(themeControllerProvider),
       locale: ref.watch(localeControllerProvider),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

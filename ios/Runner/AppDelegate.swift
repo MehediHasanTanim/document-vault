@@ -5,6 +5,7 @@ import UIKit
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var privacyView: UIView?
   private var backupExportDelegate: BackupExportDelegate?
+  private var privacyCoverEnabled = true
 
   override func application(
     _ application: UIApplication,
@@ -41,12 +42,28 @@ import UIKit
         picker.delegate = exporter
         presenter.present(picker, animated: true)
       }
+      let privacyChannel = FlutterMethodChannel(
+        name: "documentvault/privacy_display",
+        binaryMessenger: controller.binaryMessenger
+      )
+      privacyChannel.setMethodCallHandler { [weak self] call, result in
+        guard call.method == "apply" else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+        let arguments = call.arguments as? [String: Any]
+        self?.privacyCoverEnabled = arguments?["hideInAppSwitcher"] as? Bool ?? true
+        // iOS does not provide a public application-level screenshot block.
+        // The app-switcher cover remains supported and screenshot preference
+        // is retained in encrypted app settings for compatible platforms.
+        result(nil)
+      }
     }
     return launched
   }
 
   @objc private func showPrivacyCover() {
-    guard let window = self.window, privacyView == nil else { return }
+    guard privacyCoverEnabled, let window = self.window, privacyView == nil else { return }
     let cover = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
     cover.frame = window.bounds
     cover.autoresizingMask = [.flexibleWidth, .flexibleHeight]

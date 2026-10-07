@@ -46,6 +46,21 @@ class MainActivity : FlutterActivity() {
                     REQUEST_SAVE_BACKUP,
                 )
             }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "documentvault/privacy_display")
+            .setMethodCallHandler { call, result ->
+                if (call.method != "apply") {
+                    result.notImplemented()
+                    return@setMethodCallHandler
+                }
+                val hideInSwitcher = call.argument<Boolean>("hideInAppSwitcher") ?: true
+                val blockScreenshots = call.argument<Boolean>("screenshotProtection") ?: true
+                if (hideInSwitcher || blockScreenshots) {
+                    window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                }
+                result.success(null)
+            }
     }
 
     @Deprecated("Deprecated in Android API")

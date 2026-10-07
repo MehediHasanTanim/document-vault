@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'localization/locale_controller.dart';
+import 'theme/theme_controller.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,9 @@ Future<void> bootstrap() async {
       overrides: [
         localeStorageProvider.overrideWithValue(
           SharedPreferencesLocaleStorage(preferences),
+        ),
+        themeStorageProvider.overrideWithValue(
+          SharedPreferencesThemeStorage(preferences),
         ),
       ],
       child: const DocumentVaultApp(),
